@@ -21,6 +21,10 @@ function RobloxAPI:HitResource(Args)
     return self.Communication:WaitForChild("HitResource"):FireServer(Args)
 end
 
+function RobloxAPI:CollectFishCrateContents()
+    return self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()    
+end
+
 -- Геттеры для доступа к сервисам и переменным
 function RobloxAPI:GetPlayers()
     return self.Players
@@ -38,7 +42,7 @@ function RobloxAPI:GetLocalPlayer()
     return self.LocalPlayer
 end
 
-function RobloxAPI:GetIsland()
+function RobloxAPI:GetLocalIsland()
     return self.LocalIsland
 end
 

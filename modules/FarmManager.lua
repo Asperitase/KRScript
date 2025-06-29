@@ -28,7 +28,7 @@ function FarmManager.New(Api)
     self.Api = Api
     self.Player = Api:GetLocalPlayer()
     self.Communication = Api:GetCommunication()
-    self.Island = Api:GetIsland()
+    self.Island = Api:GetLocalIsland()
     self.LandPlots = Api:GetLandPlots()
     self.SelectedHiveTypes = {Bee = true, MagmaBee = true}
     self.DistanceHive = 500
@@ -38,6 +38,7 @@ function FarmManager.New(Api)
     self.SelectedBerryTypes = {Strawberry = true, Blueberries = true}
     self.SelectedResourceTypes = {Bamboo = true, Cactus = true}
     self.AutoResourceTask = nil
+    self.AutoCollectFishTask = nil
     self.OnlyMaxHp = true
     self.BasePlayer = Api
     self.SelectedPlayers = {self.Player.Name}
@@ -76,7 +77,8 @@ function FarmManager:StartupTask(TaskName, Value)
     local TaskMap = {
         autohive = {task = "AutoHiveTask", func = "AutoHive"},
         autoharvest = {task = "AutoHarvestTask", func = "AutoHarvest"},
-        instafarm = {task = "AutoResourceTask", func = "AutoResource"}
+        instafarm = {task = "AutoResourceTask", func = "AutoResource"},
+        autocollectfish = {task = "AutoCollectFishTask", func = "AutoCollectFish"}
     }
     
     local Config = TaskMap[TaskName]
@@ -101,7 +103,7 @@ end
 function FarmManager:AutoHive()
     local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
     local HumanPart = Character:WaitForChild("HumanoidRootPart")
-    local Island = self.Api:GetIsland()
+    local Island = self.Api:GetLocalIsland()
     for _, Spot in ipairs(Island:GetDescendants()) do
         if Spot:IsA("Model") and Spot.Name:match("Spot") then
             local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
@@ -136,7 +138,7 @@ function FarmManager:AutoHive()
 end
 
 function FarmManager:AutoHarvest()
-    local Island = self.Api:GetIsland()
+    local Island = self.Api:GetLocalIsland()
     for _, Plant in ipairs(Island:FindFirstChild("Plants"):GetChildren()) do
         local PromptHold = Plant:FindFirstChild("PromptHold")
         if PromptHold then
@@ -186,6 +188,28 @@ function FarmManager:AutoResource()
     end
 end
 
+function FarmManager:AutoCollectFish()
+    if self.LandPlots then
+        for _, LandPlot in ipairs(self.LandPlots:GetChildren()) do
+            local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
+            if FishCrate then
+                for _, Amount in ipairs(self.FishCrate:GetChildren()) do
+                    local CurrentAmount = Amount:FindFirstChild("Amount")
+                    print(CurrentAmount.Text)
+                end
+
+                -- local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
+                -- if Amount then
+                --     if not Amount.Text:find("/") then
+                --         print("collect")
+                --         self.BasePlayer:CollectFishCrateContents()
+                --     end
+                -- end
+            end
+        end
+    end
+end
+
 function FarmManager:Destroy()
     if self.AutoHiveTask then
         task.cancel(self.AutoHiveTask)
@@ -198,6 +222,10 @@ function FarmManager:Destroy()
     if self.AutoResourceTask then
         task.cancel(self.AutoResourceTask)
         self.AutoResourceTask = nil
+    end
+    if self.AutoCollectFishTask then
+        task.cancel(self.AutoCollectFishTask)
+        self.AutoCollectFishTask = nil
     end
 end
 

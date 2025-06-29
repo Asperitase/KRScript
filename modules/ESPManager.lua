@@ -5,7 +5,7 @@ function ESPManager.New(Api)
     local self = setmetatable({}, ESPManager)
     self.Api = Api
     self.Player = Api:GetLocalPlayer()
-    self.Island = Api:GetIsland()
+    self.Island = Api:GetLocalIsland()
     self.EspTask = nil
     self.EspEnabled = false
     return self

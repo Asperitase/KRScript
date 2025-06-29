@@ -238,6 +238,12 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
         end
     })
 
+    -- Auto Collect Fish
+    local AutoCollectFishToggle = self.TabsId.farm:AddToggle("Auto Collect Fish", {Title = "Auto Collect Fish", Default = false})
+    AutoCollectFishToggle:OnChanged(function(Value)
+        FarmManager:StartupTask("autocollectfish", Value)
+    end)
+
     -- ESP Tab
     self.TabsId.esp:AddParagraph({ Title = "Farm", Content = "Farm visual" })
     local EspToggle = self.TabsId.esp:AddToggle("ESP Hive", {Title = "ESP Hive", Default = false})
@@ -287,29 +293,8 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
     self.TabsId.test:AddButton({
         Title = "Test Functions",
         Callback = function()
+            -- Здесь вы можете писать свой код для тестирования
             print("=== CUSTOM TEST ===")
-            
-            if self.LandPlot then
-                local S252 = self.LandPlot:FindFirstChild("S252")
-                if S252 then
-                    local FishCrate = S252:FindFirstChild("FISHCRATE")
-                    if FishCrate then
-                        local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
-                        if Amount then
-                            print("FISHCRATE Amount в S252:", Amount.Text)
-                            
-                            -- Проверяем если бокс FULL и собираем рыбу
-                            if not Amount.Text:find("/") then
-                                print("Бокс FULL! Собираем рыбу...")
-                                self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()
-                                print("Команда сбора отправлена!")
-                            else
-                                print("Бокс не FULL, Amount:", Amount.Text)
-                            end
-                        end
-                    end
-                end
-            end
             
         end
     })
