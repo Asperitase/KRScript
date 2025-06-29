@@ -8,6 +8,7 @@ function SpeedManager.new(api)
     self.default_speed = nil
     self.speed_enabled = false
     self.custom_speed = 16
+    self.speed_task = nil
     return self
 end
 
@@ -33,11 +34,28 @@ function SpeedManager:enable_speed(speed)
     
     self.custom_speed = speed or self.custom_speed
     self.speed_enabled = true
-    self:set_speed(self.custom_speed)
+    
+    -- Запускаем цикл для постоянного поддержания скорости
+    if not self.speed_task then
+        self.speed_task = task.spawn(function()
+            while self.speed_enabled do
+                self:set_speed(self.custom_speed)
+                task.wait(0.001)
+            end
+        end)
+    end
 end
 
 function SpeedManager:disable_speed()
     self.speed_enabled = false
+    
+    -- Останавливаем цикл
+    if self.speed_task then
+        task.cancel(self.speed_task)
+        self.speed_task = nil
+    end
+    
+    -- Возвращаем исходную скорость
     if self.default_speed then
         self:set_speed(self.default_speed)
     end
@@ -45,7 +63,18 @@ end
 
 function SpeedManager:character_added()
     if self.speed_enabled then
-        self:set_speed(self.custom_speed)
+        -- Перезапускаем цикл для нового персонажа
+        if self.speed_task then
+            task.cancel(self.speed_task)
+            self.speed_task = nil
+        end
+        
+        self.speed_task = task.spawn(function()
+            while self.speed_enabled do
+                self:set_speed(self.custom_speed)
+                task.wait(0.001)
+            end
+        end)
     end
 end
 

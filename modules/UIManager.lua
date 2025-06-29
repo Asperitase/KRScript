@@ -15,7 +15,7 @@ end
 function UIManager:setup(speed_manager, farm_manager, esp_manager) 
     local window = self.fluent_menu:CreateWindow({
         Title = "ketaminex | ",
-        SubTitle = "dev build: 1.0.75", 
+        SubTitle = "dev build: 1.0.77", 
         TabWidth = 120,
         Size = UDim2.fromOffset(580, 750),
         Theme = "Dark",
@@ -84,7 +84,9 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
             "Apple",
             "Sundew",
             "Cherries",
-            "Dragonfruit"
+            "Dragonfruit",
+            "Mango",
+            "Starfruit"
         },
         Multi = true,
         Default = {
@@ -99,7 +101,9 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
             "Apple",
             "Sundew",
             "Cherries",
-             "Dragonfruit"
+            "Dragonfruit",
+            "Mango",
+            "Starfruit"
         },
     })
     berry_dropdown:OnChanged(function(Value)
