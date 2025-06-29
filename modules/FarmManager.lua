@@ -196,10 +196,11 @@ end
 
 function FarmManager:SpamFish()
     local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
+    local pos2 = Vector3.new(-360.8326416015625, -1.6463819742202759, 429.3346862792969)
     local secondArg = 2
     while true do --testing
         self.BasePlayer:SpamFish(pos, secondArg)
-        self.BasePlayer:SpamFish(pos, secondArg)
+        self.BasePlayer:SpamFish(pos2, secondArg)
         task.wait(0.01)
     end
 end
