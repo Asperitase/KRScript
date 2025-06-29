@@ -5,7 +5,7 @@ local FarmManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/A
 local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/UIManager.lua?t=" .. tick()))()
 local RobloxAPI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/RobloxAPI.lua?t=" .. tick()))()
 
-local RobloxApi = RobloxAPI.New() 
+local RobloxApi = RobloxAPI.New()  
 
 local SpeedManagerInstance = SpeedManager.New(RobloxApi)
 local FarmManagerInstance = FarmManager.New(RobloxApi)

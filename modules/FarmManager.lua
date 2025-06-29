@@ -80,7 +80,7 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                task.wait(1.1)
+                task.wait(1)
             end
         end)
     else 
@@ -92,33 +92,41 @@ function FarmManager:StartupTask(TaskName, Value)
 end
 
 function FarmManager:AutoHive()
-    local Character = self.BasePlayer:GetLocalPlayer().Character or self.BasePlayer:GetLocalPlayer().CharacterAdded:Wait()
-    local HumanPart = Character:WaitForChild("HumanoidRootPart")
-    
-    for _, Spot in ipairs(self.BasePlayer:GetLocalIsland():GetDescendants()) do
-        if Spot:IsA("Model") and Spot.Name:match("Spot") then
-            local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
-            if PrimaryPart then
-                local Parent = Spot.Parent
-                local IsBee, IsMagma = false, false
-                for _, Child in ipairs(Parent:GetChildren()) do
-                    if string.find(Child.Name, "MagmaHiveRunner") and self.SelectedHiveTypes.MagmaBee then
-                        IsMagma = true
-                    elseif string.find(Child.Name, "HiveRunner") and not string.find(Child.Name, "Magma") and self.SelectedHiveTypes.Bee then
-                        IsBee = true
-                    end
+    local island = self.BasePlayer:GetLocalIsland()
+    if not island then return end
+
+    -- Кэшируем споты при первом вызове
+    if not self._cachedSpots then
+        self._cachedSpots = {}
+        for _, spot in ipairs(island:GetDescendants()) do
+            if spot:IsA("Model") and spot.Name:match("Spot") then
+                table.insert(self._cachedSpots, spot)
+            end
+        end
+    end
+
+    for _, Spot in ipairs(self._cachedSpots) do
+        local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
+        if PrimaryPart then
+            local Parent = Spot.Parent
+            if not Parent then continue end
+
+            local hasBee = false
+            for _, Child in ipairs(Parent:GetChildren()) do
+                local name = Child.Name
+                if self.SelectedHiveTypes.MagmaBee and name:find("MagmaHiveRunner") then
+                    hasBee = true
+                    break
+                elseif self.SelectedHiveTypes.Bee and name:find("HiveRunner") and not name:find("Magma") then
+                    hasBee = true
+                    break
                 end
-                if IsBee or IsMagma then
-                    local CollectPrompt = nil
-                    for _, Prompt in ipairs(Spot:GetDescendants()) do
-                        if Prompt:IsA("ProximityPrompt") and Prompt.ActionText == "Collect" then
-                            CollectPrompt = Prompt
-                            break
-                        end
-                    end
-                    if CollectPrompt and CollectPrompt.Enabled then
-                        self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
-                    end
+            end
+
+            if hasBee then
+                local prompt = Spot:FindFirstChildWhichIsA("ProximityPrompt", true)
+                if prompt and prompt.ActionText == "Collect" and prompt.Enabled then
+                    self.BasePlayer:AutoHive(Parent.Name, Spot.Name)
                 end
             end
         end
