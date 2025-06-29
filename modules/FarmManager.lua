@@ -36,7 +36,7 @@ function FarmManager.New(Api)
     self.AutoCollectFishTask = nil
     self.OnlyMaxHp = true
     self.BasePlayer = Api
-    self.SelectedPlayers = {self.BasePlayer:GetLocalPlayer().Name}
+    self.SelectedPlayers = {self.BasePlayer:GetLocalPlayer()}
     return self
 end
 

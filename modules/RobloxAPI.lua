@@ -11,7 +11,6 @@ function RobloxAPI.New()
     
     self.LocalPlayer = self.Players.LocalPlayer
     self.LocalIsland = self.Workspace:WaitForChild("Plots"):WaitForChild(self.LocalPlayer.Name)
-    self.LandPlots = self.LocalIsland:FindFirstChild("Land")
     self.Communication = self.ReplicatedStorage:WaitForChild("Communication")
     
     return self
@@ -44,10 +43,6 @@ end
 
 function RobloxAPI:GetLocalIsland()
     return self.LocalIsland
-end
-
-function RobloxAPI:GetLandPlots()
-    return self.LandPlots
 end
 
 function RobloxAPI:GetCommunication()
