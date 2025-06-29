@@ -125,7 +125,11 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                task.wait(0.01)
+                if TaskName == "autohive" then
+                    task.wait(0.2)
+                else
+                    task.wait(0.01)
+                end
             end
         end)
     else 
@@ -146,6 +150,8 @@ function FarmManager:AutoHive()
         
         local LocalIsland = self.BasePlayer:GetLocalIsland()
         if not LocalIsland then return end
+        
+        local FoundHive = false
         
         for _, Spot in ipairs(LocalIsland:GetDescendants()) do
             if Spot:IsA("Model") and Spot.Name:match("Spot") then
@@ -172,11 +178,17 @@ function FarmManager:AutoHive()
                             end
                             if CollectPrompt and CollectPrompt.Enabled then
                                 self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
+                                FoundHive = true
+                                task.wait(0.1)
                             end
                         end
                     end
                 end
             end
+        end
+        
+        if not FoundHive then
+            task.wait(0.5)
         end
     end)
 end
