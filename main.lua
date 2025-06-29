@@ -1,10 +1,10 @@
 -- Загружаем Fluent UI
 local fluent_menu = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 -- Загружаем модули
-local SpeedManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/holovachov/refs/heads/main/Documents/lua/modules/SpeedManager.lua"))()
-local FarmManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/holovachov/refs/heads/main/Documents/lua/modules/FarmManager.lua"))()
-local ESPManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/holovachov/refs/heads/main/Documents/lua/modules/ESPManager.lua"))()
-local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/holovachov/refs/heads/main/Documents/lua/modules/UIManager.lua"))()
+local SpeedManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/refs/heads/main/modules/SpeedManager.lua"))()
+local FarmManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/refs/heads/main/modules/FarmManager.lua"))()
+local ESPManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/refs/heads/main/modules/ESPManager.lua"))()
+local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/refs/heads/main/modules/UIManager.lua"))()
 
 -- Инициализация сервисов
 local players = game:GetService("Players")
