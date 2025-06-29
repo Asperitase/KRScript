@@ -196,13 +196,17 @@ end
 
 function FarmManager:SpamFish()
     local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
-    local pos2 = Vector3.new(-350.8326416015625, -1.6463819742202759, 425.3346862792969)
-    local pos3 = Vector3.new(-390.8326416015625, -1.6463819742202759, 425.3346862792969)
-    local pos4 = Vector3.new(-320.8326416015625, -1.6463819742202759, 425.3346862792969)
-    self.BasePlayer:SpamFish(pos, 1)
-    self.BasePlayer:SpamFish(pos2, 2)
-    self.BasePlayer:SpamFish(pos3, 3)
-    self.BasePlayer:SpamFish(pos4, 5)
+    local pos2 = Vector3.new(-349.8042297363281, -1.6463819742202759, 446.7143249511719)
+    local pos3 = Vector3.new(-358.8326416015625, -1.6463819742202759, 445.3346862792969)
+    local pos4 = Vector3.new(-356.8326416015625, -1.6463819742202759, 434.3346862792969)
+    local secondArg = 2
+    while true do --testing
+    self.BasePlayer:SpamFish(pos, secondArg)
+    self.BasePlayer:SpamFish(pos2, secondArg)
+    self.BasePlayer:SpamFish(pos3, secondArg)
+    self.BasePlayer:SpamFish(pos4, secondArg)
+        task.wait(0.01)
+    end
 end
 
 function FarmManager:Destroy()
