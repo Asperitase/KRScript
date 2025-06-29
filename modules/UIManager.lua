@@ -88,6 +88,7 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
             "Dragonfruit",
             "Mango",
             "Starfruit"
+            -- pumpkin
         },
         Multi = true,
         Default = {
@@ -298,7 +299,7 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
                             print("FISHCRATE Amount в S252:", Amount.Text)
                             
                             -- Проверяем если бокс FULL и собираем рыбу
-                            if Amount.Text == "FULL" then
+                            if not Amount.Text:find("/") then
                                 print("Бокс FULL! Собираем рыбу...")
                                 self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()
                                 print("Команда сбора отправлена!")
