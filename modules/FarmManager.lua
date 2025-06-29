@@ -189,6 +189,7 @@ function FarmManager:AutoResource()
 end
 
 function FarmManager:AutoCollectFish()
+    print(123)
     if self.LandPlots then
         for _, LandPlot in ipairs(self.LandPlots:GetChildren()) do
             local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
