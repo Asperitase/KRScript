@@ -85,9 +85,6 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                if TaskName ~= "spamfish" then
-                    task.wait(1)
-                end
             end
         end)
     else
