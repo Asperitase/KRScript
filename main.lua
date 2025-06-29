@@ -31,7 +31,7 @@ local function CleanupOnExit()
     end
     if UiManagerInstance then
         UiManagerInstance:Destroy()
-    end 
+    end  
 end
 
 -- Регистрируем обработчик для завершения
@@ -45,4 +45,16 @@ end)
 if not Success then
     warn("Ошибка в основном коде:", Error)
     CleanupOnExit()
-end 
+end
+
+-- Глобальная функция для очистки (если нужно)
+_G.CleanupOnExit = CleanupOnExit
+
+-- Обработчик нажатия клавиши U
+local UserInputService = game:GetService("UserInputService")
+UserInputService.InputBegan:Connect(function(input, processed)
+    if not processed and input.KeyCode == Enum.KeyCode.U then
+        print("Нажата клавиша U — скрипт будет завершён")
+        CleanupOnExit()
+    end
+end) 
