@@ -196,18 +196,13 @@ function FarmManager:AutoCollectFish()
         for _, LandPlot in ipairs(LandPlots:GetChildren()) do
             local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
             if FishCrate then
-                for _, Amount in ipairs(self.FishCrate:GetChildren()) do
-                    local CurrentAmount = Amount:FindFirstChild("Amount")
-                    print(CurrentAmount.Text)
+                local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
+                if Amount then
+                    -- Проверяем если бокс полный (нет "/" в тексте)
+                    if not Amount.Text:find("/") then
+                        self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()
+                    end
                 end
-
-                -- local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
-                -- if Amount then
-                --     -- Проверяем если бокс полный (нет "/" в тексте)
-                --     if not Amount.Text:find("/") then
-                --         self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()
-                --     end
-                -- end
             end
         end
     end
