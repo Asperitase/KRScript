@@ -14,7 +14,41 @@ function UIManager.New(Api, FluentMenu)
         Samples = {},
         LastUpdate = 0
     }
+    self.FpsScreenGui = nil
+    self.FpsLabel = nil
     return self
+end
+
+function UIManager:CreateFpsDisplay()
+    self.FpsScreenGui = Instance.new("ScreenGui")
+    self.FpsScreenGui.Name = "FpsMonitor"
+    self.FpsScreenGui.Parent = game:GetService("CoreGui")
+    self.FpsScreenGui.ResetOnSpawn = false
+    self.FpsScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    self.FpsLabel = Instance.new("TextLabel")
+    self.FpsLabel.Name = "FpsLabel"
+    self.FpsLabel.Size = UDim2.new(0, 200, 0, 60)
+    self.FpsLabel.Position = UDim2.new(1, -220, 0, 20)
+    self.FpsLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    self.FpsLabel.BackgroundTransparency = 0.7
+    self.FpsLabel.BorderSizePixel = 0
+    self.FpsLabel.Font = Enum.Font.SourceSansBold
+    self.FpsLabel.TextSize = 14
+    self.FpsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    self.FpsLabel.Text = "FPS: Loading..."
+    self.FpsLabel.Parent = self.FpsScreenGui
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.Parent = self.FpsLabel
+
+    local Padding = Instance.new("UIPadding")
+    Padding.PaddingLeft = UDim.new(0, 10)
+    Padding.PaddingRight = UDim.new(0, 10)
+    Padding.PaddingTop = UDim.new(0, 5)
+    Padding.PaddingBottom = UDim.new(0, 5)
+    Padding.Parent = self.FpsLabel
 end
 
 function UIManager:UpdateFPS()
@@ -39,10 +73,37 @@ function UIManager:UpdateFPS()
             Sum = Sum + FPS
         end
         self.FpsData.Average = math.floor(Sum / #self.FpsData.Samples)
+        
+        if self.FpsLabel then
+            local Color = Color3.fromRGB(255, 255, 255)
+            if self.FpsData.Current < 30 then
+                Color = Color3.fromRGB(255, 0, 0)
+            elseif self.FpsData.Current < 60 then
+                Color = Color3.fromRGB(255, 255, 0)
+            end
+            
+            self.FpsLabel.TextColor3 = Color
+            self.FpsLabel.Text = string.format(
+                "FPS: %d\nAvg: %d | Min: %d | Max: %d",
+                self.FpsData.Current,
+                self.FpsData.Average,
+                self.FpsData.Min,
+                self.FpsData.Max
+            )
+        end
     end
 end
 
 function UIManager:Setup(SpeedManager, FarmManager)
+    self:CreateFpsDisplay()
+    
+    task.spawn(function()
+        while true do
+            self:UpdateFPS()
+            task.wait(0.1)
+        end
+    end)
+
     local Window = self.FluentMenu:CreateWindow({
         Title = "ketaminex | ",
         SubTitle = "dev build: 1.0.8", 
@@ -297,25 +358,6 @@ function UIManager:Setup(SpeedManager, FarmManager)
         end
     })
 
-    local FpsParagraph = self.TabsId.test:AddParagraph({ 
-        Title = "FPS Monitor", 
-        Content = "Current: 0 | Average: 0 | Min: 0 | Max: 0" 
-    })
-
-    task.spawn(function()
-        while true do
-            self:UpdateFPS()
-            FpsParagraph:SetDesc(string.format(
-                "Current: %d | Average: %d | Min: %d | Max: %d",
-                self.FpsData.Current,
-                self.FpsData.Average,
-                self.FpsData.Min,
-                self.FpsData.Max
-            ))
-            task.wait(0.1)
-        end
-    end)
-
     self.TabsId.test:AddButton({
         Title = "Reset FPS Stats",
         Callback = function()
@@ -336,6 +378,11 @@ function UIManager:Setup(SpeedManager, FarmManager)
 end
 
 function UIManager:Destroy()
+    if self.FpsScreenGui then
+        self.FpsScreenGui:Destroy()
+        self.FpsScreenGui = nil
+        self.FpsLabel = nil
+    end
     if self.FluentMenu then
         self.FluentMenu:Destroy()
     end
