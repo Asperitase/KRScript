@@ -29,7 +29,6 @@ function FarmManager.New(Api)
     self.DistanceHive = 500
     self.AutoHiveTask = nil
     self.AutoHarvestTask = nil
-    self.HarvestDelay = 0
     self.SelectedBerryTypes = {Strawberry = true, Blueberries = true}
     self.SelectedResourceTypes = {Bamboo = true, Cactus = true}
     self.AutoResourceTask = nil
@@ -46,10 +45,6 @@ end
 
 function FarmManager:SetDistance(Distance)
     self.DistanceHive = Distance
-end
-
-function FarmManager:SetHarvestDelay(Delay)
-    self.HarvestDelay = Delay
 end
 
 function FarmManager:SetSelectedBerryTypes(Types)
@@ -123,7 +118,7 @@ function FarmManager:AutoHive()
                             end
                         end
                         if CollectPrompt and CollectPrompt.Enabled then
-                            self.Communication:WaitForChild("Hive"):FireServer(Spot.Parent.Name, Spot.Name, 2)
+                            self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
                         end
                     end
                 end
@@ -140,8 +135,7 @@ function FarmManager:AutoHarvest()
             if Prompt and Prompt.ActionText == "Harvest" and Prompt.Enabled then
                 local TypeValue = Plant:GetAttribute("Type")
                 if self.SelectedBerryTypes[TypeValue] then
-                    self.Communication:WaitForChild("Harvest"):FireServer(Plant.Name)
-                    task.wait(self.HarvestDelay)
+                    self.BasePlayer:AutoHarvest(Plant.Name)
                 end
             end
         end

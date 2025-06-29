@@ -24,6 +24,14 @@ function RobloxAPI:CollectFishCrateContents()
     return self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()    
 end
 
+function RobloxAPI:AutoHive(Parent, Name)
+    return self.Communication:WaitForChild("Hive"):FireServer(Parent, Name, 2)
+end
+
+function RobloxAPI:AutoHarvest(Name)
+    return self.Communication:WaitForChild("Harvest"):FireServer(Name)
+end
+
 -- Геттеры для доступа к сервисам и переменным
 function RobloxAPI:GetPlayers()
     return self.Players

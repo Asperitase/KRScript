@@ -14,7 +14,7 @@ end
 function UIManager:Setup(SpeedManager, FarmManager, EspManager)
     local Window = self.FluentMenu:CreateWindow({
         Title = "ketaminex | ",
-        SubTitle = "dev build: 1.0.9", 
+        SubTitle = "dev build: 1.1", 
         TabWidth = 120,
         Size = UDim2.fromOffset(580, 750),
         Theme = "Dark",
@@ -115,21 +115,6 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
             end
         end
         FarmManager:SetSelectedBerryTypes(SelectedTypes)
-    end)
-
-    local HarvestDelay = 0
-    local SliderHarvestDelay = self.TabsId.farm:AddSlider("Harvest Delay", {
-        Title = "Harvest Delay",
-        Description = "Задержка между сбором (сек)",
-        Default = HarvestDelay,
-        Min = 0,
-        Max = 5,
-        Rounding = 1,
-        Callback = function(Value) end
-    })
-    SliderHarvestDelay:OnChanged(function(Value)
-        HarvestDelay = tonumber(Value)
-        FarmManager:SetHarvestDelay(HarvestDelay)
     end)
 
     local ResourceToggle = self.TabsId.farm:AddToggle("Auto Resource", {Title = "Auto Resource", Default = false})
