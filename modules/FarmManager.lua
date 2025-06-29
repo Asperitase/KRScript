@@ -158,8 +158,8 @@ function FarmManager:AutoResource()
                 local Name = Resource.Name
                 local Hp = Resource:GetAttribute("HP")
                 local MaxHp = Resource:GetAttribute("MaxHP")
-                -- local MinHp = HealthResources[Name]
-                if self.SelectedResourceTypes[Name] and Hp and MaxHp then
+                local MinHp = HealthResources[Name]
+                if self.SelectedResourceTypes[Name] and Hp and MinHp then
                     if self.OnlyMaxHp then
                         if Hp == MaxHp then
                             task.spawn(function()
@@ -170,7 +170,7 @@ function FarmManager:AutoResource()
                             end)
                         end
                     else
-                        if Hp <= MaxHp then
+                        if Hp <= MinHp then
                             self.BasePlayer:HitResource(Resource)
                         end
                     end

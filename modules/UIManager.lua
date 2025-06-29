@@ -11,10 +11,10 @@ function UIManager.New(Api, FluentMenu)
     return self
 end
 
-function UIManager:Setup(SpeedManager, FarmManager, EspManager)
+function UIManager:Setup(SpeedManager, FarmManager)
     local Window = self.FluentMenu:CreateWindow({
         Title = "ketaminex | ",
-        SubTitle = "dev build: 1.13", 
+        SubTitle = "dev build: 1.0.8", 
         TabWidth = 120,
         Size = UDim2.fromOffset(580, 750),
         Theme = "Dark",
@@ -23,7 +23,6 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
 
     self.TabsId = {
         farm = Window:AddTab({ Title = "Farm", Icon = "axe" }),
-        esp = Window:AddTab({ Title = "Esp", Icon = "eye"}),
         movement = Window:AddTab({ Title = "Movement", Icon = "move-3d"}),
         test = Window:AddTab({ Title = "Test", Icon = "test-tube"}),
         settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
@@ -232,17 +231,6 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
     local SpamFishToggle = self.TabsId.farm:AddToggle("Spam Fish", {Title = "Spam Fish", Default = false})
     SpamFishToggle:OnChanged(function(Value)
         FarmManager:StartupTask("spamfish", Value)
-    end)
-
-    -- ESP Tab
-    self.TabsId.esp:AddParagraph({ Title = "Farm", Content = "Farm visual" })
-    local EspToggle = self.TabsId.esp:AddToggle("ESP Hive", {Title = "ESP Hive", Default = false})
-    EspToggle:OnChanged(function(Value)
-        if Value then
-            EspManager:ShowEsp()
-        else
-            EspManager:HideEsp()
-        end
     end)
 
     -- Movement Tab
