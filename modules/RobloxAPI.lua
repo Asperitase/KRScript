@@ -54,4 +54,8 @@ function RobloxAPI:GetAllIsland()
     return self.workspace:WaitForChild("Plots")
 end
 
+function RobloxAPI:GetAllPlayers()
+    return self.players:GetPlayers()
+end
+
 return RobloxAPI 

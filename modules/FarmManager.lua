@@ -38,7 +38,7 @@ function FarmManager.new(api)
     self.auto_resource_task = nil
     self.only_max_hp = true
     self.base_player = api
-    self.target_player = self.player.Name
+    self.selected_players = {self.player.Name}
     return self
 end
 
@@ -66,8 +66,8 @@ function FarmManager:set_only_max_hp(value)
     self.only_max_hp = value
 end
 
-function FarmManager:set_target_player(player_name)
-    self.target_player = player_name
+function FarmManager:set_selected_players(players)
+    self.selected_players = players
 end
 
 function FarmManager:startup_task(task_name, Value)
@@ -152,27 +152,30 @@ end
 
 function FarmManager:auto_resource()
     local islands = self.api:GetAllIsland()
-    local target_island = islands:FindFirstChild(self.target_player)
-    if target_island and target_island:FindFirstChild("Resources") then
-        local resources = target_island.Resources:GetChildren()
-        for _, resource in ipairs(resources) do
-            local name = resource.Name
-            local hp = resource:GetAttribute("HP")
-            local max_hp = resource:GetAttribute("MaxHP")
-            local min_hp = health_resources[name]
-            if self.selected_resource_types[name] and hp and min_hp then
-                if self.only_max_hp then
-                    if hp == max_hp then
-                        task.spawn(function()
-                            while resource:GetAttribute("HP") and resource:GetAttribute("HP") > 0 do
-                                self.base_player:HitResource(resource)
-                                task.wait(0.001)
-                            end
-                        end)
-                    end
-                else
-                    if hp <= min_hp then
-                        self.base_player:HitResource(resource)
+    
+    for _, targetPlayer in ipairs(self.selected_players) do
+        local target_island = islands:FindFirstChild(targetPlayer)
+        if target_island and target_island:FindFirstChild("Resources") then
+            local resources = target_island.Resources:GetChildren()
+            for _, resource in ipairs(resources) do
+                local name = resource.Name
+                local hp = resource:GetAttribute("HP")
+                local max_hp = resource:GetAttribute("MaxHP")
+                local min_hp = health_resources[name]
+                if self.selected_resource_types[name] and hp and min_hp then
+                    if self.only_max_hp then
+                        if hp == max_hp then
+                            task.spawn(function()
+                                while resource:GetAttribute("HP") and resource:GetAttribute("HP") > 0 do
+                                    self.base_player:HitResource(resource)
+                                    task.wait(0.001)
+                                end
+                            end)
+                        end
+                    else
+                        if hp <= min_hp then
+                            self.base_player:HitResource(resource)
+                        end
                     end
                 end
             end

@@ -15,7 +15,7 @@ end
 function UIManager:setup(speed_manager, farm_manager, esp_manager) 
     local window = self.fluent_menu:CreateWindow({
         Title = "ketaminex | ",
-        SubTitle = "dev build: 1.0.77", 
+        SubTitle = "dev build: 1.0.8", 
         TabWidth = 120,
         Size = UDim2.fromOffset(580, 750),
         Theme = "Dark",
@@ -191,24 +191,40 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
         farm_manager:set_only_max_hp(Value)
     end)
 
-    -- Выбор игрока для ломания ресурсов
+    -- Выбор игроков для ломания ресурсов
     local all_players = {}
     for _, player in ipairs(self.api:GetAllPlayers()) do
         table.insert(all_players, player.Name)
     end
 
-    local player_dropdown = self.tabs_id.farm:AddDropdown("Target Player", {
-        Title = "Target Player",
-        Description = "Выберите игрока для ломания ресурсов",
+    local player_dropdown = self.tabs_id.farm:AddDropdown("Target Players", {
+        Title = "Target Players",
+        Description = "Выберите игроков для ломания ресурсов на их островах",
         Values = all_players,
-        Multi = false,
-        Default = self.player.Name,
+        Multi = true,
+        Default = {self.player.Name},
     })
     player_dropdown:OnChanged(function(Value)
-        if Value then
-            farm_manager:set_target_player(Value)
+        local selected_players = {}
+        for name, state in next, Value do
+            if state then
+                table.insert(selected_players, name)
+            end
         end
+        farm_manager:set_selected_players(selected_players)
     end)
+
+    -- Кнопка обновления списка игроков
+    self.tabs_id.farm:AddButton({
+        Title = "Refresh Player List",
+        Callback = function()
+            local new_players = {}
+            for _, player in ipairs(self.api:GetAllPlayers()) do
+                table.insert(new_players, player.Name)
+            end
+            player_dropdown:SetValues(new_players)
+        end
+    })
 
     -- ESP Tab
     self.tabs_id.esp:AddParagraph({ Title = "Farm", Content = "Farm visual" })
