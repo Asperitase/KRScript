@@ -28,7 +28,7 @@ function FarmManager.New(Api)
     self.Api = Api
     self.Player = Api:GetLocalPlayer()
     self.Communication = Api:GetCommunication()
-    self.Island = Api:GetIsland()
+    self.Island = Api:GetLocalIsland()
     self.SelectedHiveTypes = {Bee = true, MagmaBee = true}
     self.DistanceHive = 500
     self.AutoHiveTask = nil
