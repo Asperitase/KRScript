@@ -26,6 +26,7 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
         farm = Window:AddTab({ Title = "Farm", Icon = "axe" }),
         esp = Window:AddTab({ Title = "Esp", Icon = "eye"}),
         movement = Window:AddTab({ Title = "Movement", Icon = "move-3d"}),
+        test = Window:AddTab({ Title = "Test", Icon = "test-tube"}),
         settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
     }
 
@@ -278,6 +279,53 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
         SpeedManager:CharacterAdded()
     end)
 
+    -- Test Tab
+    self.TabsId.test:AddParagraph({ Title = "Testing Functions", Content = "Тестируйте функции здесь без влияния на основные настройки" })
+    
+    -- Кнопка для пользовательского тестирования
+    self.TabsId.test:AddButton({
+        Title = "Test Functions",
+        Callback = function()
+            print("=== CUSTOM TEST ===")
+            
+            -- Получаем значение Amount из BillboardGui (конкретный путь)
+            local TargetPath = workspace.Plots.idredakx.Land.S252.FISHCRATE.PromptPart.Top.BillboardGui.Amount
+            if TargetPath then
+                print("Amount значение:", TargetPath.Text)
+            else
+                print("Путь не найден!")
+            end
+            
+            -- Универсальный поиск всех FISHCRATE
+            print("=== ПОИСК ВСЕХ FISHCRATE ===")
+            local AllPlots = workspace.Plots:GetChildren()
+            for _, Plot in ipairs(AllPlots) do
+                if Plot:FindFirstChild("Land") then
+                    local LandPlots = Plot.Land:GetChildren()
+                    for _, LandPlot in ipairs(LandPlots) do
+                        local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
+                        if FishCrate then
+                            local PromptPart = FishCrate:FindFirstChild("PromptPart")
+                            if PromptPart then
+                                local Top = PromptPart:FindFirstChild("Top")
+                                if Top then
+                                    local BillboardGui = Top:FindFirstChild("BillboardGui")
+                                    if BillboardGui then
+                                        local Amount = BillboardGui:FindFirstChild("Amount")
+                                        if Amount then
+                                            print("Найден FISHCRATE в", Plot.Name, LandPlot.Name, "Amount:", Amount.Text)
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            
+        end
+    })
+
     -- SaveManager и InterfaceManager
     local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua?t=" .. tick()))()
     local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua?t=" .. tick()))()
@@ -287,7 +335,7 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
     SaveManager:SetFolder("KetaminHub/specific-game")
     InterfaceManager:BuildInterfaceSection(self.TabsId.settings)
     -- SaveManager:BuildConfigSection(self.TabsId.settings) -- пока закомментировано
-    Window:SelectTab(2)
+    Window:SelectTab(4)
 end
 
 function UIManager:Destroy()
