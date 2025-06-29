@@ -296,6 +296,15 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
                         local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
                         if Amount then
                             print("FISHCRATE Amount в S252:", Amount.Text)
+                            
+                            -- Проверяем если бокс FULL и собираем рыбу
+                            if Amount.Text == "FULL" then
+                                print("Бокс FULL! Собираем рыбу...")
+                                self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()
+                                print("Команда сбора отправлена!")
+                            else
+                                print("Бокс не FULL, Amount:", Amount.Text)
+                            end
                         end
                     end
                 end
