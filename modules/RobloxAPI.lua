@@ -59,8 +59,6 @@ function RobloxAPI:GetLocalIsland()
 end
 
 function RobloxAPI:GetCommunication()
-
-    
     return self.Communication
 end
 
