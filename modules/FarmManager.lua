@@ -194,21 +194,18 @@ function FarmManager:AutoCollectFish()
     end
 end
 
-
-
--- 190 538
 function FarmManager:SpamFish()
+    print("=== Тест спама рыбалки: старт ===")
+    local x_fraction = 0.8326416015625
+    local z_fraction = 0.3346862792969
     while true do
-             -- X: от 350 до 365
-             local x = math.random() * (365 - 350) + 350
-             -- Y: всегда одно
-             local y = -1.6463819742202759
-             -- Z: от 420 до 450
-             local z = math.random() * (450 - 420) + 420
-     
-             local pos = Vector3.new(x, y, z)
-             self.BasePlayer:SpamFish(pos, 2)
-             task.wait(0.01)
+        local x_int = math.random(-365, -350)
+        local z_int = math.random(420, 450)
+        local x = x_int + x_fraction
+        local z = z_int + z_fraction
+        local pos = Vector3.new(x, -1.6463819742202759, z)
+        self.BasePlayer:SpamFish(pos, 2)
+        task.wait(0.01)
     end
 end
 
