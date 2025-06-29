@@ -171,7 +171,7 @@ function FarmManager:AutoResource()
                             task.spawn(function()
                                 while Resource:GetAttribute("HP") and Resource:GetAttribute("HP") > 0 do
                                     self.BasePlayer:HitResource(Resource)
-                                    task.wait(0.001)
+                                    task.wait(0.05)
                                 end
                             end)
                         end
