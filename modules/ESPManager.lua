@@ -5,7 +5,7 @@ function ESPManager.new(api)
     local self = setmetatable({}, ESPManager)
     self.api = api
     self.player = api:GetLocalPlayer()
-    self.land = api:GetPlatform()
+    self.land = api:GetIsland()
     self.esp_task = nil
     return self
 end

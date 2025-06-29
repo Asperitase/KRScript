@@ -18,7 +18,16 @@ function RobloxAPI.new()
 end
 
 function RobloxAPI:HitResource(args)
-    return self.communication:WaitForChild("HitResource"):FireServer(args)
+    if not self.communication then
+        warn("Communication не инициализирован для HitResource")
+        return
+    end
+    local hit_resource = self.communication:WaitForChild("HitResource")
+    if hit_resource then
+        return hit_resource:FireServer(args)
+    else
+        warn("Не удалось найти HitResource в Communication")
+    end
 end
 
 -- Геттеры для доступа к сервисам и переменным

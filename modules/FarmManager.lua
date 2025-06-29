@@ -27,7 +27,7 @@ function FarmManager.new(api)
     self.api = api
     self.player = api:GetLocalPlayer()
     self.communication = api:GetCommunication()
-    self.land = api:GetPlatform()
+    self.land = api:GetIsland()
     self.selected_hive_types = {Bee = true, MagmaBee = true}
     self.distance_hive = 500
     self.auto_hive_task = nil
@@ -94,7 +94,8 @@ end
 function FarmManager:auto_hive()
     local character = self.player.Character or self.player.CharacterAdded:Wait()
     local human_part = character:WaitForChild("HumanoidRootPart")
-    for _, spot in ipairs(self.land:GetDescendants()) do
+    local island = self.api:GetIsland()
+    for _, spot in ipairs(island:GetDescendants()) do
         if spot:IsA("Model") and spot.Name:match("Spot") then
             local primaryPart = spot.PrimaryPart or spot:FindFirstChildWhichIsA("BasePart")
             if primaryPart then
