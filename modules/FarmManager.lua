@@ -171,6 +171,7 @@ function FarmManager:AutoHive()
                         end
                         if CollectPrompt and CollectPrompt.Enabled then
                             self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
+                            task.wait(0)
                         end
                     end
                 end
