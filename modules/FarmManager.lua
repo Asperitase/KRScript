@@ -188,12 +188,12 @@ function FarmManager:AutoResource()
 end
 
 function FarmManager:AutoCollectFish()
-    local Island = self.BasePlayer:GetLocalIsland()
-    local LandPlots = Island:FindFirstChild("Land")
+    local Island1 = self.BasePlayer:GetLocalIsland()
+    local LandPlots1 = Island1:FindFirstChild("Land")
     
-    if LandPlots then
-        for _, LandPlot in ipairs(LandPlots:GetChildren()) do
-            local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
+    if LandPlots1 then
+        for _, LandPlot1 in ipairs(LandPlots1:GetChildren()) do
+            local FishCrate = LandPlot1:FindFirstChild("FISHCRATE")
             if FishCrate then
                 local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
                 if Amount then
