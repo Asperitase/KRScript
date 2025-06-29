@@ -36,6 +36,14 @@ function FarmManager.New(Api)
     self.OnlyMaxHp = true
     self.BasePlayer = Api
     self.SelectedPlayers = {Api:GetLocalPlayer().Name}
+    
+    -- Флаги для контроля работы функций
+    self.IsAutoHiveRunning = false
+    self.IsAutoHarvestRunning = false
+    self.IsAutoResourceRunning = false
+    self.IsAutoCollectFishRunning = false
+    self.IsSpamFishRunning = false
+    
     return self
 end
 
@@ -60,30 +68,151 @@ function FarmManager:SetSelectedPlayers(Players)
 end
 
 function FarmManager:StartupTask(TaskName, Value)
-    local TaskMap = {
-        autohive = {task = "AutoHiveTask", func = "AutoHive", delay = 1},
-        autoharvest = {task = "AutoHarvestTask", func = "AutoHarvest", delay = 0.03},
-        instafarm = {task = "AutoResourceTask", func = "AutoResource", delay = 0.03},
-        autocollectfish = {task = "AutoCollectFishTask", func = "AutoCollectFish", delay = 0.03},
-        spamfish = {task = "SpamFishTask", func = "SpamFish", delay = 0.03}
-    }
-
-    local Config = TaskMap[TaskName]
-    if not Config then return end
-
-    if Value then
-        if self[Config.task] then return end
-        self[Config.task] = task.spawn(function()
-            while true do
-                self[Config.func](self)
-                task.wait(Config.delay)
-            end
-        end)
-    else
-        if self[Config.task] then
-            task.cancel(self[Config.task])
-            self[Config.task] = nil
+    if TaskName == "autohive" then
+        if Value then
+            self:StartAutoHive()
+        else
+            self:StopAutoHive()
         end
+    elseif TaskName == "autoharvest" then
+        if Value then
+            self:StartAutoHarvest()
+        else
+            self:StopAutoHarvest()
+        end
+    elseif TaskName == "instafarm" then
+        if Value then
+            self:StartAutoResource()
+        else
+            self:StopAutoResource()
+        end
+    elseif TaskName == "autocollectfish" then
+        if Value then
+            self:StartAutoCollectFish()
+        else
+            self:StopAutoCollectFish()
+        end
+    elseif TaskName == "spamfish" then
+        if Value then
+            self:StartSpamFish()
+        else
+            self:StopSpamFish()
+        end
+    end
+end
+
+-- Авто улей - отдельная функция
+function FarmManager:StartAutoHive()
+    if self.IsAutoHiveRunning then return end
+    self.IsAutoHiveRunning = true
+    
+    self.AutoHiveTask = task.spawn(function()
+        while self.IsAutoHiveRunning do
+            task.spawn(function()
+                self:AutoHive()
+            end)
+            task.wait(1)
+        end
+    end)
+end
+
+function FarmManager:StopAutoHive()
+    self.IsAutoHiveRunning = false
+    if self.AutoHiveTask then
+        task.cancel(self.AutoHiveTask)
+        self.AutoHiveTask = nil
+    end
+end
+
+-- Авто сбор - отдельная функция
+function FarmManager:StartAutoHarvest()
+    if self.IsAutoHarvestRunning then return end
+    self.IsAutoHarvestRunning = true
+    
+    self.AutoHarvestTask = task.spawn(function()
+        while self.IsAutoHarvestRunning do
+            task.spawn(function()
+                self:AutoHarvest()
+            end)
+            task.wait(0.03)
+        end
+    end)
+end
+
+function FarmManager:StopAutoHarvest()
+    self.IsAutoHarvestRunning = false
+    if self.AutoHarvestTask then
+        task.cancel(self.AutoHarvestTask)
+        self.AutoHarvestTask = nil
+    end
+end
+
+-- Авто ресурсы - отдельная функция
+function FarmManager:StartAutoResource()
+    if self.IsAutoResourceRunning then return end
+    self.IsAutoResourceRunning = true
+    
+    self.AutoResourceTask = task.spawn(function()
+        while self.IsAutoResourceRunning do
+            task.spawn(function()
+                self:AutoResource()
+            end)
+            task.wait(0.03)
+        end
+    end)
+end
+
+function FarmManager:StopAutoResource()
+    self.IsAutoResourceRunning = false
+    if self.AutoResourceTask then
+        task.cancel(self.AutoResourceTask)
+        self.AutoResourceTask = nil
+    end
+end
+
+-- Авто сбор рыбы - отдельная функция
+function FarmManager:StartAutoCollectFish()
+    if self.IsAutoCollectFishRunning then return end
+    self.IsAutoCollectFishRunning = true
+    
+    self.AutoCollectFishTask = task.spawn(function()
+        while self.IsAutoCollectFishRunning do
+            task.spawn(function()
+                self:AutoCollectFish()
+            end)
+            task.wait(0.03)
+        end
+    end)
+end
+
+function FarmManager:StopAutoCollectFish()
+    self.IsAutoCollectFishRunning = false
+    if self.AutoCollectFishTask then
+        task.cancel(self.AutoCollectFishTask)
+        self.AutoCollectFishTask = nil
+    end
+end
+
+-- Спам рыбалка - отдельная функция
+function FarmManager:StartSpamFish()
+    if self.IsSpamFishRunning then return end
+    self.IsSpamFishRunning = true
+    
+    self.SpamFishTask = task.spawn(function()
+        while self.IsSpamFishRunning do
+            task.spawn(function()
+                self:SpamFish()
+            end)
+            task.wait(0.001)
+        end
+    end)
+end
+
+function FarmManager:StopSpamFish()
+    self.IsSpamFishRunning = false
+    if self.SpamFishTask then
+        task.cancel(self.SpamFishTask)
+        self.SpamFishTask = nil
     end
 end
 
@@ -102,6 +231,8 @@ function FarmManager:AutoHive()
     end
 
     for _, Spot in ipairs(self._cachedSpots) do
+        if not self.IsAutoHiveRunning then break end
+        
         local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
         if PrimaryPart then
             local Parent = Spot.Parent
@@ -122,7 +253,9 @@ function FarmManager:AutoHive()
             if hasBee then
                 local prompt = Spot:FindFirstChildWhichIsA("ProximityPrompt", true)
                 if prompt and prompt.ActionText == "Collect" and prompt.Enabled then
-                    self.BasePlayer:AutoHive(Parent.Name, Spot.Name)
+                    task.spawn(function()
+                        self.BasePlayer:AutoHive(Parent.Name, Spot.Name)
+                    end)
                 end
             end
         end
@@ -130,14 +263,24 @@ function FarmManager:AutoHive()
 end
 
 function FarmManager:AutoHarvest()
-    for _, Plant in ipairs(self.BasePlayer:GetLocalIsland():FindFirstChild("Plants"):GetChildren()) do
+    local island = self.BasePlayer:GetLocalIsland()
+    if not island then return end
+    
+    local Plants = island:FindFirstChild("Plants")
+    if not Plants then return end
+    
+    for _, Plant in ipairs(Plants:GetChildren()) do
+        if not self.IsAutoHarvestRunning then break end
+        
         local PromptHold = Plant:FindFirstChild("PromptHold")
         if PromptHold then
             local Prompt = PromptHold:FindFirstChildWhichIsA("ProximityPrompt")
             if Prompt and Prompt.ActionText == "Harvest" and Prompt.Enabled then
                 local TypeValue = Plant:GetAttribute("Type")
                 if self.SelectedBerryTypes[TypeValue] then
-                    self.BasePlayer:AutoHarvest(Plant.Name)
+                    task.spawn(function()
+                        self.BasePlayer:AutoHarvest(Plant.Name)
+                    end)
                 end
             end
         end
@@ -146,10 +289,14 @@ end
 
 function FarmManager:AutoResource()
     for _, TargetPlayer in ipairs(self.SelectedPlayers) do
+        if not self.IsAutoResourceRunning then break end
+        
         local TargetIsland = self.BasePlayer:GetAllIslands():FindFirstChild(TargetPlayer)
         if TargetIsland and TargetIsland:FindFirstChild("Resources") then
             local Resources = TargetIsland.Resources:GetChildren()
             for _, Resource in ipairs(Resources) do
+                if not self.IsAutoResourceRunning then break end
+                
                 local Name = Resource.Name
                 local Hp = Resource:GetAttribute("HP")
                 local MaxHp = Resource:GetAttribute("MaxHP")
@@ -158,7 +305,7 @@ function FarmManager:AutoResource()
                     if self.OnlyMaxHp then
                         if Hp == MaxHp then
                             task.spawn(function()
-                                while Resource:GetAttribute("HP") and Resource:GetAttribute("HP") > 0 do
+                                while Resource:GetAttribute("HP") and Resource:GetAttribute("HP") > 0 and self.IsAutoResourceRunning do
                                     self.BasePlayer:HitResource(Resource)
                                     task.wait(0.05)
                                 end
@@ -166,7 +313,9 @@ function FarmManager:AutoResource()
                         end
                     else
                         if Hp <= MinHp then
-                            self.BasePlayer:HitResource(Resource)
+                            task.spawn(function()
+                                self.BasePlayer:HitResource(Resource)
+                            end)
                         end
                     end
                 end
@@ -176,13 +325,23 @@ function FarmManager:AutoResource()
 end
 
 function FarmManager:AutoCollectFish()
-    for _, LandPlace in ipairs(self.BasePlayer:GetLocalIsland():FindFirstChild("Land"):GetChildren()) do
+    local island = self.BasePlayer:GetLocalIsland()
+    if not island then return end
+    
+    local Land = island:FindFirstChild("Land")
+    if not Land then return end
+    
+    for _, LandPlace in ipairs(Land:GetChildren()) do
+        if not self.IsAutoCollectFishRunning then break end
+        
         local FishCrate = LandPlace:FindFirstChild("FISHCRATE")
         if FishCrate then
             local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
             if Amount then
                 if not Amount.Text:find("/") then
-                    self.BasePlayer:CollectFishCrateContents()
+                    task.spawn(function()
+                        self.BasePlayer:CollectFishCrateContents()
+                    end)
                     task.wait(1)
                 end
             end
@@ -191,34 +350,20 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
+    if not self.IsSpamFishRunning then return end
+    
     local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
-    while true do
+    task.spawn(function()
         self.BasePlayer:SpamFish(pos, 2)
-        task.wait(0.001)
-    end
+    end)
 end
 
 function FarmManager:Destroy()
-    if self.AutoHiveTask then
-        task.cancel(self.AutoHiveTask)
-        self.AutoHiveTask = nil
-    end
-    if self.AutoHarvestTask then
-        task.cancel(self.AutoHarvestTask)
-        self.AutoHarvestTask = nil
-    end
-    if self.AutoResourceTask then
-        task.cancel(self.AutoResourceTask)
-        self.AutoResourceTask = nil
-    end
-    if self.AutoCollectFishTask then
-        task.cancel(self.AutoCollectFishTask)
-        self.AutoCollectFishTask = nil
-    end
-    if self.SpamFishTask then
-        task.cancel(self.SpamFishTask)
-        self.SpamFishTask = nil
-    end
+    self:StopAutoHive()
+    self:StopAutoHarvest()
+    self:StopAutoResource()
+    self:StopAutoCollectFish()
+    self:StopSpamFish()
 end
 
 return FarmManager 
