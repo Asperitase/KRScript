@@ -16,10 +16,16 @@ function UIManager.New(Api, FluentMenu)
     }
     self.FpsScreenGui = nil
     self.FpsLabel = nil
+    self.FpsMonitorEnabled = true
+    self.FpsUpdateTask = nil
     return self
 end
 
 function UIManager:CreateFpsDisplay()
+    if self.FpsScreenGui then
+        self.FpsScreenGui:Destroy()
+    end
+    
     self.FpsScreenGui = Instance.new("ScreenGui")
     self.FpsScreenGui.Name = "FpsMonitor"
     self.FpsScreenGui.Parent = game:GetService("CoreGui")
@@ -49,6 +55,32 @@ function UIManager:CreateFpsDisplay()
     Padding.PaddingTop = UDim.new(0, 5)
     Padding.PaddingBottom = UDim.new(0, 5)
     Padding.Parent = self.FpsLabel
+end
+
+function UIManager:ToggleFpsMonitor()
+    self.FpsMonitorEnabled = not self.FpsMonitorEnabled
+    
+    if self.FpsMonitorEnabled then
+        self:CreateFpsDisplay()
+        if not self.FpsUpdateTask then
+            self.FpsUpdateTask = task.spawn(function()
+                while self.FpsMonitorEnabled do
+                    self:UpdateFPS()
+                    task.wait(0.1)
+                end
+            end)
+        end
+    else
+        if self.FpsScreenGui then
+            self.FpsScreenGui:Destroy()
+            self.FpsScreenGui = nil
+            self.FpsLabel = nil
+        end
+        if self.FpsUpdateTask then
+            task.cancel(self.FpsUpdateTask)
+            self.FpsUpdateTask = nil
+        end
+    end
 end
 
 function UIManager:UpdateFPS()
@@ -97,8 +129,8 @@ end
 function UIManager:Setup(SpeedManager, FarmManager)
     self:CreateFpsDisplay()
     
-    task.spawn(function()
-        while true do
+    self.FpsUpdateTask = task.spawn(function()
+        while self.FpsMonitorEnabled do
             self:UpdateFPS()
             task.wait(0.1)
         end
@@ -359,6 +391,13 @@ function UIManager:Setup(SpeedManager, FarmManager)
     })
 
     self.TabsId.test:AddButton({
+        Title = "Toggle FPS Monitor",
+        Callback = function()
+            self:ToggleFpsMonitor()
+        end
+    })
+
+    self.TabsId.test:AddButton({
         Title = "Reset FPS Stats",
         Callback = function()
             self.FpsData.Min = 999
@@ -378,6 +417,10 @@ function UIManager:Setup(SpeedManager, FarmManager)
 end
 
 function UIManager:Destroy()
+    if self.FpsUpdateTask then
+        task.cancel(self.FpsUpdateTask)
+        self.FpsUpdateTask = nil
+    end
     if self.FpsScreenGui then
         self.FpsScreenGui:Destroy()
         self.FpsScreenGui = nil
