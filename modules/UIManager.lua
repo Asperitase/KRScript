@@ -1,19 +1,19 @@
 local UIManager = {}
 UIManager.__index = UIManager
 
-function UIManager.new(api, fluent_menu)
+function UIManager.New(Api, FluentMenu)
     local self = setmetatable({}, UIManager)
-    self.api = api
-    self.player = api:GetLocalPlayer()
-    self.fluent_menu = fluent_menu
-    self.communication = api:GetCommunication()
-    self.land = api:GetPlatform()
-    self.tabs_id = {}
+    self.Api = Api
+    self.Player = Api:GetLocalPlayer()
+    self.FluentMenu = FluentMenu
+    self.Communication = Api:GetCommunication()
+    self.LandPlot = Api:GetLandPlots()
+    self.TabsId = {}
     return self
 end
 
-function UIManager:setup(speed_manager, farm_manager, esp_manager) 
-    local window = self.fluent_menu:CreateWindow({
+function UIManager:Setup(SpeedManager, FarmManager, EspManager)
+    local Window = self.FluentMenu:CreateWindow({
         Title = "ketaminex | ",
         SubTitle = "dev build: 1.0.8", 
         TabWidth = 120,
@@ -22,55 +22,55 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
         MinimizeKey = Enum.KeyCode.Q
     })
 
-    self.tabs_id = {
-        farm = window:AddTab({ Title = "Farm", Icon = "axe" }),
-        esp = window:AddTab({ Title = "Esp", Icon = "eye"}),
-        movement = window:AddTab({ Title = "Movement", Icon = "move-3d"}),
-        settings = window:AddTab({ Title = "Settings", Icon = "settings" })
+    self.TabsId = {
+        farm = Window:AddTab({ Title = "Farm", Icon = "axe" }),
+        esp = Window:AddTab({ Title = "Esp", Icon = "eye"}),
+        movement = Window:AddTab({ Title = "Movement", Icon = "move-3d"}),
+        settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
     }
 
     -- Farm Tab
-    local is_auto_hive = self.tabs_id.farm:AddToggle("Auto Hive", {Title = "Auto Hive", Default = false})
+    local IsAutoHive = self.TabsId.farm:AddToggle("Auto Hive", {Title = "Auto Hive", Default = false})
 
-    local selected_hive_types = {Bee = true, MagmaBee = true}
-    local dropdown_hive = self.tabs_id.farm:AddDropdown("Hive", {
+    local SelectedHiveTypes = {Bee = true, MagmaBee = true}
+    local DropdownHive = self.TabsId.farm:AddDropdown("Hive", {
         Title = "Hive",
         Values = {"Bee", "MagmaBee"}, 
         Multi = true,
         Default = {"Bee", "MagmaBee"},
     })
-    dropdown_hive:OnChanged(function(Value)
-        selected_hive_types = {}
+    DropdownHive:OnChanged(function(Value)
+        SelectedHiveTypes = {}
         for k in next, Value do
-            selected_hive_types[k] = true
+            SelectedHiveTypes[k] = true
         end
-        farm_manager:set_selected_types(selected_hive_types)
+        FarmManager:SetSelectedTypes(SelectedHiveTypes)
     end)
 
-    local distance_hive = 500
-    local slider_distance_hive = self.tabs_id.farm:AddSlider("Auto Hive Distance", {
+    local DistanceHive = 500
+    local SliderDistanceHive = self.TabsId.farm:AddSlider("Auto Hive Distance", {
         Title = "Auto Hive Distance",
         Description = "Distance Hive",
-        Default = distance_hive,
+        Default = DistanceHive,
         Min = 35,
         Max = 500,
         Rounding = 1,
         Callback = function(Value) end
     })
-    slider_distance_hive:OnChanged(function(Value)
-        distance_hive = tonumber(Value)
-        farm_manager:set_distance(distance_hive)
+    SliderDistanceHive:OnChanged(function(Value)
+        DistanceHive = tonumber(Value)
+        FarmManager:SetDistance(DistanceHive)
     end)
-    is_auto_hive:OnChanged(function(Value)
-        farm_manager:startup_task("autohive", Value)
-    end)
-
-    local harvest_toggle = self.tabs_id.farm:AddToggle("Auto Harvest", {Title = "Auto Harvest", Default = false})
-    harvest_toggle:OnChanged(function(Value)
-        farm_manager:startup_task("autoharvest", Value)
+    IsAutoHive:OnChanged(function(Value)
+        FarmManager:StartupTask("autohive", Value)
     end)
 
-    local berry_dropdown = self.tabs_id.farm:AddDropdown("Type Harvest", {
+    local HarvestToggle = self.TabsId.farm:AddToggle("Auto Harvest", {Title = "Auto Harvest", Default = false})
+    HarvestToggle:OnChanged(function(Value)
+        FarmManager:StartupTask("autoharvest", Value)
+    end)
+
+    local BerryDropdown = self.TabsId.farm:AddDropdown("Type Harvest", {
         Title = "Type Harvest",
         Values = {
             "Strawberry",
@@ -106,33 +106,33 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
             "Starfruit"
         },
     })
-    berry_dropdown:OnChanged(function(Value)
-        local selected_types = {}
-        for k in pairs(Value) do selected_types[k] = true end
-        farm_manager:set_selected_berry_types(selected_types)
+    BerryDropdown:OnChanged(function(Value)
+        local SelectedTypes = {}
+        for k in pairs(Value) do SelectedTypes[k] = true end
+        FarmManager:SetSelectedBerryTypes(SelectedTypes)
     end)
 
-    local harvest_delay = 0
-    local slider_harvest_delay = self.tabs_id.farm:AddSlider("Harvest Delay", {
+    local HarvestDelay = 0
+    local SliderHarvestDelay = self.TabsId.farm:AddSlider("Harvest Delay", {
         Title = "Harvest Delay",
         Description = "Задержка между сбором (сек)",
-        Default = harvest_delay,
+        Default = HarvestDelay,
         Min = 0,
         Max = 5,
         Rounding = 1,
         Callback = function(Value) end
     })
-    slider_harvest_delay:OnChanged(function(Value)
-        harvest_delay = tonumber(Value)
-        farm_manager:set_harvest_delay(harvest_delay)
+    SliderHarvestDelay:OnChanged(function(Value)
+        HarvestDelay = tonumber(Value)
+        FarmManager:SetHarvestDelay(HarvestDelay)
     end)
 
-    local resource_toggle = self.tabs_id.farm:AddToggle("Auto Resource", {Title = "Auto Resource", Default = false})
-    resource_toggle:OnChanged(function(Value)
-        farm_manager:startup_task("instafarm", Value)
+    local ResourceToggle = self.TabsId.farm:AddToggle("Auto Resource", {Title = "Auto Resource", Default = false})
+    ResourceToggle:OnChanged(function(Value)
+        FarmManager:StartupTask("instafarm", Value)
     end)
 
-    local resource_dropdown = self.tabs_id.farm:AddDropdown("Type Resource", {
+    local ResourceDropdown = self.TabsId.farm:AddDropdown("Type Resource", {
         Title = "Type Resource",
         Values = {
             "Bamboo",
@@ -176,108 +176,108 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
             "Wheat"
         },
     })
-    resource_dropdown:OnChanged(function(Value)
-        local selected_types = {}
-        for k in pairs(Value) do selected_types[k] = true end
-        farm_manager:set_selected_resource_types(selected_types)
+    ResourceDropdown:OnChanged(function(Value)
+        local SelectedTypes = {}
+        for k in pairs(Value) do SelectedTypes[k] = true end
+        FarmManager:SetSelectedResourceTypes(SelectedTypes)
     end)
 
-    local only_max_hp_toggle = self.tabs_id.farm:AddToggle("Only Max HP", {
+    local OnlyMaxHpToggle = self.TabsId.farm:AddToggle("Only Max HP", {
         Title = "Only Max HP",
         Description = "Hit only when resource HP is max",
         Default = true
     })
-    only_max_hp_toggle:OnChanged(function(Value)
-        farm_manager:set_only_max_hp(Value)
+    OnlyMaxHpToggle:OnChanged(function(Value)
+        FarmManager:SetOnlyMaxHp(Value)
     end)
 
     -- Выбор игроков для ломания ресурсов
-    local all_players = {}
-    for _, player in ipairs(self.api:GetAllPlayers()) do
-        table.insert(all_players, player.Name)
+    local AllPlayers = {}
+    for _, Player in ipairs(self.Api:GetAllPlayers()) do
+        table.insert(AllPlayers, Player.Name)
     end
 
-    local player_dropdown = self.tabs_id.farm:AddDropdown("Target Players", {
+    local PlayerDropdown = self.TabsId.farm:AddDropdown("Target Players", {
         Title = "Target Players",
         Description = "Выберите игроков для ломания ресурсов на их островах",
-        Values = all_players,
+        Values = AllPlayers,
         Multi = true,
-        Default = {self.player.Name},
+        Default = {self.Player.Name},
     })
-    player_dropdown:OnChanged(function(Value)
-        local selected_players = {}
-        for name, state in next, Value do
-            if state then
-                table.insert(selected_players, name)
+    PlayerDropdown:OnChanged(function(Value)
+        local SelectedPlayers = {}
+        for Name, State in next, Value do
+            if State then
+                table.insert(SelectedPlayers, Name)
             end
         end
-        farm_manager:set_selected_players(selected_players)
+        FarmManager:SetSelectedPlayers(SelectedPlayers)
     end)
 
     -- Кнопка обновления списка игроков
-    self.tabs_id.farm:AddButton({
+    self.TabsId.farm:AddButton({
         Title = "Refresh Player List",
         Callback = function()
-            local new_players = {}
-            for _, player in ipairs(self.api:GetAllPlayers()) do
-                table.insert(new_players, player.Name)
+            local NewPlayers = {}
+            for _, Player in ipairs(self.Api:GetAllPlayers()) do
+                table.insert(NewPlayers, Player.Name)
             end
-            player_dropdown:SetValues(new_players)
+            PlayerDropdown:SetValues(NewPlayers)
         end
     })
 
     -- ESP Tab
-    self.tabs_id.esp:AddParagraph({ Title = "Farm", Content = "Farm visual" })
-    local esp_toggle = self.tabs_id.esp:AddToggle("ESP Hive", {Title = "ESP Hive", Default = false})
-    esp_toggle:OnChanged(function(Value)
+    self.TabsId.esp:AddParagraph({ Title = "Farm", Content = "Farm visual" })
+    local EspToggle = self.TabsId.esp:AddToggle("ESP Hive", {Title = "ESP Hive", Default = false})
+    EspToggle:OnChanged(function(Value)
         if Value then
-            esp_manager:show_esp()
+            EspManager:ShowEsp()
         else
-            esp_manager:hide_esp()
+            EspManager:HideEsp()
         end
     end)
 
     -- Movement Tab
-    local player_speed = 16
-    local is_player_speed = self.tabs_id.movement:AddToggle("Player Speed", {Title = "Player Speed", Default = false})
-    is_player_speed:OnChanged(function(Value)
+    local PlayerSpeed = 16
+    local IsPlayerSpeed = self.TabsId.movement:AddToggle("Player Speed", {Title = "Player Speed", Default = false})
+    IsPlayerSpeed:OnChanged(function(Value)
         if Value then
-            speed_manager:enable_speed(player_speed)
+            SpeedManager:EnableSpeed(PlayerSpeed)
         else
-            speed_manager:disable_speed()
+            SpeedManager:DisableSpeed()
         end
     end)
-    local slider_speed = self.tabs_id.movement:AddSlider("Player Speed", {
+    local SliderSpeed = self.TabsId.movement:AddSlider("Player Speed", {
         Title = "Player Speed",
         Description = "Set your walking speed",
-        Default = player_speed,
+        Default = PlayerSpeed,
         Min = 16,
         Max = 60,
         Rounding = 1,
         Callback = function(Value) end
     })
-    slider_speed:OnChanged(function(Value)
-        player_speed = tonumber(Value)
-        if speed_manager.speed_enabled then
-            speed_manager:enable_speed(player_speed)
+    SliderSpeed:OnChanged(function(Value)
+        PlayerSpeed = tonumber(Value)
+        if SpeedManager.SpeedEnabled then
+            SpeedManager:EnableSpeed(PlayerSpeed)
         end
     end)
 
     -- Character respawn support
-    self.player.CharacterAdded:Connect(function()
-        speed_manager:character_added()
+    self.Player.CharacterAdded:Connect(function()
+        SpeedManager:CharacterAdded()
     end)
 
     -- SaveManager и InterfaceManager
-    local save_manager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua?t=" .. tick()))()
-    local interface_manager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua?t=" .. tick()))()
-    save_manager:SetLibrary(self.fluent_menu)
-    interface_manager:SetLibrary(self.fluent_menu)
-    interface_manager:SetFolder("KetaminHub")
-    save_manager:SetFolder("KetaminHub/specific-game")
-    interface_manager:BuildInterfaceSection(self.tabs_id.settings)
-    -- save_manager:BuildConfigSection(self.tabs_id.settings) -- пока закомментировано
-    window:SelectTab(2)
+    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua?t=" .. tick()))()
+    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua?t=" .. tick()))()
+    SaveManager:SetLibrary(self.FluentMenu)
+    InterfaceManager:SetLibrary(self.FluentMenu)
+    InterfaceManager:SetFolder("KetaminHub")
+    SaveManager:SetFolder("KetaminHub/specific-game")
+    InterfaceManager:BuildInterfaceSection(self.TabsId.settings)
+    -- SaveManager:BuildConfigSection(self.TabsId.settings) -- пока закомментировано
+    Window:SelectTab(2)
 end
 
 return UIManager 

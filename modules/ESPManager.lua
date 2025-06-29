@@ -1,57 +1,57 @@
 local ESPManager = {}
 ESPManager.__index = ESPManager
 
-function ESPManager.new(api)
+function ESPManager.New(Api)
     local self = setmetatable({}, ESPManager)
-    self.api = api
-    self.player = api:GetLocalPlayer()
-    self.land = api:GetIsland()
-    self.esp_task = nil
+    self.Api = Api
+    self.Player = Api:GetLocalPlayer()
+    self.Island = Api:GetIsland()
+    self.EspTask = nil
     return self
 end
 
-function ESPManager:create_esp_gui(spot)
-    local gui = Instance.new("BillboardGui")
-    gui.Name = "DistanceGui"
-    gui.Adornee = spot.PrimaryPart or spot:FindFirstChildWhichIsA("BasePart")
-    gui.Size = UDim2.new(0, 50, 0, 20)
-    gui.StudsOffset = Vector3.new(0, 3, 0)
-    gui.AlwaysOnTop = true
-    gui.Parent = spot
+function ESPManager:CreateEspGui(Spot)
+    local Gui = Instance.new("BillboardGui")
+    Gui.Name = "DistanceGui"
+    Gui.Adornee = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
+    Gui.Size = UDim2.new(0, 50, 0, 20)
+    Gui.StudsOffset = Vector3.new(0, 3, 0)
+    Gui.AlwaysOnTop = true
+    Gui.Parent = Spot
 
-    local label = Instance.new("TextLabel")
-    label.Name = "DistanceLabel"
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.TextColor3 = Color3.new(1, 1, 1)
-    label.TextStrokeTransparency = 0
-    label.TextStrokeColor3 = Color3.new(0, 0, 0)
-    label.TextScaled = true
-    label.Font = Enum.Font.SourceSansBold
-    label.Parent = gui
+    local Label = Instance.new("TextLabel")
+    Label.Name = "DistanceLabel"
+    Label.Size = UDim2.new(1, 0, 1, 0)
+    Label.BackgroundTransparency = 1
+    Label.TextColor3 = Color3.new(1, 1, 1)
+    Label.TextStrokeTransparency = 0
+    Label.TextStrokeColor3 = Color3.new(0, 0, 0)
+    Label.TextScaled = true
+    Label.Font = Enum.Font.SourceSansBold
+    Label.Parent = Gui
     
-    return label
+    return Label
 end
 
-function ESPManager:show_esp()
-    if self.esp_task then return end
-    self.esp_task = task.spawn(function() 
+function ESPManager:ShowEsp()
+    if self.EspTask then return end
+    self.EspTask = task.spawn(function() 
         while true do
-            local character = self.player.Character or self.player.CharacterAdded:Wait()
-            local human_part = character:WaitForChild("HumanoidRootPart")
-            for _, spot in ipairs(self.land:GetDescendants()) do
-                if spot:IsA("Model") and spot.Name:match("Spot") then
-                    local gui = spot:FindFirstChild("DistanceGui")
-                    local label = gui and gui:FindFirstChild("DistanceLabel")
+            local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
+            local HumanPart = Character:WaitForChild("HumanoidRootPart")
+            for _, Spot in ipairs(self.Island:GetDescendants()) do
+                if Spot:IsA("Model") and Spot.Name:match("Spot") then
+                    local Gui = Spot:FindFirstChild("DistanceGui")
+                    local Label = Gui and Gui:FindFirstChild("DistanceLabel")
                     
-                    if not label then
-                        label = self:create_esp_gui(spot)
+                    if not Label then
+                        Label = self:CreateEspGui(Spot)
                     end
 
-                    local primaryPart = spot.PrimaryPart or spot:FindFirstChildWhichIsA("BasePart")
-                    if primaryPart then
-                        local distance = (human_part.Position - primaryPart.Position).Magnitude * 0.8
-                        label.Text = string.format("%.f meters", distance)
+                    local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
+                    if PrimaryPart then
+                        local Distance = (HumanPart.Position - PrimaryPart.Position).Magnitude * 0.8
+                        Label.Text = string.format("%.f meters", Distance)
                     end
                 end
             end
@@ -60,16 +60,16 @@ function ESPManager:show_esp()
     end)
 end
 
-function ESPManager:hide_esp()
-    if self.esp_task then
-        task.cancel(self.esp_task)
-        self.esp_task = nil
+function ESPManager:HideEsp()
+    if self.EspTask then
+        task.cancel(self.EspTask)
+        self.EspTask = nil
     end
-    for _, spot in ipairs(self.land:GetDescendants()) do
-        if spot:IsA("Model") and spot.Name:match("Spot") then
-            local gui = spot:FindFirstChild("DistanceGui")
-            if gui then
-                gui:Destroy()
+    for _, Spot in ipairs(self.Island:GetDescendants()) do
+        if Spot:IsA("Model") and Spot.Name:match("Spot") then
+            local Gui = Spot:FindFirstChild("DistanceGui")
+            if Gui then
+                Gui:Destroy()
             end
         end
     end

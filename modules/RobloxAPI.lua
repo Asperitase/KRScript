@@ -2,60 +2,60 @@
 local RobloxAPI = {}
 RobloxAPI.__index = RobloxAPI
 
-function RobloxAPI.new()
+function RobloxAPI.New()
     local self = setmetatable({}, RobloxAPI)
     
-    self.players = game:GetService("Players")
-    self.replicated_storage = game:GetService("ReplicatedStorage")
-    self.workspace = game:GetService("Workspace")
+    self.Players = game:GetService("Players")
+    self.ReplicatedStorage = game:GetService("ReplicatedStorage")
+    self.Workspace = game:GetService("Workspace")
     
-    self.local_player = self.players.LocalPlayer
-    self.local_island = self.workspace:WaitForChild("Plots"):WaitForChild(self.local_player.Name)
-    self.land_cube = self.local_island:FindFirstChild("Land")
-    self.communication = self.replicated_storage:WaitForChild("Communication")
+    self.LocalPlayer = self.Players.LocalPlayer
+    self.LocalIsland = self.Workspace:WaitForChild("Plots"):WaitForChild(self.LocalPlayer.Name)
+    self.LandPlots = self.LocalIsland:FindFirstChild("Land")
+    self.Communication = self.ReplicatedStorage:WaitForChild("Communication")
     
     return self
 end
 
-function RobloxAPI:HitResource(args)
-    return self.communication:WaitForChild("HitResource"):FireServer(args)
+function RobloxAPI:HitResource(Args)
+    return self.Communication:WaitForChild("HitResource"):FireServer(Args)
 end
 
 -- Геттеры для доступа к сервисам и переменным
 function RobloxAPI:GetPlayers()
-    return self.players
+    return self.Players
 end
 
 function RobloxAPI:GetReplicatedStorage()
-    return self.replicated_storage
+    return self.ReplicatedStorage
 end
 
 function RobloxAPI:GetWorkspace()
-    return self.workspace
+    return self.Workspace
 end
 
 function RobloxAPI:GetLocalPlayer()
-    return self.local_player
+    return self.LocalPlayer
 end
 
 function RobloxAPI:GetIsland()
-    return self.local_island
+    return self.LocalIsland
 end
 
-function RobloxAPI:GetPlatform()
-    return self.land_cube
+function RobloxAPI:GetLandPlots()
+    return self.LandPlots
 end
 
 function RobloxAPI:GetCommunication()
-    return self.communication
+    return self.Communication
 end
 
-function RobloxAPI:GetAllIsland()
-    return self.workspace:WaitForChild("Plots")
+function RobloxAPI:GetAllIslands()
+    return self.Workspace:WaitForChild("Plots")
 end
 
 function RobloxAPI:GetAllPlayers()
-    return self.players:GetPlayers()
+    return self.Players:GetPlayers()
 end
 
 return RobloxAPI 

@@ -1,7 +1,7 @@
 local FarmManager = {}
 FarmManager.__index = FarmManager
 
-local health_resources = {
+local HealthResources = {
     ["Bamboo"] = 6,
     ["Big Bamboo"] = 10,
     ["Big Obsidian"] = 35,
@@ -22,109 +22,110 @@ local health_resources = {
     ["Wheat"] = 7,
 }
 
-function FarmManager.new(api)
+function FarmManager.New(Api)
     local self = setmetatable({}, FarmManager)
-    self.api = api
-    self.player = api:GetLocalPlayer()
-    self.communication = api:GetCommunication()
-    self.land = api:GetIsland()
-    self.selected_hive_types = {Bee = true, MagmaBee = true}
-    self.distance_hive = 500
-    self.auto_hive_task = nil
-    self.auto_harvest_task = nil
-    self.harvest_delay = 0
-    self.selected_berry_types = {Strawberry = true, Blueberries = true}
-    self.selected_resource_types = {Bamboo = true, Cactus = true}
-    self.auto_resource_task = nil
-    self.only_max_hp = true
-    self.base_player = api
-    self.selected_players = {self.player.Name}
+    self.Api = Api
+    self.Player = Api:GetLocalPlayer()
+    self.Communication = Api:GetCommunication()
+    self.Island = Api:GetIsland()
+    self.LandPlots = Api:GetLandPlots()
+    self.SelectedHiveTypes = {Bee = true, MagmaBee = true}
+    self.DistanceHive = 500
+    self.AutoHiveTask = nil
+    self.AutoHarvestTask = nil
+    self.HarvestDelay = 0
+    self.SelectedBerryTypes = {Strawberry = true, Blueberries = true}
+    self.SelectedResourceTypes = {Bamboo = true, Cactus = true}
+    self.AutoResourceTask = nil
+    self.OnlyMaxHp = true
+    self.BasePlayer = Api
+    self.SelectedPlayers = {self.Player.Name}
     return self
 end
 
-function FarmManager:set_selected_types(types)
-    self.selected_hive_types = types
+function FarmManager:SetSelectedTypes(Types)
+    self.SelectedHiveTypes = Types
 end
 
-function FarmManager:set_distance(distance)
-    self.distance_hive = distance
+function FarmManager:SetDistance(Distance)
+    self.DistanceHive = Distance
 end
 
-function FarmManager:set_harvest_delay(delay)
-    self.harvest_delay = delay
+function FarmManager:SetHarvestDelay(Delay)
+    self.HarvestDelay = Delay
 end
 
-function FarmManager:set_selected_berry_types(types)
-    self.selected_berry_types = types
+function FarmManager:SetSelectedBerryTypes(Types)
+    self.SelectedBerryTypes = Types
 end
 
-function FarmManager:set_selected_resource_types(types)
-    self.selected_resource_types = types
+function FarmManager:SetSelectedResourceTypes(Types)
+    self.SelectedResourceTypes = Types
 end
 
-function FarmManager:set_only_max_hp(value)
-    self.only_max_hp = value
+function FarmManager:SetOnlyMaxHp(Value)
+    self.OnlyMaxHp = Value
 end
 
-function FarmManager:set_selected_players(players)
-    self.selected_players = players
+function FarmManager:SetSelectedPlayers(Players)
+    self.SelectedPlayers = Players
 end
 
-function FarmManager:startup_task(task_name, Value)
-    local task_map = {
-        autohive = {task = "auto_hive_task", func = "auto_hive"},
-        autoharvest = {task = "auto_harvest_task", func = "auto_harvest"},
-        instafarm = {task = "auto_resource_task", func = "auto_resource"}
+function FarmManager:StartupTask(TaskName, Value)
+    local TaskMap = {
+        autohive = {task = "AutoHiveTask", func = "AutoHive"},
+        autoharvest = {task = "AutoHarvestTask", func = "AutoHarvest"},
+        instafarm = {task = "AutoResourceTask", func = "AutoResource"}
     }
     
-    local config = task_map[task_name]
-    if not config then return end
+    local Config = TaskMap[TaskName]
+    if not Config then return end
     
     if Value then
-        if self[config.task] then return end
-        self[config.task] = task.spawn(function()
+        if self[Config.task] then return end
+        self[Config.task] = task.spawn(function()
             while true do
-                self[config.func](self)
+                self[Config.func](self)
                 task.wait(1)
             end
         end)
     else
-        if self[config.task] then
-            task.cancel(self[config.task])
-            self[config.task] = nil
+        if self[Config.task] then
+            task.cancel(self[Config.task])
+            self[Config.task] = nil
         end
     end
 end
 
-function FarmManager:auto_hive()
-    local character = self.player.Character or self.player.CharacterAdded:Wait()
-    local human_part = character:WaitForChild("HumanoidRootPart")
-    local island = self.api:GetIsland()
-    for _, spot in ipairs(island:GetDescendants()) do
-        if spot:IsA("Model") and spot.Name:match("Spot") then
-            local primaryPart = spot.PrimaryPart or spot:FindFirstChildWhichIsA("BasePart")
-            if primaryPart then
-                local distance = (human_part.Position - primaryPart.Position).Magnitude * 0.8
-                if distance < self.distance_hive then
-                    local parent = spot.Parent
-                    local is_bee, is_magma = false, false
-                    for _, child in ipairs(parent:GetChildren()) do
-                        if string.find(child.Name, "MagmaHiveRunner") and self.selected_hive_types.MagmaBee then
-                            is_magma = true
-                        elseif string.find(child.Name, "HiveRunner") and not string.find(child.Name, "Magma") and self.selected_hive_types.Bee then
-                            is_bee = true
+function FarmManager:AutoHive()
+    local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
+    local HumanPart = Character:WaitForChild("HumanoidRootPart")
+    local Island = self.Api:GetIsland()
+    for _, Spot in ipairs(Island:GetDescendants()) do
+        if Spot:IsA("Model") and Spot.Name:match("Spot") then
+            local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
+            if PrimaryPart then
+                local Distance = (HumanPart.Position - PrimaryPart.Position).Magnitude * 0.8
+                if Distance < self.DistanceHive then
+                    local Parent = Spot.Parent
+                    local IsBee, IsMagma = false, false
+                    for _, Child in ipairs(Parent:GetChildren()) do
+                        if string.find(Child.Name, "MagmaHiveRunner") and self.SelectedHiveTypes.MagmaBee then
+                            IsMagma = true
+                        elseif string.find(Child.Name, "HiveRunner") and not string.find(Child.Name, "Magma") and self.SelectedHiveTypes.Bee then
+                            IsBee = true
                         end
                     end
-                    if is_bee or is_magma then
-                        local collect_prompt = nil
-                        for _, prompt in ipairs(spot:GetDescendants()) do
-                            if prompt:IsA("ProximityPrompt") and prompt.ActionText == "Collect" then
-                                collect_prompt = prompt
+                    if IsBee or IsMagma then
+                        local CollectPrompt = nil
+                        for _, Prompt in ipairs(Spot:GetDescendants()) do
+                            if Prompt:IsA("ProximityPrompt") and Prompt.ActionText == "Collect" then
+                                CollectPrompt = Prompt
                                 break
                             end
                         end
-                        if collect_prompt and collect_prompt.Enabled then
-                            self.communication:WaitForChild("Hive"):FireServer(spot.Parent.Name, spot.Name, 2)
+                        if CollectPrompt and CollectPrompt.Enabled then
+                            self.Communication:WaitForChild("Hive"):FireServer(Spot.Parent.Name, Spot.Name, 2)
                         end
                     end
                 end
@@ -133,48 +134,47 @@ function FarmManager:auto_hive()
     end
 end
 
-function FarmManager:auto_harvest()
-    local plots = self.api:GetIsland()
-    for _, plant in ipairs(plots:FindFirstChild("Plants"):GetChildren()) do
-        local promptHold = plant:FindFirstChild("PromptHold")
-        if promptHold then
-            local prompt = promptHold:FindFirstChildWhichIsA("ProximityPrompt")
-            if prompt and prompt.ActionText == "Harvest" and prompt.Enabled then
-                local type_value = plant:GetAttribute("Type")
-                if self.selected_berry_types[type_value] then
-                    self.communication:WaitForChild("Harvest"):FireServer(plant.Name)
-                    task.wait(self.harvest_delay)
+function FarmManager:AutoHarvest()
+    local Island = self.Api:GetIsland()
+    for _, Plant in ipairs(Island:FindFirstChild("Plants"):GetChildren()) do
+        local PromptHold = Plant:FindFirstChild("PromptHold")
+        if PromptHold then
+            local Prompt = PromptHold:FindFirstChildWhichIsA("ProximityPrompt")
+            if Prompt and Prompt.ActionText == "Harvest" and Prompt.Enabled then
+                local TypeValue = Plant:GetAttribute("Type")
+                if self.SelectedBerryTypes[TypeValue] then
+                    self.Communication:WaitForChild("Harvest"):FireServer(Plant.Name)
+                    task.wait(self.HarvestDelay)
                 end
             end
         end
     end
 end
 
-function FarmManager:auto_resource()
-    local islands = self.api:GetAllIsland()
-    
-    for _, targetPlayer in ipairs(self.selected_players) do
-        local target_island = islands:FindFirstChild(targetPlayer)
-        if target_island and target_island:FindFirstChild("Resources") then
-            local resources = target_island.Resources:GetChildren()
-            for _, resource in ipairs(resources) do
-                local name = resource.Name
-                local hp = resource:GetAttribute("HP")
-                local max_hp = resource:GetAttribute("MaxHP")
-                local min_hp = health_resources[name]
-                if self.selected_resource_types[name] and hp and min_hp then
-                    if self.only_max_hp then
-                        if hp == max_hp then
+function FarmManager:AutoResource()
+    local AllIslands = self.Api:GetAllIslands()
+    for _, TargetPlayer in ipairs(self.SelectedPlayers) do
+        local TargetIsland = AllIslands:FindFirstChild(TargetPlayer)
+        if TargetIsland and TargetIsland:FindFirstChild("Resources") then
+            local Resources = TargetIsland.Resources:GetChildren()
+            for _, Resource in ipairs(Resources) do
+                local Name = Resource.Name
+                local Hp = Resource:GetAttribute("HP")
+                local MaxHp = Resource:GetAttribute("MaxHP")
+                local MinHp = HealthResources[Name]
+                if self.SelectedResourceTypes[Name] and Hp and MinHp then
+                    if self.OnlyMaxHp then
+                        if Hp == MaxHp then
                             task.spawn(function()
-                                while resource:GetAttribute("HP") and resource:GetAttribute("HP") > 0 do
-                                    self.base_player:HitResource(resource)
+                                while Resource:GetAttribute("HP") and Resource:GetAttribute("HP") > 0 do
+                                    self.BasePlayer:HitResource(Resource)
                                     task.wait(0.001)
                                 end
                             end)
                         end
                     else
-                        if hp <= min_hp then
-                            self.base_player:HitResource(resource)
+                        if Hp <= MinHp then
+                            self.BasePlayer:HitResource(Resource)
                         end
                     end
                 end
