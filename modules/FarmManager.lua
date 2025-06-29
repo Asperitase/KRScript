@@ -36,47 +36,8 @@ function FarmManager.New(Api)
     self.SpamFishTask = nil
     self.OnlyMaxHp = true
     self.BasePlayer = Api
-    
-    self.CachedIslands = {}
-    self.CachedResources = {}
-    self.CachedPlants = {}
-    self.LastCacheUpdate = 0
-    self.CacheUpdateInterval = 1
-    
     self.SelectedPlayers = {Api:GetLocalPlayer().Name}
     return self
-end
-
-function FarmManager:UpdateCache()
-    local CurrentTime = tick()
-    if CurrentTime - self.LastCacheUpdate < self.CacheUpdateInterval then
-        return
-    end
-    
-    self.LastCacheUpdate = CurrentTime
-    
-    task.spawn(function()
-        self.CachedIslands = {}
-        for _, Player in ipairs(self.SelectedPlayers) do
-            local Island = self.BasePlayer:GetAllIslands():FindFirstChild(Player)
-            if Island then
-                self.CachedIslands[Player] = Island
-            end
-        end
-        
-        self.CachedResources = {}
-        for Player, Island in pairs(self.CachedIslands) do
-            if Island:FindFirstChild("Resources") then
-                self.CachedResources[Player] = Island.Resources:GetChildren()
-            end
-        end
-        
-        self.CachedPlants = {}
-        local LocalIsland = self.BasePlayer:GetLocalIsland()
-        if LocalIsland:FindFirstChild("Plants") then
-            self.CachedPlants = LocalIsland.Plants:GetChildren()
-        end
-    end)
 end
 
 function FarmManager:SetSelectedTypes(Types)
@@ -101,7 +62,6 @@ end
 
 function FarmManager:SetSelectedPlayers(Players)
     self.SelectedPlayers = Players
-    self.LastCacheUpdate = 0
 end
 
 function FarmManager:StartupTask(TaskName, Value)
@@ -125,11 +85,7 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                if TaskName == "autohive" then
-                    task.wait(0.2)
-                else
-                    task.wait(0.01)
-                end
+                task.wait(0.01)
             end
         end)
     else 
@@ -141,95 +97,80 @@ function FarmManager:StartupTask(TaskName, Value)
 end
 
 function FarmManager:AutoHive()
-    task.spawn(function()
-        local Character = self.BasePlayer:GetLocalPlayer().Character
-        if not Character then return end
-        
-        local HumanPart = Character:FindFirstChild("HumanoidRootPart")
-        if not HumanPart then return end
-        
-        local LocalIsland = self.BasePlayer:GetLocalIsland()
-        if not LocalIsland then return end
-        
-        local FoundHive = false
-        
-        for _, Spot in ipairs(LocalIsland:GetDescendants()) do
-            if Spot:IsA("Model") and Spot.Name:match("Spot") then
-                local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
-                if PrimaryPart then
-                    local Distance = (HumanPart.Position - PrimaryPart.Position).Magnitude * 0.8
-                    if Distance < self.DistanceHive then
-                        local Parent = Spot.Parent
-                        local IsBee, IsMagma = false, false
-                        for _, Child in ipairs(Parent:GetChildren()) do
-                            if string.find(Child.Name, "MagmaHiveRunner") and self.SelectedHiveTypes.MagmaBee then
-                                IsMagma = true
-                            elseif string.find(Child.Name, "HiveRunner") and not string.find(Child.Name, "Magma") and self.SelectedHiveTypes.Bee then
-                                IsBee = true
+    local Character = self.BasePlayer:GetLocalPlayer().Character
+    if not Character then return end
+    
+    local HumanPart = Character:FindFirstChild("HumanoidRootPart")
+    if not HumanPart then return end
+    
+    local LocalIsland = self.BasePlayer:GetLocalIsland()
+    if not LocalIsland then return end
+    
+    for _, Spot in ipairs(LocalIsland:GetDescendants()) do
+        if Spot:IsA("Model") and Spot.Name:match("Spot") then
+            local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
+            if PrimaryPart then
+                local Distance = (HumanPart.Position - PrimaryPart.Position).Magnitude * 0.8
+                if Distance < self.DistanceHive then
+                    local Parent = Spot.Parent
+                    local IsBee, IsMagma = false, false
+                    for _, Child in ipairs(Parent:GetChildren()) do
+                        if string.find(Child.Name, "MagmaHiveRunner") and self.SelectedHiveTypes.MagmaBee then
+                            IsMagma = true
+                        elseif string.find(Child.Name, "HiveRunner") and not string.find(Child.Name, "Magma") and self.SelectedHiveTypes.Bee then
+                            IsBee = true
+                        end
+                    end
+                    if IsBee or IsMagma then
+                        local CollectPrompt = nil
+                        for _, Prompt in ipairs(Spot:GetDescendants()) do
+                            if Prompt:IsA("ProximityPrompt") and Prompt.ActionText == "Collect" then
+                                CollectPrompt = Prompt
+                                break
                             end
                         end
-                        if IsBee or IsMagma then
-                            local CollectPrompt = nil
-                            for _, Prompt in ipairs(Spot:GetDescendants()) do
-                                if Prompt:IsA("ProximityPrompt") and Prompt.ActionText == "Collect" then
-                                    CollectPrompt = Prompt
-                                    break
-                                end
-                            end
-                            if CollectPrompt and CollectPrompt.Enabled then
-                                self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
-                                FoundHive = true
-                                task.wait(0.1)
-                            end
+                        if CollectPrompt and CollectPrompt.Enabled then
+                            self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
                         end
                     end
                 end
             end
         end
-        
-        if not FoundHive then
-            task.wait(0.5)
-        end
-    end)
+    end
 end
 
 function FarmManager:AutoHarvest()
-    self:UpdateCache()
-    
-    task.spawn(function()
-        for _, Plant in ipairs(self.CachedPlants) do
-            local PromptHold = Plant:FindFirstChild("PromptHold")
-            if PromptHold then
-                local Prompt = PromptHold:FindFirstChildWhichIsA("ProximityPrompt")
-                if Prompt and Prompt.ActionText == "Harvest" and Prompt.Enabled then
-                    local TypeValue = Plant:GetAttribute("Type")
-                    if self.SelectedBerryTypes[TypeValue] then
-                        self.BasePlayer:AutoHarvest(Plant.Name)
-                    end
+    for _, Plant in ipairs(self.BasePlayer:GetLocalIsland():FindFirstChild("Plants"):GetChildren()) do
+        local PromptHold = Plant:FindFirstChild("PromptHold")
+        if PromptHold then
+            local Prompt = PromptHold:FindFirstChildWhichIsA("ProximityPrompt")
+            if Prompt and Prompt.ActionText == "Harvest" and Prompt.Enabled then
+                local TypeValue = Plant:GetAttribute("Type")
+                if self.SelectedBerryTypes[TypeValue] then
+                    self.BasePlayer:AutoHarvest(Plant.Name)
                 end
             end
         end
-    end)
+    end
 end
 
 function FarmManager:AutoResource()
-    self:UpdateCache()
-    
-    task.spawn(function()
-        for Player, Resources in pairs(self.CachedResources) do
+    for _, TargetPlayer in ipairs(self.SelectedPlayers) do
+        local TargetIsland = self.BasePlayer:GetAllIslands():FindFirstChild(TargetPlayer)
+        if TargetIsland and TargetIsland:FindFirstChild("Resources") then
+            local Resources = TargetIsland.Resources:GetChildren()
             for _, Resource in ipairs(Resources) do
                 local Name = Resource.Name
                 local Hp = Resource:GetAttribute("HP")
                 local MaxHp = Resource:GetAttribute("MaxHP")
                 local MinHp = HealthResources[Name]
-                
                 if self.SelectedResourceTypes[Name] and Hp and MinHp then
                     if self.OnlyMaxHp then
                         if Hp == MaxHp then
                             task.spawn(function()
                                 while Resource:GetAttribute("HP") and Resource:GetAttribute("HP") > 0 do
                                     self.BasePlayer:HitResource(Resource)
-                                    task.wait(0.03)
+                                    task.wait(0.05)
                                 end
                             end)
                         end
@@ -241,36 +182,29 @@ function FarmManager:AutoResource()
                 end
             end
         end
-    end)
+    end
 end
 
 function FarmManager:AutoCollectFish()
-    local LocalIsland = self.BasePlayer:GetLocalIsland()
-    if not LocalIsland:FindFirstChild("Land") then return end
-    
-    task.spawn(function()
-        for _, LandPlace in ipairs(LocalIsland.Land:GetChildren()) do
-            local FishCrate = LandPlace:FindFirstChild("FISHCRATE")
-            if FishCrate then
-                local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
-                if Amount and not Amount.Text:find("/") then
+    for _, LandPlace in ipairs(self.BasePlayer:GetLocalIsland():FindFirstChild("Land"):GetChildren()) do
+        local FishCrate = LandPlace:FindFirstChild("FISHCRATE")
+        if FishCrate then
+            local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
+            if Amount then
+                if not Amount.Text:find("/") then
                     self.BasePlayer:CollectFishCrateContents()
-                    task.wait(1)
                 end
             end
         end
-    end)
+    end
 end
 
 function FarmManager:SpamFish()
     local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
-    
-    task.spawn(function()
-        while true do
-            self.BasePlayer:SpamFish(pos, 2)
-            task.wait(0.001)
-        end
-    end)
+    while true do
+        self.BasePlayer:SpamFish(pos, 2)
+        task.wait(0.001)
+    end
 end
 
 function FarmManager:Destroy()
@@ -294,11 +228,6 @@ function FarmManager:Destroy()
         task.cancel(self.SpamFishTask)
         self.SpamFishTask = nil
     end
-    
-    self.CachedIslands = {}
-    self.CachedResources = {}
-    self.CachedPlants = {}
-    self.LastCacheUpdate = 0
 end
 
 return FarmManager 
