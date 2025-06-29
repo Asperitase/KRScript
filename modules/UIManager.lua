@@ -6,7 +6,40 @@ function UIManager.New(Api, FluentMenu)
     self.BasePlayer = Api
     self.FluentMenu = FluentMenu
     self.TabsId = {}
+    self.FpsData = {
+        Current = 0,
+        Average = 0,
+        Min = 999,
+        Max = 0,
+        Samples = {},
+        LastUpdate = 0
+    }
     return self
+end
+
+function UIManager:UpdateFPS()
+    local RunService = game:GetService("RunService")
+    local CurrentTime = tick()
+    
+    if CurrentTime - self.FpsData.LastUpdate >= 0.1 then
+        self.FpsData.LastUpdate = CurrentTime
+        local CurrentFPS = math.floor(1 / RunService.RenderStepped:Wait())
+        
+        table.insert(self.FpsData.Samples, CurrentFPS)
+        if #self.FpsData.Samples > 60 then
+            table.remove(self.FpsData.Samples, 1)
+        end
+        
+        self.FpsData.Current = CurrentFPS
+        self.FpsData.Min = math.min(self.FpsData.Min, CurrentFPS)
+        self.FpsData.Max = math.max(self.FpsData.Max, CurrentFPS)
+        
+        local Sum = 0
+        for _, FPS in ipairs(self.FpsData.Samples) do
+            Sum = Sum + FPS
+        end
+        self.FpsData.Average = math.floor(Sum / #self.FpsData.Samples)
+    end
 end
 
 function UIManager:Setup(SpeedManager, FarmManager)
@@ -261,6 +294,34 @@ function UIManager:Setup(SpeedManager, FarmManager)
         Title = "Test Functions",
         Callback = function()
             print("=== CUSTOM TEST ===")
+        end
+    })
+
+    local FpsParagraph = self.TabsId.test:AddParagraph({ 
+        Title = "FPS Monitor", 
+        Content = "Current: 0 | Average: 0 | Min: 0 | Max: 0" 
+    })
+
+    task.spawn(function()
+        while true do
+            self:UpdateFPS()
+            FpsParagraph:SetDesc(string.format(
+                "Current: %d | Average: %d | Min: %d | Max: %d",
+                self.FpsData.Current,
+                self.FpsData.Average,
+                self.FpsData.Min,
+                self.FpsData.Max
+            ))
+            task.wait(0.1)
+        end
+    end)
+
+    self.TabsId.test:AddButton({
+        Title = "Reset FPS Stats",
+        Callback = function()
+            self.FpsData.Min = 999
+            self.FpsData.Max = 0
+            self.FpsData.Samples = {}
         end
     })
 
