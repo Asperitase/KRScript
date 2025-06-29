@@ -226,30 +226,10 @@ function FarmManager:SpamFish()
 
     print("SpamFish: Character and HumanoidRootPart found, continue...")
 
-    -- Получаем LocalIsland, Land, S252
-    local LocalIsland = self.BasePlayer:GetLocalIsland()
-    if not LocalIsland then
-        print("SpamFish: LocalIsland not found")
-        return
-    end
-
-    local Land = LocalIsland:FindFirstChild("Land")
-    if not Land then
-        print("SpamFish: Land not found in LocalIsland")
-        return
-    end
-
-    local S252 = Land:FindFirstChild("S252")
-    if not S252 then
-        print("SpamFish: S252 (плот) не найден")
-        return
-    end
-
-    local region = S252.FishingRegion
+    -- Получаем LocalIsland, L
 
     local castPos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
     local num = 1
-
         self.BasePlayer:SpamFish(castPos,num)
 end
 
