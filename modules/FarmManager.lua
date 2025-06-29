@@ -195,17 +195,17 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
-    print("ver", 2)
+    print("ver", 3)
     local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
     local pos2 = Vector3.new(-349.8042297363281, -1.6463819742202759, 446.7143249511719)
     local pos3 = Vector3.new(-358.8326416015625, -1.6463819742202759, 445.3346862792969)
     local pos4 = Vector3.new(-356.8326416015625, -1.6463819742202759, 434.3346862792969)
-    local secondArg = 2
+    local secondArg = 3
     while true do --testing
-    self.BasePlayer:SpamFish(pos, secondArg)
-    self.BasePlayer:SpamFish(pos2, secondArg)
-    self.BasePlayer:SpamFish(pos3, secondArg)
-    self.BasePlayer:SpamFish(pos4, secondArg)
+        self.BasePlayer:SpamFish(pos, secondArg)
+        self.BasePlayer:SpamFish(pos2, secondArg)
+        self.BasePlayer:SpamFish(pos3, secondArg)
+        self.BasePlayer:SpamFish(pos4, secondArg)
         task.wait(0.01)
     end
 end
