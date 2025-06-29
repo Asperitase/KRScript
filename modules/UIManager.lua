@@ -282,4 +282,12 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
     Window:SelectTab(2)
 end
 
+function UIManager:Destroy()
+    -- Очищаем все UI элементы
+    if self.FluentMenu then
+        self.FluentMenu:Destroy()
+    end
+    self.TabsId = {}
+end
+
 return UIManager 

@@ -41,6 +41,8 @@ function FarmManager.New(Api)
     self.OnlyMaxHp = true
     self.BasePlayer = Api
     self.SelectedPlayers = {self.Player.Name}
+    self.ActiveResourceTasks = {}
+    self.MaxConcurrentTasks = 5
     return self
 end
 
@@ -154,6 +156,8 @@ end
 
 function FarmManager:AutoResource()
     local AllIslands = self.Api:GetAllIslands()
+    local ActiveTaskCount = 0
+    
     for _, TargetPlayer in ipairs(self.SelectedPlayers) do
         local TargetIsland = AllIslands:FindFirstChild(TargetPlayer)
         if TargetIsland and TargetIsland:FindFirstChild("Resources") then
@@ -163,15 +167,22 @@ function FarmManager:AutoResource()
                 local Hp = Resource:GetAttribute("HP")
                 local MaxHp = Resource:GetAttribute("MaxHP")
                 local MinHp = HealthResources[Name]
+                
                 if self.SelectedResourceTypes[Name] and Hp and MinHp then
                     if self.OnlyMaxHp then
                         if Hp == MaxHp then
-                            task.spawn(function()
-                                while Resource:GetAttribute("HP") and Resource:GetAttribute("HP") > 0 do
-                                    self.BasePlayer:HitResource(Resource)
-                                    task.wait(0.001)
-                                end
-                            end)
+                            if ActiveTaskCount < self.MaxConcurrentTasks then
+                                ActiveTaskCount = ActiveTaskCount + 1
+                                local TaskId = Resource.Name .. "_" .. tick()
+                                self.ActiveResourceTasks[TaskId] = task.spawn(function()
+                                    while Resource:GetAttribute("HP") and Resource:GetAttribute("HP") > 0 do
+                                        self.BasePlayer:HitResource(Resource)
+                                        task.wait(0.05)
+                                    end
+                                    self.ActiveResourceTasks[TaskId] = nil
+                                    ActiveTaskCount = ActiveTaskCount - 1
+                                end)
+                            end
                         end
                     else
                         if Hp <= MinHp then
@@ -182,6 +193,26 @@ function FarmManager:AutoResource()
             end
         end
     end
+end
+
+function FarmManager:Destroy()
+    if self.AutoHiveTask then
+        task.cancel(self.AutoHiveTask)
+        self.AutoHiveTask = nil
+    end
+    if self.AutoHarvestTask then
+        task.cancel(self.AutoHarvestTask)
+        self.AutoHarvestTask = nil
+    end
+    if self.AutoResourceTask then
+        task.cancel(self.AutoResourceTask)
+        self.AutoResourceTask = nil
+    end
+    
+    for TaskId, Task in pairs(self.ActiveResourceTasks) do
+        task.cancel(Task)
+    end
+    self.ActiveResourceTasks = {}
 end
 
 return FarmManager 

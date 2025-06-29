@@ -13,4 +13,33 @@ local SpeedManagerInstance = SpeedManager.New(RobloxApi)
 local FarmManagerInstance = FarmManager.New(RobloxApi)
 local EspManagerInstance = ESPManager.New(RobloxApi)
 local UiManagerInstance = UIManager.New(RobloxApi, FluentMenu)
-UiManagerInstance:Setup(SpeedManagerInstance, FarmManagerInstance, EspManagerInstance) 
+UiManagerInstance:Setup(SpeedManagerInstance, FarmManagerInstance, EspManagerInstance)
+
+-- Обработчик для правильного завершения всех задач при отключении
+local function CleanupOnExit()
+    if SpeedManagerInstance then
+        SpeedManagerInstance:Destroy()
+    end
+    if FarmManagerInstance then
+        FarmManagerInstance:Destroy()
+    end
+    if EspManagerInstance then
+        EspManagerInstance:Destroy()
+    end
+    if UiManagerInstance then
+        UiManagerInstance:Destroy()
+    end
+end
+
+-- Регистрируем обработчик для завершения
+game:BindToClose(CleanupOnExit)
+
+-- Альтернативный способ через pcall для дополнительной безопасности
+local Success, Error = pcall(function()
+    -- Основной код уже выполнен выше
+end)
+
+if not Success then
+    warn("Ошибка в основном коде:", Error)
+    CleanupOnExit()
+end 

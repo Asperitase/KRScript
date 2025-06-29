@@ -7,6 +7,7 @@ function ESPManager.New(Api)
     self.Player = Api:GetLocalPlayer()
     self.Island = Api:GetIsland()
     self.EspTask = nil
+    self.EspEnabled = false
     return self
 end
 
@@ -35,24 +36,33 @@ end
 
 function ESPManager:ShowEsp()
     if self.EspTask then return end
+    self.EspEnabled = true
     self.EspTask = task.spawn(function() 
-        while true do
+        while self.EspEnabled do
             local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
             local HumanPart = Character:WaitForChild("HumanoidRootPart")
+            
+            local Spots = {}
             for _, Spot in ipairs(self.Island:GetDescendants()) do
                 if Spot:IsA("Model") and Spot.Name:match("Spot") then
-                    local Gui = Spot:FindFirstChild("DistanceGui")
-                    local Label = Gui and Gui:FindFirstChild("DistanceLabel")
-                    
-                    if not Label then
-                        Label = self:CreateEspGui(Spot)
-                    end
+                    table.insert(Spots, Spot)
+                end
+            end
+            
+            for _, Spot in ipairs(Spots) do
+                if not self.EspEnabled then break end -- Проверка на отключение
+                
+                local Gui = Spot:FindFirstChild("DistanceGui")
+                local Label = Gui and Gui:FindFirstChild("DistanceLabel")
+                
+                if not Label then
+                    Label = self:CreateEspGui(Spot)
+                end
 
-                    local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
-                    if PrimaryPart then
-                        local Distance = (HumanPart.Position - PrimaryPart.Position).Magnitude * 0.8
-                        Label.Text = string.format("%.f meters", Distance)
-                    end
+                local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
+                if PrimaryPart then
+                    local Distance = (HumanPart.Position - PrimaryPart.Position).Magnitude * 0.8
+                    Label.Text = string.format("%.f meters", Distance)
                 end
             end
             task.wait(0.2)
@@ -61,6 +71,7 @@ function ESPManager:ShowEsp()
 end
 
 function ESPManager:HideEsp()
+    self.EspEnabled = false
     if self.EspTask then
         task.cancel(self.EspTask)
         self.EspTask = nil
@@ -73,6 +84,10 @@ function ESPManager:HideEsp()
             end
         end
     end
+end
+
+function ESPManager:Destroy()
+    self:HideEsp()
 end
 
 return ESPManager 

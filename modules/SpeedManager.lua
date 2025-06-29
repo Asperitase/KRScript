@@ -40,7 +40,7 @@ function SpeedManager:EnableSpeed(Speed)
         self.SpeedTask = task.spawn(function()
             while self.SpeedEnabled do
                 self:SetSpeed(self.CustomSpeed)
-                task.wait(0.001)
+                task.wait(0.1)
             end
         end)
     end
@@ -72,10 +72,16 @@ function SpeedManager:CharacterAdded()
         self.SpeedTask = task.spawn(function()
             while self.SpeedEnabled do
                 self:SetSpeed(self.CustomSpeed)
-                task.wait(0.001)
+                task.wait(0.1)
             end
         end)
     end
+end
+
+function SpeedManager:Destroy()
+    self:DisableSpeed()
+    self.DefaultSpeed = nil
+    self.CustomSpeed = 16
 end
 
 return SpeedManager 
