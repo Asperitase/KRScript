@@ -1,7 +1,7 @@
 local FarmManager = {}
 FarmManager.__index = FarmManager
 
-local min_hp_for_resource = {
+local health_resources = {
     ["Bamboo"] = 6,
     ["Big Bamboo"] = 10,
     ["Big Obsidian"] = 35,
@@ -28,10 +28,10 @@ function FarmManager.new(player, communication, land, api)
     self.communication = communication
     self.land = land
     self.selected_hive_types = {Bee = true, MagmaBee = true}
-    self.distance_hive = 35
+    self.distance_hive = 500
     self.auto_hive_task = nil
     self.auto_harvest_task = nil
-    self.harvest_delay = 0.2
+    self.harvest_delay = 0
     self.selected_berry_types = {Strawberry = true, Blueberries = true}
     self.selected_resource_types = {Bamboo = true, Cactus = true}
     self.auto_resource_task = nil
@@ -151,7 +151,7 @@ function FarmManager:auto_resource()
             local name = resource.Name
             local hp = resource:GetAttribute("HP")
             local max_hp = resource:GetAttribute("MaxHP")
-            local min_hp = min_hp_for_resource[name]
+            local min_hp = health_resources[name]
             if self.selected_resource_types[name] and hp and min_hp then
                 if self.only_max_hp then
                     if hp == max_hp then

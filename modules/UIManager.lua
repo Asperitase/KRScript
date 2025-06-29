@@ -46,7 +46,7 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
         farm_manager:set_selected_types(selected_hive_types)
     end)
 
-    local distance_hive = 35
+    local distance_hive = 500
     local slider_distance_hive = self.tabs_id.farm:AddSlider("Auto Hive Distance", {
         Title = "Auto Hive Distance",
         Description = "Distance Hive",
@@ -107,7 +107,7 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
         farm_manager:set_selected_berry_types(selected_types)
     end)
 
-    local harvest_delay = 0.2
+    local harvest_delay = 0
     local slider_harvest_delay = self.tabs_id.farm:AddSlider("Harvest Delay", {
         Title = "Harvest Delay",
         Description = "Задержка между сбором (сек)",
