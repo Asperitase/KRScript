@@ -27,7 +27,7 @@ function FarmManager.new(api)
     self.api = api
     self.player = api:GetLocalPlayer()
     self.communication = api:GetCommunication()
-    self.land = api:GetLand()
+    self.land = api:GetPlatform()
     self.selected_hive_types = {Bee = true, MagmaBee = true}
     self.distance_hive = 500
     self.auto_hive_task = nil
@@ -128,7 +128,7 @@ function FarmManager:auto_hive()
 end
 
 function FarmManager:auto_harvest()
-    local plots = self.api:GetPlots()
+    local plots = self.api:GetIsland()
     for _, plant in ipairs(plots:FindFirstChild("Plants"):GetChildren()) do
         local promptHold = plant:FindFirstChild("PromptHold")
         if promptHold then
@@ -145,7 +145,7 @@ function FarmManager:auto_harvest()
 end
 
 function FarmManager:auto_resource()
-    local plots = self.api:GetPlots()
+    local plots = self.api:GetIsland()
     if plots:FindFirstChild("Resources") then
         local resources = plots.Resources:GetChildren()
         for _, resource in ipairs(resources) do

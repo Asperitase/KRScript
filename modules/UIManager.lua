@@ -7,7 +7,7 @@ function UIManager.new(api, fluent_menu)
     self.player = api:GetLocalPlayer()
     self.fluent_menu = fluent_menu
     self.communication = api:GetCommunication()
-    self.land = api:GetLand()
+    self.land = api:GetPlatform()
     self.tabs_id = {}
     return self
 end
