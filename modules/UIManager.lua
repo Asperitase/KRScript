@@ -229,9 +229,8 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
     end)
 
     -- SaveManager и InterfaceManager
-    local save_manager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-    local interface_manager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
-    
+    local save_manager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua?t=" .. tick()))()
+    local interface_manager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua?t=" .. tick()))()
     save_manager:SetLibrary(self.fluent_menu)
     interface_manager:SetLibrary(self.fluent_menu)
     interface_manager:SetFolder("KetaminHub")
