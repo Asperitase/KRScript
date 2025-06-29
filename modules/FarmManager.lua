@@ -40,8 +40,11 @@ function FarmManager.New(Api)
     self.CachedIslands = {}
     self.CachedResources = {}
     self.CachedPlants = {}
+    self.CachedSpots = {}
     self.LastCacheUpdate = 0
     self.CacheUpdateInterval = 1
+    self.LastHiveUpdate = 0
+    self.HiveUpdateInterval = 0.5
     
     self.SelectedPlayers = {Api:GetLocalPlayer().Name}
     return self
@@ -76,15 +79,24 @@ function FarmManager:UpdateCache()
         if LocalIsland:FindFirstChild("Plants") then
             self.CachedPlants = LocalIsland.Plants:GetChildren()
         end
+        
+        self.CachedSpots = {}
+        for _, Spot in ipairs(LocalIsland:GetDescendants()) do
+            if Spot:IsA("Model") and Spot.Name:match("Spot") then
+                table.insert(self.CachedSpots, Spot)
+            end
+        end
     end)
 end
 
 function FarmManager:SetSelectedTypes(Types)
     self.SelectedHiveTypes = Types
+    self.LastHiveUpdate = 0
 end
 
 function FarmManager:SetDistance(Distance)
     self.DistanceHive = Distance
+    self.LastHiveUpdate = 0
 end
 
 function FarmManager:SetSelectedBerryTypes(Types)
@@ -137,6 +149,12 @@ function FarmManager:StartupTask(TaskName, Value)
 end
 
 function FarmManager:AutoHive()
+    local CurrentTime = tick()
+    if CurrentTime - self.LastHiveUpdate < self.HiveUpdateInterval then
+        return
+    end
+    self.LastHiveUpdate = CurrentTime
+    
     self:UpdateCache()
     
     local Character = self.BasePlayer:GetLocalPlayer().Character
@@ -145,34 +163,55 @@ function FarmManager:AutoHive()
     local HumanPart = Character:FindFirstChild("HumanoidRootPart")
     if not HumanPart then return end
     
-    local LocalIsland = self.BasePlayer:GetLocalIsland()
-    if not LocalIsland then return end
-    
     task.spawn(function()
-        for _, Spot in ipairs(LocalIsland:GetDescendants()) do
-            if Spot:IsA("Model") and Spot.Name:match("Spot") then
-                local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
-                if PrimaryPart then
-                    local Distance = (HumanPart.Position - PrimaryPart.Position).Magnitude * 0.8
-                    if Distance < self.DistanceHive then
-                        local Parent = Spot.Parent
-                        local IsBee, IsMagma = false, false
-                        
-                        for _, Child in ipairs(Parent:GetChildren()) do
-                            if string.find(Child.Name, "MagmaHiveRunner") and self.SelectedHiveTypes.MagmaBee then
-                                IsMagma = true
-                            elseif string.find(Child.Name, "HiveRunner") and not string.find(Child.Name, "Magma") and self.SelectedHiveTypes.Bee then
-                                IsBee = true
-                            end
-                        end
-                        
-                        if IsBee or IsMagma then
-                            local CollectPrompt = Spot:FindFirstChild("ProximityPrompt")
-                            if CollectPrompt and CollectPrompt.ActionText == "Collect" and CollectPrompt.Enabled then
-                                self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
-                            end
-                        end
-                    end
+        local Spots = {}
+        local HumanPosition = HumanPart.Position
+        
+        for _, Spot in ipairs(self.CachedSpots) do
+            local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
+            if PrimaryPart then
+                local Distance = (HumanPosition - PrimaryPart.Position).Magnitude * 0.8
+                if Distance < self.DistanceHive then
+                    table.insert(Spots, {
+                        Spot = Spot,
+                        Distance = Distance,
+                        PrimaryPart = PrimaryPart
+                    })
+                end
+            end
+        end
+        
+        if #Spots == 0 then return end
+        
+        table.sort(Spots, function(a, b)
+            return a.Distance < b.Distance
+        end)
+        
+        for i = 1, math.min(#Spots, 5) do
+            local SpotData = Spots[i]
+            local Spot = SpotData.Spot
+            local Parent = Spot.Parent
+            
+            local IsBee, IsMagma = false, false
+            local Children = Parent:GetChildren()
+            
+            for j = 1, #Children do
+                local Child = Children[j]
+                local ChildName = Child.Name
+                if string.find(ChildName, "MagmaHiveRunner") and self.SelectedHiveTypes.MagmaBee then
+                    IsMagma = true
+                    break
+                elseif string.find(ChildName, "HiveRunner") and not string.find(ChildName, "Magma") and self.SelectedHiveTypes.Bee then
+                    IsBee = true
+                    break
+                end
+            end
+            
+            if IsBee or IsMagma then
+                local CollectPrompt = Spot:FindFirstChild("ProximityPrompt")
+                if CollectPrompt and CollectPrompt.ActionText == "Collect" and CollectPrompt.Enabled then
+                    self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
+                    task.wait(0.02)
                 end
             end
         end
@@ -283,6 +322,9 @@ function FarmManager:Destroy()
     self.CachedIslands = {}
     self.CachedResources = {}
     self.CachedPlants = {}
+    self.CachedSpots = {}
+    self.LastCacheUpdate = 0
+    self.LastHiveUpdate = 0
 end
 
 return FarmManager 
