@@ -102,7 +102,7 @@ end
 function FarmManager:AutoHive()
     local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
     local HumanPart = Character:WaitForChild("HumanoidRootPart")
-    local Island = self.Api:GetIsland()
+    local Island = self.Api:GetLocalIsland()
     for _, Spot in ipairs(Island:GetDescendants()) do
         if Spot:IsA("Model") and Spot.Name:match("Spot") then
             local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
@@ -137,7 +137,7 @@ function FarmManager:AutoHive()
 end
 
 function FarmManager:AutoHarvest()
-    local Island = self.Api:GetIsland()
+    local Island = self.Api:GetLocalIsland()
     for _, Plant in ipairs(Island:FindFirstChild("Plants"):GetChildren()) do
         local PromptHold = Plant:FindFirstChild("PromptHold")
         if PromptHold then
