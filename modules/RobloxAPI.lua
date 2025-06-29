@@ -33,7 +33,20 @@ function RobloxAPI:AutoHarvest(Name)
 end
 
 function RobloxAPI:SpamFish(Args)
-    return self.Communication:WaitForChild("Fish"):InvokeServer(Args)
+    print("RobloxAPI:SpamFish called with args:", Args[1], Args[2])
+    print("Args type:", typeof(Args[1]), typeof(Args[2]))
+    
+    local Success, Error = pcall(function()
+        return self.Communication:WaitForChild("Fish"):InvokeServer(unpack(Args))
+    end)
+    
+    if Success then
+        print("Fish command sent successfully")
+    else
+        print("Fish command failed:", Error)
+    end
+    
+    return Success
 end
 
 -- Геттеры для доступа к сервисам и переменным
