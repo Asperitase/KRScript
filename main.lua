@@ -6,7 +6,7 @@ local ESPManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/As
 local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/UIManager.lua?t=" .. tick()))()
 local RobloxAPI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/RobloxAPI.lua?t=" .. tick()))()
 
-
+ 
 
 
 

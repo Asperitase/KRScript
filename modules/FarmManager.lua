@@ -208,7 +208,7 @@ function FarmManager:SpamFish()
         self.BasePlayer:SpamFish(pos, 2)
         self.BasePlayer:SpamFish(pos2, 2)
         self.BasePlayer:SpamFish(pos3, 2)
-        task.wait(0.01)
+        task.wait(0.01) 
     end
 end
 
