@@ -86,7 +86,7 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                task.wait(0.05)
+                task.wait(0.03)
             end
         end)
     else 
@@ -197,12 +197,17 @@ end
 
 -- 190 538
 function FarmManager:SpamFish()
-    print("ver", 1)
-    local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
-    local startTime = tick()
-    while tick() - startTime < 10 do
-        self.BasePlayer:SpamFish(pos, 2)
-        task.wait(0.001) 
+    while true do
+             -- X: от 350 до 365
+             local x = math.random() * (365 - 350) + 350
+             -- Y: всегда одно
+             local y = -1.6463819742202759
+             -- Z: от 420 до 450
+             local z = math.random() * (450 - 420) + 420
+     
+             local pos = Vector3.new(x, y, z)
+             self.BasePlayer:SpamFish(pos, secondArg)
+             task.wait(0.01)
     end
 end
 
