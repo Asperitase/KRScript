@@ -7,7 +7,6 @@ function UIManager.New(Api, FluentMenu)
     self.Player = Api:GetLocalPlayer()
     self.FluentMenu = FluentMenu
     self.Communication = Api:GetCommunication()
-    self.LandPlot = Api:GetLandPlots()
     self.TabsId = {}
     return self
 end

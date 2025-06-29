@@ -25,10 +25,6 @@ local HealthResources = {
 
 function FarmManager.New(Api)
     local self = setmetatable({}, FarmManager)
-    self.Player = Api:GetLocalPlayer()
-    self.Communication = Api:GetCommunication()
-    self.Island = Api:GetLocalIsland()
-    self.LandPlots = Api:GetLandPlots()
     self.SelectedHiveTypes = {Bee = true, MagmaBee = true}
     self.DistanceHive = 500
     self.AutoHiveTask = nil
@@ -102,8 +98,8 @@ end
 function FarmManager:AutoHive()
     local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
     local HumanPart = Character:WaitForChild("HumanoidRootPart")
-    local Island = self.Api:GetLocalIsland()
-    for _, Spot in ipairs(Island:GetDescendants()) do
+    -- human add to api
+    for _, Spot in ipairs(self.BasePlayer:GetLocalIsland():GetDescendants()) do
         if Spot:IsA("Model") and Spot.Name:match("Spot") then
             local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
             if PrimaryPart then
@@ -137,8 +133,7 @@ function FarmManager:AutoHive()
 end
 
 function FarmManager:AutoHarvest()
-    local Island = self.Api:GetLocalIsland()
-    for _, Plant in ipairs(Island:FindFirstChild("Plants"):GetChildren()) do
+    for _, Plant in ipairs(self.Api:GetLocalIsland():FindFirstChild("Plants"):GetChildren()) do
         local PromptHold = Plant:FindFirstChild("PromptHold")
         if PromptHold then
             local Prompt = PromptHold:FindFirstChildWhichIsA("ProximityPrompt")
@@ -154,10 +149,8 @@ function FarmManager:AutoHarvest()
 end
 
 function FarmManager:AutoResource()
-    local AllIslands = self.Api:GetAllIslands()
-    
     for _, TargetPlayer in ipairs(self.SelectedPlayers) do
-        local TargetIsland = AllIslands:FindFirstChild(TargetPlayer)
+        local TargetIsland = self.Api:GetAllIslands():FindFirstChild(TargetPlayer)
         if TargetIsland and TargetIsland:FindFirstChild("Resources") then
             local Resources = TargetIsland.Resources:GetChildren()
             for _, Resource in ipairs(Resources) do
@@ -165,7 +158,6 @@ function FarmManager:AutoResource()
                 local Hp = Resource:GetAttribute("HP")
                 local MaxHp = Resource:GetAttribute("MaxHP")
                 local MinHp = HealthResources[Name]
-                
                 if self.SelectedResourceTypes[Name] and Hp and MinHp then
                     if self.OnlyMaxHp then
                         if Hp == MaxHp then
@@ -188,18 +180,13 @@ function FarmManager:AutoResource()
 end
 
 function FarmManager:AutoCollectFish()
-    local Island1 = self.BasePlayer:GetLocalIsland()
-    local LandPlots1 = Island1:FindFirstChild("Land")
-    
-    if LandPlots1 then
-        for _, LandPlot1 in ipairs(LandPlots1:GetChildren()) do
-            local FishCrate = LandPlot1:FindFirstChild("FISHCRATE")
-            if FishCrate then
-                local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
-                if Amount then
-                    if not Amount.Text:find("/") then
-                        self.BasePlayer:CollectFishCrateContents()
-                    end
+    for _, LandPlace in ipairs(self.Api:GetLocalIsland():FindFirstChild("Land"):GetChildren()) do
+        local FishCrate = LandPlace:FindFirstChild("FISHCRATE")
+        if FishCrate then
+            local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
+            if Amount then
+                if not Amount.Text:find("/") then
+                    self.BasePlayer:CollectFishCrateContents()
                 end
             end
         end
