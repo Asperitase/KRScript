@@ -1,12 +1,13 @@
 local UIManager = {}
 UIManager.__index = UIManager
 
-function UIManager.new(player, fluent_menu, communication, land)
+function UIManager.new(api, fluent_menu)
     local self = setmetatable({}, UIManager)
-    self.player = player
+    self.api = api
+    self.player = api:GetLocalPlayer()
     self.fluent_menu = fluent_menu
-    self.communication = communication
-    self.land = land
+    self.communication = api:GetCommunication()
+    self.land = api:GetLand()
     self.tabs_id = {}
     return self
 end

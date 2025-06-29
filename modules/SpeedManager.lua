@@ -1,9 +1,10 @@
 local SpeedManager = {}
 SpeedManager.__index = SpeedManager
 
-function SpeedManager.new(player)
+function SpeedManager.new(api)
     local self = setmetatable({}, SpeedManager)
-    self.player = player
+    self.api = api
+    self.player = api:GetLocalPlayer()
     self.default_speed = nil
     self.speed_enabled = false
     self.custom_speed = 16

@@ -22,11 +22,12 @@ local health_resources = {
     ["Wheat"] = 7,
 }
 
-function FarmManager.new(player, communication, land, api)
+function FarmManager.new(api)
     local self = setmetatable({}, FarmManager)
-    self.player = player
-    self.communication = communication
-    self.land = land
+    self.api = api
+    self.player = api:GetLocalPlayer()
+    self.communication = api:GetCommunication()
+    self.land = api:GetLand()
     self.selected_hive_types = {Bee = true, MagmaBee = true}
     self.distance_hive = 500
     self.auto_hive_task = nil
@@ -127,7 +128,7 @@ function FarmManager:auto_hive()
 end
 
 function FarmManager:auto_harvest()
-    local plots = game:GetService("Workspace"):WaitForChild("Plots"):WaitForChild(self.player.Name)
+    local plots = self.api:GetPlots()
     for _, plant in ipairs(plots:FindFirstChild("Plants"):GetChildren()) do
         local promptHold = plant:FindFirstChild("PromptHold")
         if promptHold then
@@ -144,7 +145,7 @@ function FarmManager:auto_harvest()
 end
 
 function FarmManager:auto_resource()
-    local plots = game:GetService("Workspace"):WaitForChild("Plots"):WaitForChild(self.player.Name)
+    local plots = self.api:GetPlots()
     if plots:FindFirstChild("Resources") then
         local resources = plots.Resources:GetChildren()
         for _, resource in ipairs(resources) do

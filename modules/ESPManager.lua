@@ -1,10 +1,11 @@
 local ESPManager = {}
 ESPManager.__index = ESPManager
 
-function ESPManager.new(player, land)
+function ESPManager.new(api)
     local self = setmetatable({}, ESPManager)
-    self.player = player 
-    self.land = land
+    self.api = api
+    self.player = api:GetLocalPlayer()
+    self.land = api:GetLand()
     self.esp_task = nil
     return self
 end
