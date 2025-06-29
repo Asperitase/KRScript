@@ -295,25 +295,7 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
         Callback = function()
             -- Здесь вы можете писать свой код для тестирования
             print("=== CUSTOM TEST ===")
-            if self.LandPlot then
-                for _, LandPlot in ipairs(self.LandPlot:GetChildren()) do
-                    local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
-                    if FishCrate then
-                        for _, Amount in ipairs(self.FishCrate:GetChildren()) do
-                            local CurrentAmount = Amount:FindFirstChild("Amount")
-                            print(CurrentAmount.Text)
-                        end
-        
-                        -- local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
-                        -- if Amount then
-                        --     if not Amount.Text:find("/") then
-                        --         print("collect")
-                        --         self.BasePlayer:CollectFishCrateContents()
-                        --     end
-                        -- end
-                    end
-                end
-            end
+            
         end
     })
 

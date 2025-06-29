@@ -28,7 +28,7 @@ function FarmManager.New(Api)
     self.Api = Api
     self.Player = Api:GetLocalPlayer()
     self.Communication = Api:GetCommunication()
-    self.Island = Api:GetLocalIsland()
+    self.Island = Api:GetIsland()
     self.LandPlots = Api:GetLandPlots()
     self.SelectedHiveTypes = {Bee = true, MagmaBee = true}
     self.DistanceHive = 500
@@ -103,7 +103,7 @@ end
 function FarmManager:AutoHive()
     local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
     local HumanPart = Character:WaitForChild("HumanoidRootPart")
-    local Island = self.Api:GetLocalIsland()
+    local Island = self.Api:GetIsland()
     for _, Spot in ipairs(Island:GetDescendants()) do
         if Spot:IsA("Model") and Spot.Name:match("Spot") then
             local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
@@ -138,7 +138,7 @@ function FarmManager:AutoHive()
 end
 
 function FarmManager:AutoHarvest()
-    local Island = self.Api:GetLocalIsland()
+    local Island = self.Api:GetIsland()
     for _, Plant in ipairs(Island:FindFirstChild("Plants"):GetChildren()) do
         local PromptHold = Plant:FindFirstChild("PromptHold")
         if PromptHold then
@@ -189,9 +189,11 @@ function FarmManager:AutoResource()
 end
 
 function FarmManager:AutoCollectFish()
-    print(123)
-    if self.LandPlots then
-        for _, LandPlot in ipairs(self.LandPlots:GetChildren()) do
+    local Island = self.Api:GetIsland()
+    local LandPlots = Island:FindFirstChild("Land")
+    
+    if LandPlots then
+        for _, LandPlot in ipairs(LandPlots:GetChildren()) do
             local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
             if FishCrate then
                 for _, Amount in ipairs(self.FishCrate:GetChildren()) do
@@ -201,9 +203,9 @@ function FarmManager:AutoCollectFish()
 
                 -- local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
                 -- if Amount then
+                --     -- Проверяем если бокс полный (нет "/" в тексте)
                 --     if not Amount.Text:find("/") then
-                --         print("collect")
-                --         self.BasePlayer:CollectFishCrateContents()
+                --         self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()
                 --     end
                 -- end
             end
