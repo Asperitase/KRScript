@@ -8,8 +8,8 @@ function RobloxAPI.new(communication)
     return self
 end
 
-function RobloxAPI:HitResource()
-    return self.communication:WaitForChild("HitResource")
+function RobloxAPI:HitResource(args)
+    return self.communication:WaitForChild("HitResource"):FireServer(args)
 end
 
 return RobloxAPI 

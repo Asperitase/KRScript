@@ -157,14 +157,14 @@ function FarmManager:auto_resource()
                     if hp == max_hp then
                         task.spawn(function()
                             while resource:GetAttribute("HP") and resource:GetAttribute("HP") > 0 do
-                                self.base_player:HitResource():FireServer(resource)
+                                self.base_player:HitResource(resource)
                                 task.wait(0.001)
                             end
                         end)
                     end
                 else
                     if hp <= min_hp then
-                        self.base_player:HitResource():FireServer(resource)
+                        self.base_player:HitResource(resource)
                     end
                 end
             end
