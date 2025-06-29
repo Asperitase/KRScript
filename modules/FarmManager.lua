@@ -91,7 +91,7 @@ function FarmManager:StartupTask(TaskName, Value)
 end
 
 function FarmManager:AutoHive()
-    local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
+    local Character = self.BasePlayer:GetLocalPlayer().Character or self.BasePlayer:GetLocalPlayer().CharacterAdded:Wait()
     local HumanPart = Character:WaitForChild("HumanoidRootPart")
     -- human add to api
     for _, Spot in ipairs(self.BasePlayer:GetLocalIsland():GetDescendants()) do
