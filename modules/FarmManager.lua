@@ -204,7 +204,7 @@ function FarmManager:SpamFish()
     local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
     if not HumanRootPart then return end
 
-    -- Получаем плот S252
+    -- Получаем S252 и FishingRegion
     local LocalIsland = self.BasePlayer:GetLocalIsland()
     local Land = LocalIsland and LocalIsland:FindFirstChild("Land")
     local S252 = Land and Land:FindFirstChild("S252")
@@ -213,12 +213,18 @@ function FarmManager:SpamFish()
         return
     end
 
-    -- Проверяем, что игрок стоит на плоту (простая проверка по расстоянию)
+    local FishingRegion = S252:FindFirstChild("FishingRegion")
+    if not FishingRegion then
+        print("SpamFish: FishingRegion не найден в S252")
+        return
+    end
+
+    -- Проверяем, что игрок стоит на плоту (или рядом)
     local PlayerPosition = HumanRootPart.Position
     local RaftPosition = S252.Position
     local RaftSize = S252.Size
     local Distance = (PlayerPosition - RaftPosition).Magnitude
-    local MaxDistance = math.max(RaftSize.X, RaftSize.Z) / 2 + 5 -- 5 — запас
+    local MaxDistance = math.max(RaftSize.X, RaftSize.Z) / 2 + 10 -- запас
 
     print(string.format("SpamFish: PlayerPos=%s, RaftPos=%s, Distance=%.2f, MaxDistance=%.2f", tostring(PlayerPosition), tostring(RaftPosition), Distance, MaxDistance))
 
@@ -227,12 +233,14 @@ function FarmManager:SpamFish()
         return
     end
 
-    -- Координаты для заброса: чуть впереди плота по оси Z (или X, если плот повернут)
-    local castOffset = Vector3.new(0, 0, -10) -- -10 по Z (вперёд от плота)
-    local castPos = RaftPosition + castOffset
-
-    -- Можно добавить случайное смещение для естественности:
-    -- local castPos = RaftPosition + Vector3.new((math.random()-0.5)*4, 0, -10 + (math.random()-0.5)*2)
+    -- Забрасываем в центр FishingRegion (или с небольшим смещением)
+    local castPos = FishingRegion.Position
+    -- Можно добавить рандомизацию:
+    -- local castPos = FishingRegion.Position + Vector3.new(
+    --     (math.random()-0.5)*FishingRegion.Size.X*0.4,
+    --     0,
+    --     (math.random()-0.5)*FishingRegion.Size.Z*0.4
+    -- )
 
     local secondArg = 1
     self.BasePlayer:SpamFish(castPos, secondArg)
