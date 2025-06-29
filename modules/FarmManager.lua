@@ -204,7 +204,7 @@ function FarmManager:SpamFish()
     print("SpamFish called")
     
     local args = {
-        vector.create(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
+        Vector3.new(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
         1
     }
     
@@ -233,7 +233,7 @@ function FarmManager:SpamFish()
     --     if Distance <= MaxDistance then
 
     --         local args = {
-    --             vector.create(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
+    --             Vector3.new(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
     --             1
     --         }
             
