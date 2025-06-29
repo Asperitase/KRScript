@@ -198,41 +198,44 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
-    print("SpamFish: start")
     local Character = self.BasePlayer:GetLocalPlayer().Character
-    if not Character then
-        print("SpamFish: Character not found")
-        return
-    end
+    if not Character then return end
 
     local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
-    if not HumanRootPart then
-        print("SpamFish: HumanoidRootPart not found") 
+    if not HumanRootPart then return end
+
+    -- Получаем плот S252
+    local LocalIsland = self.BasePlayer:GetLocalIsland()
+    local Land = LocalIsland and LocalIsland:FindFirstChild("Land")
+    local S252 = Land and Land:FindFirstChild("S252")
+    if not S252 then
+        print("SpamFish: S252 (плот) не найден")
         return
     end
 
-    local FishingRegion = self.BasePlayer:GetFishingRegion("S252")
-    if not FishingRegion then
-        print("SpamFish: FishingRegion not found")
-        return
-    end
-
+    -- Проверяем, что игрок стоит на плоту (простая проверка по расстоянию)
     local PlayerPosition = HumanRootPart.Position
-    local RegionPosition = FishingRegion.Position
-    local RegionSize = FishingRegion.Size
-    local Distance = (PlayerPosition - RegionPosition).Magnitude
-    local MaxDistance = math.max(RegionSize.X, RegionSize.Y, RegionSize.Z) / 2
+    local RaftPosition = S252.Position
+    local RaftSize = S252.Size
+    local Distance = (PlayerPosition - RaftPosition).Magnitude
+    local MaxDistance = math.max(RaftSize.X, RaftSize.Z) / 2 + 5 -- 5 — запас
 
-    print(string.format("SpamFish: PlayerPos=%s, RegionPos=%s, Distance=%.2f, MaxDistance=%.2f", tostring(PlayerPosition), tostring(RegionPosition), Distance, MaxDistance))
+    print(string.format("SpamFish: PlayerPos=%s, RaftPos=%s, Distance=%.2f, MaxDistance=%.2f", tostring(PlayerPosition), tostring(RaftPosition), Distance, MaxDistance))
 
-    if Distance <= MaxDistance then
-        print("SpamFish: Player is in FishingRegion, sending fish request")
-        local pos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
-        local secondArg = 1
-        self.BasePlayer:SpamFish(pos, secondArg)
-    else
-        print("SpamFish: Player is NOT in FishingRegion")
+    if Distance > MaxDistance then
+        print("SpamFish: Игрок не на плоту S252!")
+        return
     end
+
+    -- Координаты для заброса: чуть впереди плота по оси Z (или X, если плот повернут)
+    local castOffset = Vector3.new(0, 0, -10) -- -10 по Z (вперёд от плота)
+    local castPos = RaftPosition + castOffset
+
+    -- Можно добавить случайное смещение для естественности:
+    -- local castPos = RaftPosition + Vector3.new((math.random()-0.5)*4, 0, -10 + (math.random()-0.5)*2)
+
+    local secondArg = 1
+    self.BasePlayer:SpamFish(castPos, secondArg)
 end
 
 function FarmManager:Destroy()
