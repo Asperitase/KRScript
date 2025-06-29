@@ -32,6 +32,10 @@ function RobloxAPI:AutoHarvest(Name)
     return self.Communication:WaitForChild("Harvest"):FireServer(Name)
 end
 
+function RobloxAPI:SpamFish(Args)
+    return self.Communication:WaitForChild("Fish"):InvokeServer(Args)
+end
+
 -- Геттеры для доступа к сервисам и переменным
 function RobloxAPI:GetPlayers()
     return self.Players
@@ -63,6 +67,20 @@ end
 
 function RobloxAPI:GetAllPlayers()
     return self.Players:GetPlayers()
+end
+
+function RobloxAPI:GetFishingRegion(LandPlotName)
+    local LocalIsland = self:GetLocalIsland()
+    local LandPlots = LocalIsland:FindFirstChild("Land")
+    
+    if LandPlots then
+        local LandPlot = LandPlots:FindFirstChild(LandPlotName)
+        if LandPlot then
+            return LandPlot:FindFirstChild("FishingRegion")
+        end
+    end
+    
+    return nil
 end
 
 return RobloxAPI 

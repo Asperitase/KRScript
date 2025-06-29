@@ -33,6 +33,7 @@ function FarmManager.New(Api)
     self.SelectedResourceTypes = {Bamboo = true, Cactus = true}
     self.AutoResourceTask = nil
     self.AutoCollectFishTask = nil
+    self.SpamFishTask = nil
     self.OnlyMaxHp = true
     self.BasePlayer = Api
     self.SelectedPlayers = {Api:GetLocalPlayer().Name}
@@ -68,7 +69,8 @@ function FarmManager:StartupTask(TaskName, Value)
         autohive = {task = "AutoHiveTask", func = "AutoHive"},
         autoharvest = {task = "AutoHarvestTask", func = "AutoHarvest"},
         instafarm = {task = "AutoResourceTask", func = "AutoResource"},
-        autocollectfish = {task = "AutoCollectFishTask", func = "AutoCollectFish"}
+        autocollectfish = {task = "AutoCollectFishTask", func = "AutoCollectFish"},
+        spamfish = {task = "SpamFishTask", func = "SpamFish"}
     }
     
     local Config = TaskMap[TaskName]
@@ -187,6 +189,36 @@ function FarmManager:AutoCollectFish()
     end
 end
 
+function FarmManager:SpamFish()
+    local Character = self.BasePlayer:GetLocalPlayer().Character
+    if not Character then return end
+    
+    local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
+    if not HumanRootPart then return end
+    
+    -- Проверяем FishingRegion в S252 (или другом участке)
+    local FishingRegion = self.BasePlayer:GetFishingRegion("S252")
+    if FishingRegion then
+        -- Проверяем, находится ли игрок в FishingRegion
+        local PlayerPosition = HumanRootPart.Position
+        local RegionPosition = FishingRegion.Position
+        local RegionSize = FishingRegion.Size
+        
+        local Distance = (PlayerPosition - RegionPosition).Magnitude
+        local MaxDistance = math.max(RegionSize.X, RegionSize.Y, RegionSize.Z) / 2
+        
+        if Distance <= MaxDistance then
+
+            local args = {
+                vector.create(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
+                1
+            }
+            
+            self.BasePlayer:SpamFish(args)
+        end
+    end
+end
+
 function FarmManager:Destroy()
     if self.AutoHiveTask then
         task.cancel(self.AutoHiveTask)
@@ -199,6 +231,14 @@ function FarmManager:Destroy()
     if self.AutoResourceTask then
         task.cancel(self.AutoResourceTask)
         self.AutoResourceTask = nil
+    end
+    if self.AutoCollectFishTask then
+        task.cancel(self.AutoCollectFishTask)
+        self.AutoCollectFishTask = nil
+    end
+    if self.SpamFishTask then
+        task.cancel(self.SpamFishTask)
+        self.SpamFishTask = nil
     end
 end
 

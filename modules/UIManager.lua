@@ -228,6 +228,12 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
         FarmManager:StartupTask("autocollectfish", Value)
     end)
 
+    -- Spam Fish
+    local SpamFishToggle = self.TabsId.farm:AddToggle("Spam Fish", {Title = "Spam Fish", Default = false})
+    SpamFishToggle:OnChanged(function(Value)
+        FarmManager:StartupTask("spamfish", Value)
+    end)
+
     -- ESP Tab
     self.TabsId.esp:AddParagraph({ Title = "Farm", Content = "Farm visual" })
     local EspToggle = self.TabsId.esp:AddToggle("ESP Hive", {Title = "ESP Hive", Default = false})
