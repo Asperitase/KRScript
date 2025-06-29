@@ -226,11 +226,59 @@ function FarmManager:SpamFish()
 
     print("SpamFish: Character and HumanoidRootPart found, continue...")
 
-    -- Получаем LocalIsland, L
+    -- Получаем LocalIsland, Land, S252
+    local LocalIsland = self.BasePlayer:GetLocalIsland()
+    if not LocalIsland then
+        print("SpamFish: LocalIsland not found")
+        return
+    end
 
+    local Land = LocalIsland:FindFirstChild("Land")
+    if not Land then
+        print("SpamFish: Land not found in LocalIsland")
+        return
+    end
+
+    local S252 = Land:FindFirstChild("S252")
+    if not S252 then
+        print("SpamFish: S252 (плот) не найден")
+        return
+    end
+
+    -- Проверяем Communication и Fish
+    local Communication = self.BasePlayer:GetCommunication()
+    if not Communication then
+        print("SpamFish: Communication not found")
+        return
+    end
+
+    local Fish = Communication:FindFirstChild("Fish")
+    if not Fish then
+        print("SpamFish: Fish not found in Communication")
+        print("SpamFish: Available children in Communication:")
+        for _, child in ipairs(Communication:GetChildren()) do
+            print("  -", child.Name)
+        end
+        return
+    end
+
+    -- Используем твою фиксированную позицию броска
     local castPos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
-    local num = 1
-    self.BasePlayer:SpamFish(castPos,num)
+    print("SpamFish: castPos =", castPos, typeof(castPos))
+
+    local secondArg = 1
+    print("SpamFish: secondArg =", secondArg, typeof(secondArg))
+
+    -- Пробуем вызвать сервер
+    local success, result = pcall(function()
+        return Fish:InvokeServer(castPos, secondArg)
+    end)
+
+    if success then
+        print("SpamFish: Fish:InvokeServer выполнен успешно! Результат:", result)
+    else
+        print("SpamFish: Fish:InvokeServer ошибка:", result)
+    end
 end
 
 function FarmManager:Destroy()
