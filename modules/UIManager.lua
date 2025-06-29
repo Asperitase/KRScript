@@ -3,10 +3,8 @@ UIManager.__index = UIManager
 
 function UIManager.New(Api, FluentMenu)
     local self = setmetatable({}, UIManager)
-    self.Api = Api
-    self.Player = Api:GetLocalPlayer()
+    self.BasePlayer = Api
     self.FluentMenu = FluentMenu
-    self.Communication = Api:GetCommunication()
     self.TabsId = {}
     return self
 end
@@ -188,7 +186,7 @@ function UIManager:Setup(SpeedManager, FarmManager)
 
     -- Выбор игроков для ломания ресурсов
     local AllPlayers = {}
-    for _, Player in ipairs(self.Api:GetAllPlayers()) do
+    for _, Player in ipairs(self.BasePlayer:GetAllPlayers()) do
         table.insert(AllPlayers, Player.Name)
     end
 
@@ -197,7 +195,7 @@ function UIManager:Setup(SpeedManager, FarmManager)
         Description = "Выберите игроков для ломания ресурсов на их островах",
         Values = AllPlayers,
         Multi = true,
-        Default = {self.Player.Name},
+        Default = {self.BasePlayer:GetLocalPlayer().Name},
     })
     PlayerDropdown:OnChanged(function(Value)
         local SelectedPlayers = {}
@@ -214,7 +212,7 @@ function UIManager:Setup(SpeedManager, FarmManager)
         Title = "Refresh Player List",
         Callback = function()
             local NewPlayers = {}
-            for _, Player in ipairs(self.Api:GetAllPlayers()) do
+            for _, Player in ipairs(self.BasePlayer:GetAllPlayers()) do
                 table.insert(NewPlayers, Player.Name)
             end
             PlayerDropdown:SetValues(NewPlayers)
@@ -260,7 +258,7 @@ function UIManager:Setup(SpeedManager, FarmManager)
     end)
 
     -- Character respawn support
-    self.Player.CharacterAdded:Connect(function()
+    self.BasePlayer.GetLocalPlayer().CharacterAdded:Connect(function()
         SpeedManager:CharacterAdded()
     end)
 

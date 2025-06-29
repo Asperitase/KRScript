@@ -3,8 +3,7 @@ SpeedManager.__index = SpeedManager
 
 function SpeedManager.New(Api)
     local self = setmetatable({}, SpeedManager)
-    self.Api = Api
-    self.Player = Api:GetLocalPlayer()
+    self.BasePlayer = Api
     self.DefaultSpeed = nil
     self.SpeedEnabled = false
     self.CustomSpeed = 16
@@ -13,7 +12,7 @@ function SpeedManager.New(Api)
 end
 
 function SpeedManager:GetHuman()
-    local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
+    local Character = self.BasePlayer.GetLocalPlayer().Character or self.BasePlayer.GetLocalPlayer().CharacterAdded:Wait()
     return Character:FindFirstChildOfClass("Humanoid")
 end
 
