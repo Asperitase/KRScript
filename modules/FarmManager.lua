@@ -198,7 +198,7 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
-    local pos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
+    local pos = Vector3.new(185.45648193359375, -1.6463819742202759, 532.0242309570312)
     local secondArg = 1
     self.BasePlayer:SpamFish(pos, secondArg)
 end

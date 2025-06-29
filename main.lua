@@ -15,7 +15,6 @@ local EspManagerInstance = ESPManager.New(RobloxApi)
 local UiManagerInstance = UIManager.New(RobloxApi, FluentMenu)
 UiManagerInstance:Setup(SpeedManagerInstance, FarmManagerInstance, EspManagerInstance)
    
--- Обработчик для правильного завершения всех задач при отключении
 local function CleanupOnExit()
     if SpeedManagerInstance then
         SpeedManagerInstance:Destroy()

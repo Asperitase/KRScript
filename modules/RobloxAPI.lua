@@ -50,7 +50,7 @@ function RobloxAPI:GetWorkspace()
 end
 
 function RobloxAPI:GetLocalPlayer()
-    return self.LocalPlayer
+    return self.LocalPlayer 
 end
 
 function RobloxAPI:GetLocalIsland()
