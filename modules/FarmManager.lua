@@ -61,29 +61,25 @@ end
 
 function FarmManager:StartupTask(TaskName, Value)
     local TaskMap = {
-        autohive = {task = "AutoHiveTask", func = "AutoHive"},
-        autoharvest = {task = "AutoHarvestTask", func = "AutoHarvest"},
-        instafarm = {task = "AutoResourceTask", func = "AutoResource"},
-        autocollectfish = {task = "AutoCollectFishTask", func = "AutoCollectFish"},
-        spamfish = {task = "SpamFishTask", func = "SpamFish"}
+        autohive = {task = "AutoHiveTask", func = "AutoHive", delay = 1},
+        autoharvest = {task = "AutoHarvestTask", func = "AutoHarvest", delay = 0.03},
+        instafarm = {task = "AutoResourceTask", func = "AutoResource", delay = 0.03},
+        autocollectfish = {task = "AutoCollectFishTask", func = "AutoCollectFish", delay = 0.03},
+        spamfish = {task = "SpamFishTask", func = "SpamFish", delay = 0.03}
     }
-    
+
     local Config = TaskMap[TaskName]
-    if not Config then 
-        return 
-    end
-        
+    if not Config then return end
+
     if Value then
-        if self[Config.task] then 
-            return 
-        end
+        if self[Config.task] then return end
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                task.wait(1)
+                task.wait(Config.delay)
             end
         end)
-    else 
+    else
         if self[Config.task] then
             task.cancel(self[Config.task])
             self[Config.task] = nil
