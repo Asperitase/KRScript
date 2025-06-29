@@ -29,7 +29,6 @@ function FarmManager.New(Api)
     self.Player = Api:GetLocalPlayer()
     self.Communication = Api:GetCommunication()
     self.Island = Api:GetIsland()
-    self.LandPlots = Api:GetLandPlots()
     self.SelectedHiveTypes = {Bee = true, MagmaBee = true}
     self.DistanceHive = 500
     self.AutoHiveTask = nil
@@ -103,8 +102,7 @@ end
 function FarmManager:AutoHive()
     local Character = self.Player.Character or self.Player.CharacterAdded:Wait()
     local HumanPart = Character:WaitForChild("HumanoidRootPart")
-    local Island = self.Api:GetIsland()
-    for _, Spot in ipairs(Island:GetDescendants()) do
+    for _, Spot in ipairs(self.Island:GetDescendants()) do
         if Spot:IsA("Model") and Spot.Name:match("Spot") then
             local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
             if PrimaryPart then
@@ -138,8 +136,7 @@ function FarmManager:AutoHive()
 end
 
 function FarmManager:AutoHarvest()
-    local Island = self.Api:GetIsland()
-    for _, Plant in ipairs(Island:FindFirstChild("Plants"):GetChildren()) do
+    for _, Plant in ipairs(self.Island:FindFirstChild("Plants"):GetChildren()) do
         local PromptHold = Plant:FindFirstChild("PromptHold")
         if PromptHold then
             local Prompt = PromptHold:FindFirstChildWhichIsA("ProximityPrompt")
@@ -189,18 +186,18 @@ function FarmManager:AutoResource()
 end
 
 function FarmManager:AutoCollectFish()
-    local Island = self.Api:GetIsland()
-    local LandPlots = Island:FindFirstChild("Land")
-    
-    if LandPlots then
-        for _, LandPlot in ipairs(LandPlots:GetChildren()) do
-            local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
-            if FishCrate then
-                local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
-                if Amount then
-                    -- Проверяем если бокс полный (нет "/" в тексте)
-                    if not Amount.Text:find("/") then
-                        self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()
+    if self.Island then
+        local LandPlots = self.Island:FindFirstChild("Land")
+        
+        if LandPlots then
+            for _, LandPlot in ipairs(LandPlots:GetChildren()) do
+                local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
+                if FishCrate then
+                    local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
+                    if Amount then
+                        if not Amount.Text:find("/") then
+                            self.Communication:WaitForChild("CollectFishCrateContents"):FireServer()
+                        end
                     end
                 end
             end
