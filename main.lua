@@ -11,9 +11,8 @@ local SpeedManagerInstance = SpeedManager.New(RobloxApi)
 local FarmManagerInstance = FarmManager.New(RobloxApi)
 local UiManagerInstance = UIManager.New(RobloxApi, FluentMenu)
 
-task.spawn(function()
-    UiManagerInstance:Setup(SpeedManagerInstance, FarmManagerInstance)
-end)
+UiManagerInstance:Setup(SpeedManagerInstance, FarmManagerInstance)
+
 
 local UserInputService = game:GetService("UserInputService")
 
