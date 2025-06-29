@@ -200,11 +200,7 @@ end
 function FarmManager:SpamFish()
     local pos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
     local secondArg = 1
-    local Communication = self.BasePlayer:GetCommunication()
-    local Fish = Communication:FindFirstChild("Fish")
-    if Fish then
-        Fish:InvokeServer(pos, secondArg)
-    end
+    self.BasePlayer:SpamFish(pos, secondArg)
 end
 
 function FarmManager:Destroy()
