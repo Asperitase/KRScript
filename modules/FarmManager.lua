@@ -85,10 +85,10 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                task.wait(0.01)
+                task.wait(0.1)
             end
         end)
-    else
+    else 
         if self[Config.task] then
             task.cancel(self[Config.task])
             self[Config.task] = nil
