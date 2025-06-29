@@ -5,6 +5,7 @@ local SpeedManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/
 local FarmManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/refs/heads/main/modules/FarmManager.lua"))()
 local ESPManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/refs/heads/main/modules/ESPManager.lua"))()
 local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/refs/heads/main/modules/UIManager.lua"))()
+local RobloxAPI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/refs/heads/main/modules/RobloxAPI.lua"))()
 
 -- Инициализация сервисов
 local players = game:GetService("Players")
@@ -16,21 +17,8 @@ local plots = workspace:WaitForChild("Plots"):WaitForChild(local_player.Name)
 local land = plots:FindFirstChild("Land")
 local communication = replicated_storage:WaitForChild("Communication")
 
--- Game API
-local rAPI = {}
-rAPI.__index = rAPI
-
-function rAPI.new()
-    local self = setmetatable({}, rAPI)
-    return self
-end
-
-function rAPI:HitResource()
-    return communication:WaitForChild("HitResource")
-end
-
 -- Инициализация и запуск
-local roblox_api = rAPI.new()
+local roblox_api = RobloxAPI.new(communication)
 
 local speed_manager = SpeedManager.new(local_player)
 local farm_manager = FarmManager.new(local_player, communication, land, roblox_api)
