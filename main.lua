@@ -22,7 +22,7 @@ local function CleanupOnExit()
     if FarmManagerInstance then
         FarmManagerInstance:Destroy()
     end
-    if UiManagerInstance then
+    if UiManagerInstance then 
         UiManagerInstance:Destroy()
     end
 end
