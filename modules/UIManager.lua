@@ -288,36 +288,14 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
         Callback = function()
             print("=== CUSTOM TEST ===")
             
-            -- Получаем значение Amount из BillboardGui (конкретный путь)
-            local TargetPath = workspace.Plots.idredakx.Land.S252.FISHCRATE.PromptPart.Top.BillboardGui.Amount
-            if TargetPath then
-                print("Amount значение:", TargetPath.Text)
-            else
-                print("Путь не найден!")
-            end
-            
-            -- Универсальный поиск всех FISHCRATE
-            print("=== ПОИСК ВСЕХ FISHCRATE ===")
-            local AllPlots = workspace.Plots:GetChildren()
-            for _, Plot in ipairs(AllPlots) do
-                if Plot:FindFirstChild("Land") then
-                    local LandPlots = Plot.Land:GetChildren()
-                    for _, LandPlot in ipairs(LandPlots) do
-                        local FishCrate = LandPlot:FindFirstChild("FISHCRATE")
-                        if FishCrate then
-                            local PromptPart = FishCrate:FindFirstChild("PromptPart")
-                            if PromptPart then
-                                local Top = PromptPart:FindFirstChild("Top")
-                                if Top then
-                                    local BillboardGui = Top:FindFirstChild("BillboardGui")
-                                    if BillboardGui then
-                                        local Amount = BillboardGui:FindFirstChild("Amount")
-                                        if Amount then
-                                            print("Найден FISHCRATE в", Plot.Name, LandPlot.Name, "Amount:", Amount.Text)
-                                        end
-                                    end
-                                end
-                            end
+            if self.LandPlot then
+                local S252 = self.LandPlot:FindFirstChild("S252")
+                if S252 then
+                    local FishCrate = S252:FindFirstChild("FISHCRATE")
+                    if FishCrate then
+                        local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
+                        if Amount then
+                            print("FISHCRATE Amount в S252:", Amount.Text)
                         end
                     end
                 end
