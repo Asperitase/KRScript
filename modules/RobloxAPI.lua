@@ -33,7 +33,7 @@ function RobloxAPI:AutoHarvest(Name)
 end
 
 function RobloxAPI:SpamFish(Args)
-    return self.Communication:WaitForChild("Fish"):InvokeServer(unpack(Args))
+    return self.Communication:WaitForChild("Fish"):InvokeServer(Args)
 end
 
 -- Геттеры для доступа к сервисам и переменным

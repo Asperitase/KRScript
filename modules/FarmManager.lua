@@ -74,18 +74,29 @@ function FarmManager:StartupTask(TaskName, Value)
     }
     
     local Config = TaskMap[TaskName]
-    if not Config then return end
+    if not Config then 
+        print("Task not found:", TaskName)
+        return 
+    end
+    
+    print("Starting task:", TaskName, "Value:", Value)
     
     if Value then
-        if self[Config.task] then return end
+        if self[Config.task] then 
+            print("Task already running:", TaskName)
+            return 
+        end
         self[Config.task] = task.spawn(function()
+            print("Task loop started:", TaskName)
             while true do
                 self[Config.func](self)
                 task.wait(1)
             end
         end)
+        print("Task started:", TaskName)
     else
         if self[Config.task] then
+            print("Stopping task:", TaskName)
             task.cancel(self[Config.task])
             self[Config.task] = nil
         end
@@ -190,12 +201,17 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
+    print("SpamFish called")
+    
     local args = {
         vector.create(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
         1
     }
     
+    print("Sending fish command with args:", args[1], args[2])
     self.BasePlayer:SpamFish(args)
+    print("Fish command sent")
+    
     -- local Character = self.BasePlayer:GetLocalPlayer().Character
     -- if not Character then return end
     
@@ -210,6 +226,7 @@ function FarmManager:SpamFish()
     --     local RegionPosition = FishingRegion.Position
     --     local RegionSize = FishingRegion.Size
         
+    --     -- Простая проверка расстояния (можно улучшить для точной проверки области)
     --     local Distance = (PlayerPosition - RegionPosition).Magnitude
     --     local MaxDistance = math.max(RegionSize.X, RegionSize.Y, RegionSize.Z) / 2
         
