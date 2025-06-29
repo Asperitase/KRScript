@@ -86,7 +86,7 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                task.wait(0.1)
+                task.wait(0.01)
             end
         end)
     else 
@@ -197,7 +197,10 @@ end
 function FarmManager:SpamFish()
     local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
     local secondArg = 1
-    self.BasePlayer:SpamFish(pos, secondArg)
+    while true do
+        self.BasePlayer:SpamFish(pos, secondArg)
+        task.wait(0.01)
+    end
 end
 
 function FarmManager:Destroy()
