@@ -198,7 +198,8 @@ function FarmManager:SpamFish()
     print("=== Тест спама рыбалки: старт ===")
     local x_fraction = 0.8326416015625
     local z_fraction = 0.3346862792969
-    while true do
+    local startTime = tick() 
+    while tick() - startTime < 10 do
         local x_int = math.random(-365, -350)
         local z_int = math.random(420, 450)
         local x = x_int + x_fraction

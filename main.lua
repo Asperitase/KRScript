@@ -11,10 +11,6 @@ local RobloxAPI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asp
 
 
 
- 
-
-
-
 -- Инициализация и запуск
 local RobloxApi = RobloxAPI.New()
  
