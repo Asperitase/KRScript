@@ -190,33 +190,39 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
-    local Character = self.BasePlayer:GetLocalPlayer().Character
-    if not Character then return end
+    local args = {
+        vector.create(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
+        1
+    }
     
-    local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
-    if not HumanRootPart then return end
+    self.BasePlayer:SpamFish(args)
+    -- local Character = self.BasePlayer:GetLocalPlayer().Character
+    -- if not Character then return end
     
-    -- Проверяем FishingRegion в S252 (или другом участке)
-    local FishingRegion = self.BasePlayer:GetFishingRegion("S252")
-    if FishingRegion then
-        -- Проверяем, находится ли игрок в FishingRegion
-        local PlayerPosition = HumanRootPart.Position
-        local RegionPosition = FishingRegion.Position
-        local RegionSize = FishingRegion.Size
+    -- local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
+    -- if not HumanRootPart then return end
+    
+    -- -- Проверяем FishingRegion в S252 (или другом участке)
+    -- local FishingRegion = self.BasePlayer:GetFishingRegion("S252")
+    -- if FishingRegion then
+    --     -- Проверяем, находится ли игрок в FishingRegion
+    --     local PlayerPosition = HumanRootPart.Position
+    --     local RegionPosition = FishingRegion.Position
+    --     local RegionSize = FishingRegion.Size
         
-        local Distance = (PlayerPosition - RegionPosition).Magnitude
-        local MaxDistance = math.max(RegionSize.X, RegionSize.Y, RegionSize.Z) / 2
+    --     local Distance = (PlayerPosition - RegionPosition).Magnitude
+    --     local MaxDistance = math.max(RegionSize.X, RegionSize.Y, RegionSize.Z) / 2
         
-        if Distance <= MaxDistance then
+    --     if Distance <= MaxDistance then
 
-            local args = {
-                vector.create(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
-                1
-            }
+    --         local args = {
+    --             vector.create(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
+    --             1
+    --         }
             
-            self.BasePlayer:SpamFish(args)
-        end
-    end
+    --         self.BasePlayer:SpamFish(args)
+    --     end
+    -- end
 end
 
 function FarmManager:Destroy()
