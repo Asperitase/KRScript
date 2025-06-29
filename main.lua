@@ -31,7 +31,7 @@ local function CleanupOnExit()
     end
     if UiManagerInstance then
         UiManagerInstance:Destroy()
-    end
+    end 
 end
 
 -- Регистрируем обработчик для завершения

@@ -200,7 +200,7 @@ function FarmManager:SpamFish()
     local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
     while true do
         self.BasePlayer:SpamFish(pos, 2)
-        task.wait(0.001) 
+        task.wait(0.0001) 
     end
 end
 
