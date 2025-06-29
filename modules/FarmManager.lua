@@ -201,59 +201,44 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
-    print("SpamFish called")
-
-    -- Проверка наличия Vector3
-    if not Vector3 or typeof(Vector3) ~= "table" or not Vector3.new then
-        warn("Vector3.new не поддерживается в этом окружении!")
-        return
-    end
-
-    -- Проверка наличия Communication и Fish
-    local Communication = self.BasePlayer:GetCommunication()
-    if not Communication then
-        warn("Communication не найден!")
-        return
-    end
-
-    local Fish = Communication:FindFirstChild("Fish")
-    if not Fish then
-        warn("Fish не найден в Communication!")
-        print("Доступные объекты в Communication:")
-        for _, child in ipairs(Communication:GetChildren()) do
-            print("  -", child.Name)
-        end
-        return
-    end
-
-    -- Проверка создания Vector3
     local pos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
-    print("Создан Vector3:", pos, typeof(pos))
-
-    -- Проверка типа второго аргумента
     local secondArg = 1
-    print("Второй аргумент:", secondArg, typeof(secondArg))
+    self.BasePlayer:SpamFish(pos, secondArg)
+    -- local Communication = self.BasePlayer:GetCommunication()
+    -- local Fish = Communication:FindFirstChild("Fish")
+    -- if Fish then
+    --     Fish:InvokeServer(pos, secondArg)
+    -- end
 
-    -- Попытка вызвать сервер
-    local success, result = pcall(function()
-        return Fish:InvokeServer(pos, secondArg)
-    end)
-
-    if success then
-        print("Fish:InvokeServer выполнен успешно! Результат:", result)
-    else
-        warn("Ошибка при вызове Fish:InvokeServer:", result)
-    end
-
-    --[[
-    -- Старый код для справки:
-    -- local args = {
-    --     Vector3.new(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
-    --     1
-    -- }
-    -- print("Sending fish command with args:", args[1], args[2])
-    -- self.BasePlayer:SpamFish(args)
-    -- print("Fish command sent")
+    --[[ 
+    -- Диагностический и старый код для справки:
+    -- print("SpamFish called")
+    -- if not Vector3 or typeof(Vector3) ~= "table" or not Vector3.new then
+    --     warn("Vector3.new не поддерживается в этом окружении!")
+    --     return
+    -- end
+    -- if not Communication then
+    --     warn("Communication не найден!")
+    --     return
+    -- end
+    -- if not Fish then
+    --     warn("Fish не найден в Communication!")
+    --     print("Доступные объекты в Communication:")
+    --     for _, child in ipairs(Communication:GetChildren()) do
+    --         print("  -", child.Name)
+    --     end
+    --     return
+    -- end
+    -- print("Создан Vector3:", pos, typeof(pos))
+    -- print("Второй аргумент:", secondArg, typeof(secondArg))
+    -- local success, result = pcall(function()
+    --     return Fish:InvokeServer(pos, secondArg)
+    -- end)
+    -- if success then
+    --     print("Fish:InvokeServer выполнен успешно! Результат:", result)
+    -- else
+    --     warn("Ошибка при вызове Fish:InvokeServer:", result)
+    -- end
     -- local Character = self.BasePlayer:GetLocalPlayer().Character
     -- if not Character then return end
     -- local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
