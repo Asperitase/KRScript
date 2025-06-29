@@ -25,7 +25,6 @@ local HealthResources = {
 
 function FarmManager.New(Api)
     local self = setmetatable({}, FarmManager)
-    self.Api = Api
     self.Player = Api:GetLocalPlayer()
     self.Communication = Api:GetCommunication()
     self.Island = Api:GetLocalIsland()
@@ -189,7 +188,7 @@ function FarmManager:AutoResource()
 end
 
 function FarmManager:AutoCollectFish()
-    local Island = self.Api:GetIsland()
+    local Island = self.BasePlayer:GetLocalIsland()
     local LandPlots = Island:FindFirstChild("Land")
     
     if LandPlots then
