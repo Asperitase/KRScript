@@ -195,6 +195,7 @@ function FarmManager:AutoCollectFish()
 end
 
 
+
 -- 190 538
 function FarmManager:SpamFish()
     while true do
@@ -206,7 +207,7 @@ function FarmManager:SpamFish()
              local z = math.random() * (450 - 420) + 420
      
              local pos = Vector3.new(x, y, z)
-             self.BasePlayer:SpamFish(pos, secondArg)
+             self.BasePlayer:SpamFish(pos, 2)
              task.wait(0.01)
     end
 end
