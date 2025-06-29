@@ -198,28 +198,42 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
+    print("SpamFish: called")
+
+    -- Получаем Character
     local Character = self.BasePlayer:GetLocalPlayer().Character
-    if not Character then return end
+    if not Character then
+        print("SpamFish: Character not found")
+        return
+    end
 
+    -- Получаем HumanoidRootPart
     local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
-    if not HumanRootPart then return end
+    if not HumanRootPart then
+        print("SpamFish: HumanoidRootPart not found")
+        return
+    end
 
-    -- Получаем S252 и FishingRegion
+    -- Получаем LocalIsland, Land, S252
     local LocalIsland = self.BasePlayer:GetLocalIsland()
-    local Land = LocalIsland and LocalIsland:FindFirstChild("Land")
-    local S252 = Land and Land:FindFirstChild("S252")
+    if not LocalIsland then
+        print("SpamFish: LocalIsland not found")
+        return
+    end
+
+    local Land = LocalIsland:FindFirstChild("Land")
+    if not Land then
+        print("SpamFish: Land not found in LocalIsland")
+        return
+    end
+
+    local S252 = Land:FindFirstChild("S252")
     if not S252 then
         print("SpamFish: S252 (плот) не найден")
         return
     end
 
-    local FishingRegion = S252:FindFirstChild("FishingRegion")
-    if not FishingRegion then
-        print("SpamFish: FishingRegion не найден в S252")
-        return
-    end
-
-    -- Проверяем, что игрок стоит на плоту (или рядом)
+    -- Проверяем позицию игрока и плота
     local PlayerPosition = HumanRootPart.Position
     local RaftPosition = S252.Position
     local RaftSize = S252.Size
@@ -233,17 +247,40 @@ function FarmManager:SpamFish()
         return
     end
 
-    -- Забрасываем в центр FishingRegion (или с небольшим смещением)
-    local castPos = FishingRegion.Position
-    -- Можно добавить рандомизацию:
-    -- local castPos = FishingRegion.Position + Vector3.new(
-    --     (math.random()-0.5)*FishingRegion.Size.X*0.4,
-    --     0,
-    --     (math.random()-0.5)*FishingRegion.Size.Z*0.4
-    -- )
+    -- Проверяем Communication и Fish
+    local Communication = self.BasePlayer:GetCommunication()
+    if not Communication then
+        print("SpamFish: Communication not found")
+        return
+    end
+
+    local Fish = Communication:FindFirstChild("Fish")
+    if not Fish then
+        print("SpamFish: Fish not found in Communication")
+        print("SpamFish: Available children in Communication:")
+        for _, child in ipairs(Communication:GetChildren()) do
+            print("  -", child.Name)
+        end
+        return
+    end
+
+    -- Используем твою фиксированную позицию броска
+    local castPos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
+    print("SpamFish: castPos =", castPos, typeof(castPos))
 
     local secondArg = 1
-    self.BasePlayer:SpamFish(castPos, secondArg)
+    print("SpamFish: secondArg =", secondArg, typeof(secondArg))
+
+    -- Пробуем вызвать сервер
+    local success, result = pcall(function()
+        return Fish:InvokeServer(castPos, secondArg)
+    end)
+
+    if success then
+        print("SpamFish: Fish:InvokeServer выполнен успешно! Результат:", result)
+    else
+        print("SpamFish: Fish:InvokeServer ошибка:", result)
+    end
 end
 
 function FarmManager:Destroy()
