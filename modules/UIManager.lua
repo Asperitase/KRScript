@@ -43,20 +43,6 @@ function UIManager:Setup(SpeedManager, FarmManager)
         FarmManager:SetSelectedTypes(SelectedHiveTypes)
     end)
 
-    local DistanceHive = 500
-    local SliderDistanceHive = self.TabsId.farm:AddSlider("Auto Hive Distance", {
-        Title = "Auto Hive Distance",
-        Description = "Distance Hive",
-        Default = DistanceHive,
-        Min = 35,
-        Max = 500,
-        Rounding = 1,
-        Callback = function(Value) end
-    })
-    SliderDistanceHive:OnChanged(function(Value)
-        DistanceHive = tonumber(Value)
-        FarmManager:SetDistance(DistanceHive)
-    end)
     IsAutoHive:OnChanged(function(Value)
         FarmManager:StartupTask("autohive", Value)
     end)
