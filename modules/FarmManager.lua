@@ -75,32 +75,25 @@ function FarmManager:StartupTask(TaskName, Value)
     
     local Config = TaskMap[TaskName]
     if not Config then 
-        print("Task not found:", TaskName)
         return 
     end
-    
-    print("Starting task:", TaskName, "Value:", Value)
-    
+        
     if Value then
         if self[Config.task] then 
-            print("Task already running:", TaskName)
             return 
         end
         local interval = 1
         if TaskName == "spamfish" then
-            interval = 0.05 -- или 0.01 для максимальной скорости
+            interval = 0.05
         end
         self[Config.task] = task.spawn(function()
-            print("Task loop started:", TaskName)
             while true do
                 self[Config.func](self)
                 task.wait(interval)
             end
         end)
-        print("Task started:", TaskName)
     else
         if self[Config.task] then
-            print("Stopping task:", TaskName)
             task.cancel(self[Config.task])
             self[Config.task] = nil
         end
@@ -205,24 +198,40 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
+    print("SpamFish: start")
     local Character = self.BasePlayer:GetLocalPlayer().Character
-    if not Character then return end
+    if not Character then
+        print("SpamFish: Character not found")
+        return
+    end
 
     local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
-    if not HumanRootPart then return end
+    if not HumanRootPart then
+        print("SpamFish: HumanoidRootPart not found")
+        return
+    end
 
     local FishingRegion = self.BasePlayer:GetFishingRegion("S252")
-    if FishingRegion then
-        local PlayerPosition = HumanRootPart.Position
-        local RegionPosition = FishingRegion.Position
-        local RegionSize = FishingRegion.Size
-        local Distance = (PlayerPosition - RegionPosition).Magnitude
-        local MaxDistance = math.max(RegionSize.X, RegionSize.Y, RegionSize.Z) / 2
-        if Distance <= MaxDistance then
-            local pos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
-            local secondArg = 1
-            self.BasePlayer:SpamFish( self.BasePlayer:SpamFish(pos, secondArg))
-        end
+    if not FishingRegion then
+        print("SpamFish: FishingRegion not found")
+        return
+    end
+
+    local PlayerPosition = HumanRootPart.Position
+    local RegionPosition = FishingRegion.Position
+    local RegionSize = FishingRegion.Size
+    local Distance = (PlayerPosition - RegionPosition).Magnitude
+    local MaxDistance = math.max(RegionSize.X, RegionSize.Y, RegionSize.Z) / 2
+
+    print(string.format("SpamFish: PlayerPos=%s, RegionPos=%s, Distance=%.2f, MaxDistance=%.2f", tostring(PlayerPosition), tostring(RegionPosition), Distance, MaxDistance))
+
+    if Distance <= MaxDistance then
+        print("SpamFish: Player is in FishingRegion, sending fish request")
+        local pos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
+        local secondArg = 1
+        self.BasePlayer:SpamFish(pos, secondArg)
+    else
+        print("SpamFish: Player is NOT in FishingRegion")
     end
 end
 
