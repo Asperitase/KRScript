@@ -245,53 +245,13 @@ function FarmManager:SpamFish()
         return
     end
 
-    -- Проверяем позицию игрока и плота
-    local PlayerPosition = HumanRootPart.Position
-    local RaftPosition = S252.Position
-    local RaftSize = S252.Size
-    local Distance = (PlayerPosition - RaftPosition).Magnitude
-    local MaxDistance = math.max(RaftSize.X, RaftSize.Z) / 2 + 10 -- запас
+    local region = S252.FishingRegion
 
-    print(string.format("SpamFish: PlayerPos=%s, RaftPos=%s, Distance=%.2f, MaxDistance=%.2f", tostring(PlayerPosition), tostring(RaftPosition), Distance, MaxDistance))
-
-    if Distance > MaxDistance then
-        print("SpamFish: Игрок не на плоту S252!")
-        return
-    end
-
-    -- Проверяем Communication и Fish
-    local Communication = self.BasePlayer:GetCommunication()
-    if not Communication then
-        print("SpamFish: Communication not found")
-        return
-    end
-
-    local Fish = Communication:FindFirstChild("Fish")
-    if not Fish then
-        print("SpamFish: Fish not found in Communication")
-        print("SpamFish: Available children in Communication:")
-        for _, child in ipairs(Communication:GetChildren()) do
-            print("  -", child.Name)
-        end
-        return
-    end
-
-    -- Используем твою фиксированную позицию броска
     local castPos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
-    print("SpamFish: castPos =", castPos, typeof(castPos))
+    local num = 1
 
-    local secondArg = 1
-    print("SpamFish: secondArg =", secondArg, typeof(secondArg))
-
-    -- Пробуем вызвать сервер
-    local success, result = pcall(function()
-        return Fish:InvokeServer(castPos, secondArg)
-    end)
-
-    if success then
-        print("SpamFish: Fish:InvokeServer выполнен успешно! Результат:", result)
-    else
-        print("SpamFish: Fish:InvokeServer ошибка:", result)
+    if region then
+        self.BasePlayer:SpamFish(castPos,num)
     end
 end
 
