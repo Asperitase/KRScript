@@ -51,8 +51,7 @@ end
 
 function RobloxAPI:GetLocalPlayer()
     return self.LocalPlayer
-end
-
+end    
 
 function RobloxAPI:GetLocalIsland()
     return self.LocalIsland
