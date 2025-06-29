@@ -196,19 +196,12 @@ end
 
 -- 190 538
 function FarmManager:SpamFish()
-    print("ver", 6)
+    print("ver", 1)
     local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
-    local pos2 = Vector3.new(-349.8042297363281, -1.6463819742202759, 446.7143249511719)
-    local pos3 = Vector3.new(-358.8326416015625, -1.6463819742202759, 445.3346862792969)
     local startTime = tick()
     while tick() - startTime < 10 do
         self.BasePlayer:SpamFish(pos, 2)
-        self.BasePlayer:SpamFish(pos2, 2)
-        self.BasePlayer:SpamFish(pos3, 2)
-        self.BasePlayer:SpamFish(pos, 2)
-        self.BasePlayer:SpamFish(pos2, 2)
-        self.BasePlayer:SpamFish(pos3, 2)
-        task.wait(0.01) 
+        task.wait(0.001) 
     end
 end
 

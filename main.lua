@@ -12,7 +12,7 @@ local RobloxAPI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asp
 
 -- Инициализация и запуск
 local RobloxApi = RobloxAPI.New()
-
+ 
 local SpeedManagerInstance = SpeedManager.New(RobloxApi)
 local FarmManagerInstance = FarmManager.New(RobloxApi)
 local EspManagerInstance = ESPManager.New(RobloxApi)
