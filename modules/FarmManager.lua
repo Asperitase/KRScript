@@ -133,7 +133,7 @@ function FarmManager:AutoHive()
 end
 
 function FarmManager:AutoHarvest()
-    for _, Plant in ipairs(self.Api:GetLocalIsland():FindFirstChild("Plants"):GetChildren()) do
+    for _, Plant in ipairs(self.BasePlayer:GetLocalIsland():FindFirstChild("Plants"):GetChildren()) do
         local PromptHold = Plant:FindFirstChild("PromptHold")
         if PromptHold then
             local Prompt = PromptHold:FindFirstChildWhichIsA("ProximityPrompt")
@@ -150,7 +150,7 @@ end
 
 function FarmManager:AutoResource()
     for _, TargetPlayer in ipairs(self.SelectedPlayers) do
-        local TargetIsland = self.Api:GetAllIslands():FindFirstChild(TargetPlayer)
+        local TargetIsland = self.BasePlayer:GetAllIslands():FindFirstChild(TargetPlayer)
         if TargetIsland and TargetIsland:FindFirstChild("Resources") then
             local Resources = TargetIsland.Resources:GetChildren()
             for _, Resource in ipairs(Resources) do
@@ -180,7 +180,7 @@ function FarmManager:AutoResource()
 end
 
 function FarmManager:AutoCollectFish()
-    for _, LandPlace in ipairs(self.Api:GetLocalIsland():FindFirstChild("Land"):GetChildren()) do
+    for _, LandPlace in ipairs(self.BasePlayer:GetLocalIsland():FindFirstChild("Land"):GetChildren()) do
         local FishCrate = LandPlace:FindFirstChild("FISHCRATE")
         if FishCrate then
             local Amount = FishCrate.PromptPart.Top.BillboardGui.Amount
