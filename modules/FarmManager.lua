@@ -200,19 +200,31 @@ end
 function FarmManager:SpamFish()
     print("SpamFish: called")
 
-    -- Получаем Character
-    local Character = self.BasePlayer:GetLocalPlayer().Character
+    local BasePlayer = self.BasePlayer
+    if not BasePlayer then
+        print("SpamFish: self.BasePlayer is nil")
+        return
+    end
+
+    local LocalPlayer = BasePlayer:GetLocalPlayer()
+    if not LocalPlayer then
+        print("SpamFish: GetLocalPlayer() is nil")
+        return
+    end
+
+    local Character = LocalPlayer.Character
     if not Character then
         print("SpamFish: Character not found")
         return
     end
 
-    -- Получаем HumanoidRootPart
     local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
     if not HumanRootPart then
         print("SpamFish: HumanoidRootPart not found")
         return
     end
+
+    print("SpamFish: Character and HumanoidRootPart found, continue...")
 
     -- Получаем LocalIsland, Land, S252
     local LocalIsland = self.BasePlayer:GetLocalIsland()
