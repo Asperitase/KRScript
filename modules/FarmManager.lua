@@ -20,6 +20,7 @@ local HealthResources = {
     ["Sand"] = 12,
     ["Stone"] = 3,
     ["Wheat"] = 7,
+    ["Crystal"] = 37
 }
 
 function FarmManager.New(Api)
