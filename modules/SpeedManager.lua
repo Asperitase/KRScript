@@ -3,17 +3,30 @@ SpeedManager.__index = SpeedManager
 
 function SpeedManager.New(Api)
     local self = setmetatable({}, SpeedManager)
-    self.BasePlayer = Api
+    self.Api = Api
+    self.Player = Api:GetLocalPlayer()
     self.DefaultSpeed = nil
     self.SpeedEnabled = false
     self.CustomSpeed = 16
     self.SpeedTask = nil
+    self.CachedHumanoid = nil
+    self.LastHumanoidCheck = 0
+    self.HumanoidCheckInterval = 0.5
     return self
 end
 
 function SpeedManager:GetHuman()
-    local Character = self.BasePlayer.GetLocalPlayer().Character or self.BasePlayer.GetLocalPlayer().CharacterAdded:Wait()
-    return Character:FindFirstChildOfClass("Humanoid")
+    local CurrentTime = tick()
+    if CurrentTime - self.LastHumanoidCheck > self.HumanoidCheckInterval then
+        self.LastHumanoidCheck = CurrentTime
+        local Character = self.Player.Character
+        if Character then
+            self.CachedHumanoid = Character:FindFirstChildOfClass("Humanoid")
+        else
+            self.CachedHumanoid = nil
+        end
+    end
+    return self.CachedHumanoid
 end
 
 function SpeedManager:SetSpeed(Speed)
@@ -34,12 +47,11 @@ function SpeedManager:EnableSpeed(Speed)
     self.CustomSpeed = Speed or self.CustomSpeed
     self.SpeedEnabled = true
     
-    -- Запускаем цикл для постоянного поддержания скорости
     if not self.SpeedTask then
         self.SpeedTask = task.spawn(function()
             while self.SpeedEnabled do
                 self:SetSpeed(self.CustomSpeed)
-                task.wait(0.1)
+                task.wait(0.05)
             end
         end)
     end
@@ -48,21 +60,21 @@ end
 function SpeedManager:DisableSpeed()
     self.SpeedEnabled = false
     
-    -- Останавливаем цикл
     if self.SpeedTask then
         task.cancel(self.SpeedTask)
         self.SpeedTask = nil
     end
     
-    -- Возвращаем исходную скорость
     if self.DefaultSpeed then
         self:SetSpeed(self.DefaultSpeed)
     end
 end
 
 function SpeedManager:CharacterAdded()
+    self.CachedHumanoid = nil
+    self.LastHumanoidCheck = 0
+    
     if self.SpeedEnabled then
-        -- Перезапускаем цикл для нового персонажа
         if self.SpeedTask then
             task.cancel(self.SpeedTask)
             self.SpeedTask = nil
@@ -71,7 +83,7 @@ function SpeedManager:CharacterAdded()
         self.SpeedTask = task.spawn(function()
             while self.SpeedEnabled do
                 self:SetSpeed(self.CustomSpeed)
-                task.wait(0.1)
+                task.wait(0.05)
             end
         end)
     end
@@ -81,6 +93,7 @@ function SpeedManager:Destroy()
     self:DisableSpeed()
     self.DefaultSpeed = nil
     self.CustomSpeed = 16
+    self.CachedHumanoid = nil
 end
 
 return SpeedManager 
