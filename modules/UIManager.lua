@@ -26,7 +26,6 @@ function UIManager:Setup(SpeedManager, FarmManager)
         settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
     }
 
-    -- Farm Tab
     local IsAutoHive = self.TabsId.farm:AddToggle("Auto Hive", {Title = "Auto Hive", Default = false})
 
     local SelectedHiveTypes = {Bee = true, MagmaBee = true}
@@ -184,7 +183,6 @@ function UIManager:Setup(SpeedManager, FarmManager)
         FarmManager:SetOnlyMaxHp(Value)
     end)
 
-    -- Выбор игроков для ломания ресурсов
     local AllPlayers = {}
     for _, Player in ipairs(self.BasePlayer:GetAllPlayers()) do
         table.insert(AllPlayers, Player.Name)
@@ -192,10 +190,10 @@ function UIManager:Setup(SpeedManager, FarmManager)
 
     local PlayerDropdown = self.TabsId.farm:AddDropdown("Target Players", {
         Title = "Target Players",
-        Description = "Выберите игроков для ломания ресурсов на их островах",
+        Description = "Select players for resource farming on their islands",
         Values = AllPlayers,
         Multi = true,
-        Default = {self.BasePlayer.GetLocalPlayer().Name},
+        Default = {self.BasePlayer:GetLocalPlayer().Name},
     })
     PlayerDropdown:OnChanged(function(Value)
         local SelectedPlayers = {}
@@ -207,7 +205,6 @@ function UIManager:Setup(SpeedManager, FarmManager)
         FarmManager:SetSelectedPlayers(SelectedPlayers)
     end)
 
-    -- Кнопка обновления списка игроков
     self.TabsId.farm:AddButton({
         Title = "Refresh Player List",
         Callback = function()
@@ -219,19 +216,16 @@ function UIManager:Setup(SpeedManager, FarmManager)
         end
     })
 
-    -- Auto Collect Fish
     local AutoCollectFishToggle = self.TabsId.farm:AddToggle("Auto Collect Fish", {Title = "Auto Collect Fish", Default = false})
     AutoCollectFishToggle:OnChanged(function(Value)
         FarmManager:StartupTask("autocollectfish", Value)
     end)
 
-    -- Spam Fish
     local SpamFishToggle = self.TabsId.farm:AddToggle("Spam Fish", {Title = "Spam Fish", Default = false})
     SpamFishToggle:OnChanged(function(Value)
         FarmManager:StartupTask("spamfish", Value)
     end)
 
-    -- Movement Tab
     local PlayerSpeed = 16
     local IsPlayerSpeed = self.TabsId.movement:AddToggle("Player Speed", {Title = "Player Speed", Default = false})
     IsPlayerSpeed:OnChanged(function(Value)
@@ -257,25 +251,19 @@ function UIManager:Setup(SpeedManager, FarmManager)
         end
     end)
 
-    -- Character respawn support
-    self.BasePlayer.GetLocalPlayer().CharacterAdded:Connect(function()
+    self.BasePlayer:GetLocalPlayer().CharacterAdded:Connect(function()
         SpeedManager:CharacterAdded()
     end)
 
-    -- Test Tab
-    self.TabsId.test:AddParagraph({ Title = "Testing Functions", Content = "Тестируйте функции здесь без влияния на основные настройки" })
+    self.TabsId.test:AddParagraph({ Title = "Testing Functions", Content = "Test functions here without affecting main settings" })
     
-    -- Кнопка для пользовательского тестирования
     self.TabsId.test:AddButton({
         Title = "Test Functions",
         Callback = function()
-            -- Здесь вы можете писать свой код для тестирования
             print("=== CUSTOM TEST ===")
-            
         end
     })
 
-    -- SaveManager и InterfaceManager
     local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua?t=" .. tick()))()
     local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua?t=" .. tick()))()
     SaveManager:SetLibrary(self.FluentMenu)
@@ -283,12 +271,10 @@ function UIManager:Setup(SpeedManager, FarmManager)
     InterfaceManager:SetFolder("KetaminHub")
     SaveManager:SetFolder("KetaminHub/specific-game")
     InterfaceManager:BuildInterfaceSection(self.TabsId.settings)
-    -- SaveManager:BuildConfigSection(self.TabsId.settings) -- пока закомментировано
     Window:SelectTab(4)
 end
 
 function UIManager:Destroy()
-    -- Очищаем все UI элементы
     if self.FluentMenu then
         self.FluentMenu:Destroy()
     end
