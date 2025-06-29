@@ -20,17 +20,42 @@ function UIManager:Setup(SpeedManager, FarmManager)
     })
 
     self.TabsId = {
-        farm = Window:AddTab({ Title = "Farm", Icon = "axe" }),
+        main = Window:AddTab({ Title = "Main", Icon = "home" }),
+        farming = Window:AddTab({ Title = "Farming", Icon = "axe" }),
         movement = Window:AddTab({ Title = "Movement", Icon = "move-3d"}),
-        test = Window:AddTab({ Title = "Test", Icon = "test-tube"}),
+        players = Window:AddTab({ Title = "Players", Icon = "users" }),
+        test = Window:AddTab({ Title = "Test", Icon = "flask-conical"}),
         settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
     }
 
-    local IsAutoHive = self.TabsId.farm:AddToggle("Auto Hive", {Title = "Auto Hive", Default = false})
+    -- ===== MAIN TAB =====
+    self.TabsId.main:AddParagraph({ 
+        Title = "Welcome to Ketaminex", 
+        Content = "Select the desired tab to configure functions" 
+    })
+
+    self.TabsId.main:AddButton({
+        Title = "Refresh Player List",
+        Callback = function()
+            local NewPlayers = {}
+            for _, Player in ipairs(self.BasePlayer:GetAllPlayers()) do
+                table.insert(NewPlayers, Player.Name)
+            end
+            if self.PlayerDropdown then
+                self.PlayerDropdown:SetValues(NewPlayers)
+            end
+        end
+    })
+
+    -- ===== FARMING TAB =====
+    -- Auto Hive Section
+    self.TabsId.farming:AddParagraph({ Title = "🪺 Auto Hive", Content = "Automatic hive collection" })
+    
+    local IsAutoHive = self.TabsId.farming:AddToggle("Auto Hive", {Title = "Enable Auto Hive", Default = false})
 
     local SelectedHiveTypes = {Bee = true, MagmaBee = true}
-    local DropdownHive = self.TabsId.farm:AddDropdown("Hive", {
-        Title = "Hive",
+    local DropdownHive = self.TabsId.farming:AddDropdown("Hive", {
+        Title = "Hive Types",
         Values = {"Bee", "MagmaBee"}, 
         Multi = true,
         Default = {"Bee", "MagmaBee"},
@@ -47,13 +72,16 @@ function UIManager:Setup(SpeedManager, FarmManager)
         FarmManager:StartupTask("autohive", Value)
     end)
 
-    local HarvestToggle = self.TabsId.farm:AddToggle("Auto Harvest", {Title = "Auto Harvest", Default = false})
+    -- Auto Harvest Section
+    self.TabsId.farming:AddParagraph({ Title = "🌾 Auto Harvest", Content = "Automatic berry and fruit collection" })
+    
+    local HarvestToggle = self.TabsId.farming:AddToggle("Auto Harvest", {Title = "Enable Auto Harvest", Default = false})
     HarvestToggle:OnChanged(function(Value)
         FarmManager:StartupTask("autoharvest", Value)
     end)
 
-    local BerryDropdown = self.TabsId.farm:AddDropdown("Type Harvest", {
-        Title = "Type Harvest",
+    local BerryDropdown = self.TabsId.farming:AddDropdown("Type Harvest", {
+        Title = "Harvest Types",
         Values = {
             "Strawberry",
             "Blueberries",
@@ -69,7 +97,6 @@ function UIManager:Setup(SpeedManager, FarmManager)
             "Dragonfruit",
             "Mango",
             "Starfruit"
-            -- pumpkin
         },
         Multi = true,
         Default = {
@@ -99,13 +126,16 @@ function UIManager:Setup(SpeedManager, FarmManager)
         FarmManager:SetSelectedBerryTypes(SelectedTypes)
     end)
 
-    local ResourceToggle = self.TabsId.farm:AddToggle("Auto Resource", {Title = "Auto Resource", Default = false})
+    -- Auto Resource Section
+    self.TabsId.farming:AddParagraph({ Title = "⛏️ Auto Resources", Content = "Automatic resource collection" })
+    
+    local ResourceToggle = self.TabsId.farming:AddToggle("Auto Resource", {Title = "Enable Auto Resources", Default = false})
     ResourceToggle:OnChanged(function(Value)
         FarmManager:StartupTask("instafarm", Value)
     end)
 
-    local ResourceDropdown = self.TabsId.farm:AddDropdown("Type Resource", {
-        Title = "Type Resource",
+    local ResourceDropdown = self.TabsId.farming:AddDropdown("Type Resource", {
+        Title = "Resource Types",
         Values = {
             "Bamboo",
             "Big Bamboo",
@@ -160,60 +190,33 @@ function UIManager:Setup(SpeedManager, FarmManager)
         FarmManager:SetSelectedResourceTypes(SelectedTypes)
     end)
 
-    local OnlyMaxHpToggle = self.TabsId.farm:AddToggle("Only Max HP", {
+    local OnlyMaxHpToggle = self.TabsId.farming:AddToggle("Only Max HP", {
         Title = "Only Max HP",
-        Description = "Hit only when resource HP is max",
+        Description = "Attack only resources with maximum HP",
         Default = true
     })
     OnlyMaxHpToggle:OnChanged(function(Value)
         FarmManager:SetOnlyMaxHp(Value)
     end)
 
-    local AllPlayers = {}
-    for _, Player in ipairs(self.BasePlayer:GetAllPlayers()) do
-        table.insert(AllPlayers, Player.Name)
-    end
-
-    local PlayerDropdown = self.TabsId.farm:AddDropdown("Target Players", {
-        Title = "Target Players",
-        Description = "Select players for resource farming on their islands",
-        Values = AllPlayers,
-        Multi = true,
-        Default = {self.BasePlayer:GetLocalPlayer().Name},
-    })
-    PlayerDropdown:OnChanged(function(Value)
-        local SelectedPlayers = {}
-        for Name, State in next, Value do
-            if State then
-                table.insert(SelectedPlayers, Name)
-            end
-        end
-        FarmManager:SetSelectedPlayers(SelectedPlayers)
-    end)
-
-    self.TabsId.farm:AddButton({
-        Title = "Refresh Player List",
-        Callback = function()
-            local NewPlayers = {}
-            for _, Player in ipairs(self.BasePlayer:GetAllPlayers()) do
-                table.insert(NewPlayers, Player.Name)
-            end
-            PlayerDropdown:SetValues(NewPlayers)
-        end
-    })
-
-    local AutoCollectFishToggle = self.TabsId.farm:AddToggle("Auto Collect Fish", {Title = "Auto Collect Fish", Default = false})
+    -- Auto Fishing Section
+    self.TabsId.farming:AddParagraph({ Title = "🎣 Auto Fishing", Content = "Automatic fishing and fish collection" })
+    
+    local AutoCollectFishToggle = self.TabsId.farming:AddToggle("Auto Collect Fish", {Title = "Auto Collect Fish", Default = false})
     AutoCollectFishToggle:OnChanged(function(Value)
         FarmManager:StartupTask("autocollectfish", Value)
     end)
 
-    local SpamFishToggle = self.TabsId.farm:AddToggle("Spam Fish", {Title = "Spam Fish", Default = false})
+    local SpamFishToggle = self.TabsId.farming:AddToggle("Spam Fish", {Title = "Spam Fish", Default = false})
     SpamFishToggle:OnChanged(function(Value)
         FarmManager:StartupTask("spamfish", Value)
     end)
 
+    -- ===== MOVEMENT TAB =====
+    self.TabsId.movement:AddParagraph({ Title = "🏃‍♂️ Movement", Content = "Speed and movement settings" })
+    
     local PlayerSpeed = 16
-    local IsPlayerSpeed = self.TabsId.movement:AddToggle("Player Speed", {Title = "Player Speed", Default = false})
+    local IsPlayerSpeed = self.TabsId.movement:AddToggle("Player Speed", {Title = "Enable Speed Boost", Default = false})
     IsPlayerSpeed:OnChanged(function(Value)
         if Value then
             SpeedManager:EnableSpeed(PlayerSpeed)
@@ -221,9 +224,10 @@ function UIManager:Setup(SpeedManager, FarmManager)
             SpeedManager:DisableSpeed()
         end
     end)
+    
     local SliderSpeed = self.TabsId.movement:AddSlider("Player Speed", {
         Title = "Player Speed",
-        Description = "Set your walking speed",
+        Description = "Set your movement speed",
         Default = PlayerSpeed,
         Min = 16,
         Max = 60,
@@ -241,15 +245,53 @@ function UIManager:Setup(SpeedManager, FarmManager)
         SpeedManager:CharacterAdded()
     end)
 
-    self.TabsId.test:AddParagraph({ Title = "Testing Functions", Content = "Test functions here without affecting main settings" })
+    -- ===== PLAYERS TAB =====
+    self.TabsId.players:AddParagraph({ Title = "👥 Players", Content = "Player management for resource farming" })
+    
+    local AllPlayers = {}
+    for _, Player in ipairs(self.BasePlayer:GetAllPlayers()) do
+        table.insert(AllPlayers, Player.Name)
+    end
+
+    self.PlayerDropdown = self.TabsId.players:AddDropdown("Target Players", {
+        Title = "Target Players",
+        Description = "Select players for resource farming on their islands",
+        Values = AllPlayers,
+        Multi = true,
+        Default = {self.BasePlayer:GetLocalPlayer().Name},
+    })
+    self.PlayerDropdown:OnChanged(function(Value)
+        local SelectedPlayers = {}
+        for Name, State in next, Value do
+            if State then
+                table.insert(SelectedPlayers, Name)
+            end
+        end
+        FarmManager:SetSelectedPlayers(SelectedPlayers)
+    end)
+
+    self.TabsId.players:AddButton({
+        Title = "Refresh Player List",
+        Callback = function()
+            local NewPlayers = {}
+            for _, Player in ipairs(self.BasePlayer:GetAllPlayers()) do
+                table.insert(NewPlayers, Player.Name)
+            end
+            self.PlayerDropdown:SetValues(NewPlayers)
+        end
+    })
+
+    -- ===== TEST TAB =====
+    self.TabsId.test:AddParagraph({ Title = "🧪 Testing", Content = "Test functions without affecting main settings" })
     
     self.TabsId.test:AddButton({
-        Title = "Test Functions",
+        Title = "Run Test",
         Callback = function()
             print("=== CUSTOM TEST ===")
         end
     })
 
+    -- ===== SETTINGS TAB =====
     local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua?t=" .. tick()))()
     local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua?t=" .. tick()))()
     SaveManager:SetLibrary(self.FluentMenu)
@@ -257,7 +299,9 @@ function UIManager:Setup(SpeedManager, FarmManager)
     InterfaceManager:SetFolder("KetaminHub")
     SaveManager:SetFolder("KetaminHub/specific-game")
     InterfaceManager:BuildInterfaceSection(self.TabsId.settings)
-    Window:SelectTab(4)
+    
+    -- Устанавливаем главную вкладку по умолчанию
+    Window:SelectTab(1)
 end
 
 function UIManager:Destroy()
