@@ -152,7 +152,8 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
             "Salt",
             "Sand",
             "Stone",
-            "Wheat"
+            "Wheat",
+            "Crystal"
         },
         Multi = true,
         Default = {
@@ -173,7 +174,8 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
             "Salt",
             "Sand",
             "Stone",
-            "Wheat"
+            "Wheat",
+            "Crystal"
         },
     })
     ResourceDropdown:OnChanged(function(Value)
