@@ -50,6 +50,7 @@ end
 -- Глобальная функция для очистки (если нужно)
 _G.CleanupOnExit = CleanupOnExit
 
+
 -- Обработчик нажатия клавиши U
 local UserInputService = game:GetService("UserInputService")
 UserInputService.InputBegan:Connect(function(input, processed)
