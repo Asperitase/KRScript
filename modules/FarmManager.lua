@@ -85,7 +85,7 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                task.wait(0.01)
+                task.wait(0.03)
             end
         end)
     else 
@@ -97,16 +97,10 @@ function FarmManager:StartupTask(TaskName, Value)
 end
 
 function FarmManager:AutoHive()
-    local Character = self.BasePlayer:GetLocalPlayer().Character
-    if not Character then return end
+    local Character = self.BasePlayer:GetLocalPlayer().Character or self.BasePlayer:GetLocalPlayer().CharacterAdded:Wait()
+    local HumanPart = Character:WaitForChild("HumanoidRootPart")
     
-    local HumanPart = Character:FindFirstChild("HumanoidRootPart")
-    if not HumanPart then return end
-    
-    local LocalIsland = self.BasePlayer:GetLocalIsland()
-    if not LocalIsland then return end
-    
-    for _, Spot in ipairs(LocalIsland:GetDescendants()) do
+    for _, Spot in ipairs(self.BasePlayer:GetLocalIsland():GetDescendants()) do
         if Spot:IsA("Model") and Spot.Name:match("Spot") then
             local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
             if PrimaryPart then
@@ -193,6 +187,7 @@ function FarmManager:AutoCollectFish()
             if Amount then
                 if not Amount.Text:find("/") then
                     self.BasePlayer:CollectFishCrateContents()
+                    task.wait(1)
                 end
             end
         end

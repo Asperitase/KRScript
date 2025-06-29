@@ -13,7 +13,6 @@ local UiManagerInstance = UIManager.New(RobloxApi, FluentMenu)
 
 UiManagerInstance:Setup(SpeedManagerInstance, FarmManagerInstance)
 
-
 local UserInputService = game:GetService("UserInputService")
 
 local function CleanupOnExit()
