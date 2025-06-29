@@ -14,7 +14,7 @@ local FarmManagerInstance = FarmManager.New(RobloxApi)
 local EspManagerInstance = ESPManager.New(RobloxApi)
 local UiManagerInstance = UIManager.New(RobloxApi, FluentMenu)
 UiManagerInstance:Setup(SpeedManagerInstance, FarmManagerInstance, EspManagerInstance)
-        
+  
 local function CleanupOnExit()
     if SpeedManagerInstance then
         SpeedManagerInstance:Destroy()

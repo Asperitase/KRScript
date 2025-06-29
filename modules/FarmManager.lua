@@ -85,6 +85,7 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
+                task.wait(0.01)
             end
         end)
     else
