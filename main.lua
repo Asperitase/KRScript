@@ -16,7 +16,6 @@ task.spawn(function()
 end)
 
 local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
 
 local function CleanupOnExit()
     if SpeedManagerInstance then
