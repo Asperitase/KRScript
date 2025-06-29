@@ -191,6 +191,25 @@ function UIManager:setup(speed_manager, farm_manager, esp_manager)
         farm_manager:set_only_max_hp(Value)
     end)
 
+    -- Выбор игрока для ломания ресурсов
+    local all_players = {}
+    for _, player in ipairs(self.api:GetAllPlayers()) do
+        table.insert(all_players, player.Name)
+    end
+
+    local player_dropdown = self.tabs_id.farm:AddDropdown("Target Player", {
+        Title = "Target Player",
+        Description = "Выберите игрока для ломания ресурсов",
+        Values = all_players,
+        Multi = false,
+        Default = self.player.Name,
+    })
+    player_dropdown:OnChanged(function(Value)
+        if Value then
+            farm_manager:set_target_player(Value)
+        end
+    end)
+
     -- ESP Tab
     self.tabs_id.esp:AddParagraph({ Title = "Farm", Content = "Farm visual" })
     local esp_toggle = self.tabs_id.esp:AddToggle("ESP Hive", {Title = "ESP Hive", Default = false})

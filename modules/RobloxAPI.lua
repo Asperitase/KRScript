@@ -50,4 +50,8 @@ function RobloxAPI:GetCommunication()
     return self.communication
 end
 
+function RobloxAPI:GetAllIsland()
+    return self.workspace:WaitForChild("Plots")
+end
+
 return RobloxAPI 

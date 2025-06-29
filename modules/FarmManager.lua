@@ -38,6 +38,7 @@ function FarmManager.new(api)
     self.auto_resource_task = nil
     self.only_max_hp = true
     self.base_player = api
+    self.target_player = self.player.Name
     return self
 end
 
@@ -63,6 +64,10 @@ end
 
 function FarmManager:set_only_max_hp(value)
     self.only_max_hp = value
+end
+
+function FarmManager:set_target_player(player_name)
+    self.target_player = player_name
 end
 
 function FarmManager:startup_task(task_name, Value)
@@ -146,9 +151,10 @@ function FarmManager:auto_harvest()
 end
 
 function FarmManager:auto_resource()
-    local plots = self.api:GetIsland()
-    if plots:FindFirstChild("Resources") then
-        local resources = plots.Resources:GetChildren()
+    local islands = self.api:GetAllIsland()
+    local target_island = islands:FindFirstChild(self.target_player)
+    if target_island and target_island:FindFirstChild("Resources") then
+        local resources = target_island.Resources:GetChildren()
         for _, resource in ipairs(resources) do
             local name = resource.Name
             local hp = resource:GetAttribute("HP")
