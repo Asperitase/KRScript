@@ -250,9 +250,7 @@ function FarmManager:SpamFish()
     local castPos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
     local num = 1
 
-    if region then
         self.BasePlayer:SpamFish(castPos,num)
-    end
 end
 
 function FarmManager:Destroy()
