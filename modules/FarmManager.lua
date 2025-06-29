@@ -86,11 +86,15 @@ function FarmManager:StartupTask(TaskName, Value)
             print("Task already running:", TaskName)
             return 
         end
+        local interval = 1
+        if TaskName == "spamfish" then
+            interval = 0.05 -- или 0.01 для максимальной скорости
+        end
         self[Config.task] = task.spawn(function()
             print("Task loop started:", TaskName)
             while true do
                 self[Config.func](self)
-                task.wait(1)
+                task.wait(interval)
             end
         end)
         print("Task started:", TaskName)
@@ -201,64 +205,25 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
-    local pos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
-    local secondArg = 1
-    self.BasePlayer:SpamFish(pos, secondArg)
-    -- local Communication = self.BasePlayer:GetCommunication()
-    -- local Fish = Communication:FindFirstChild("Fish")
-    -- if Fish then
-    --     Fish:InvokeServer(pos, secondArg)
-    -- end
+    local Character = self.BasePlayer:GetLocalPlayer().Character
+    if not Character then return end
 
-    --[[ 
-    -- Диагностический и старый код для справки:
-    -- print("SpamFish called")
-    -- if not Vector3 or typeof(Vector3) ~= "table" or not Vector3.new then
-    --     warn("Vector3.new не поддерживается в этом окружении!")
-    --     return
-    -- end
-    -- if not Communication then
-    --     warn("Communication не найден!")
-    --     return
-    -- end
-    -- if not Fish then
-    --     warn("Fish не найден в Communication!")
-    --     print("Доступные объекты в Communication:")
-    --     for _, child in ipairs(Communication:GetChildren()) do
-    --         print("  -", child.Name)
-    --     end
-    --     return
-    -- end
-    -- print("Создан Vector3:", pos, typeof(pos))
-    -- print("Второй аргумент:", secondArg, typeof(secondArg))
-    -- local success, result = pcall(function()
-    --     return Fish:InvokeServer(pos, secondArg)
-    -- end)
-    -- if success then
-    --     print("Fish:InvokeServer выполнен успешно! Результат:", result)
-    -- else
-    --     warn("Ошибка при вызове Fish:InvokeServer:", result)
-    -- end
-    -- local Character = self.BasePlayer:GetLocalPlayer().Character
-    -- if not Character then return end
-    -- local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
-    -- if not HumanRootPart then return end
-    -- local FishingRegion = self.BasePlayer:GetFishingRegion("S252")
-    -- if FishingRegion then
-    --     local PlayerPosition = HumanRootPart.Position
-    --     local RegionPosition = FishingRegion.Position
-    --     local RegionSize = FishingRegion.Size
-    --     local Distance = (PlayerPosition - RegionPosition).Magnitude
-    --     local MaxDistance = math.max(RegionSize.X, RegionSize.Y, RegionSize.Z) / 2
-    --     if Distance <= MaxDistance then
-    --         local args = {
-    --             Vector3.new(-557.9046630859375, -1.6463819742202759, -93.75228118896484),
-    --             1
-    --         }
-    --         self.BasePlayer:SpamFish(args)
-    --     end
-    -- end
-    ]]--
+    local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
+    if not HumanRootPart then return end
+
+    local FishingRegion = self.BasePlayer:GetFishingRegion("S252")
+    if FishingRegion then
+        local PlayerPosition = HumanRootPart.Position
+        local RegionPosition = FishingRegion.Position
+        local RegionSize = FishingRegion.Size
+        local Distance = (PlayerPosition - RegionPosition).Magnitude
+        local MaxDistance = math.max(RegionSize.X, RegionSize.Y, RegionSize.Z) / 2
+        if Distance <= MaxDistance then
+            local pos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
+            local secondArg = 1
+            self.BasePlayer:SpamFish( self.BasePlayer:SpamFish(pos, secondArg))
+        end
+    end
 end
 
 function FarmManager:Destroy()
