@@ -9,6 +9,18 @@ function UIManager.New(Api, FluentMenu)
     self.Communication = Api:GetCommunication()
     self.LandPlot = Api:GetLandPlots()
     self.TabsId = {}
+    
+    -- Вспомогательная функция для получения ключей таблицы
+    function self:GetTableKeys(Table)
+        local Keys = {}
+        for k, v in pairs(Table) do
+            if v then
+                table.insert(Keys, k)
+            end
+        end
+        return Keys
+    end
+    
     return self
 end
 
@@ -108,7 +120,12 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
     })
     BerryDropdown:OnChanged(function(Value)
         local SelectedTypes = {}
-        for k in pairs(Value) do SelectedTypes[k] = true end
+        for k, v in pairs(Value) do 
+            if v then
+                SelectedTypes[k] = true 
+            end
+        end
+        print("Выбранные типы ягод:", table.concat(self:GetTableKeys(SelectedTypes), ", "))
         FarmManager:SetSelectedBerryTypes(SelectedTypes)
     end)
 
@@ -180,7 +197,12 @@ function UIManager:Setup(SpeedManager, FarmManager, EspManager)
     })
     ResourceDropdown:OnChanged(function(Value)
         local SelectedTypes = {}
-        for k in pairs(Value) do SelectedTypes[k] = true end
+        for k, v in pairs(Value) do 
+            if v then
+                SelectedTypes[k] = true 
+            end
+        end
+        print("Выбранные типы ресурсов:", table.concat(self:GetTableKeys(SelectedTypes), ", "))
         FarmManager:SetSelectedResourceTypes(SelectedTypes)
     end)
 

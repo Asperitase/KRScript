@@ -64,6 +64,12 @@ end
 
 function FarmManager:SetSelectedResourceTypes(Types)
     self.SelectedResourceTypes = Types
+    print("Установлены выбранные типы ресурсов:")
+    for Type, Enabled in pairs(Types) do
+        if Enabled then
+            print("  - " .. Type)
+        end
+    end
 end
 
 function FarmManager:SetOnlyMaxHp(Value)
@@ -84,9 +90,15 @@ function FarmManager:StartupTask(TaskName, Value)
     local Config = TaskMap[TaskName]
     if not Config then return end
     
+    print("Запуск задачи:", TaskName, "Значение:", Value)
+    
     if Value then
-        if self[Config.task] then return end
+        if self[Config.task] then 
+            print("Задача уже запущена:", TaskName)
+            return 
+        end
         self[Config.task] = task.spawn(function()
+            print("Задача запущена:", TaskName)
             while true do
                 self[Config.func](self)
                 task.wait(1)
@@ -94,6 +106,7 @@ function FarmManager:StartupTask(TaskName, Value)
         end)
     else
         if self[Config.task] then
+            print("Остановка задачи:", TaskName)
             task.cancel(self[Config.task])
             self[Config.task] = nil
         end
@@ -156,7 +169,6 @@ end
 
 function FarmManager:AutoResource()
     local AllIslands = self.Api:GetAllIslands()
-    local ActiveTaskCount = 0
     
     for _, TargetPlayer in ipairs(self.SelectedPlayers) do
         local TargetIsland = AllIslands:FindFirstChild(TargetPlayer)
@@ -168,11 +180,22 @@ function FarmManager:AutoResource()
                 local MaxHp = Resource:GetAttribute("MaxHP")
                 local MinHp = HealthResources[Name]
                 
+                -- Отладочная информация
+                if self.SelectedResourceTypes[Name] then
+                    print("Найден ресурс:", Name, "HP:", Hp, "MaxHP:", MaxHp, "MinHP:", MinHp)
+                end
+                
                 if self.SelectedResourceTypes[Name] and Hp and MinHp then
                     if self.OnlyMaxHp then
                         if Hp == MaxHp then
-                            if ActiveTaskCount < self.MaxConcurrentTasks then
-                                ActiveTaskCount = ActiveTaskCount + 1
+                            print("Атакуем ресурс:", Name, "HP:", Hp, "MaxHP:", MaxHp)
+                            -- Проверяем количество активных задач
+                            local CurrentTaskCount = 0
+                            for _, _ in pairs(self.ActiveResourceTasks) do
+                                CurrentTaskCount = CurrentTaskCount + 1
+                            end
+                            
+                            if CurrentTaskCount < self.MaxConcurrentTasks then
                                 local TaskId = Resource.Name .. "_" .. tick()
                                 self.ActiveResourceTasks[TaskId] = task.spawn(function()
                                     while Resource:GetAttribute("HP") and Resource:GetAttribute("HP") > 0 do
@@ -180,12 +203,14 @@ function FarmManager:AutoResource()
                                         task.wait(0.05)
                                     end
                                     self.ActiveResourceTasks[TaskId] = nil
-                                    ActiveTaskCount = ActiveTaskCount - 1
                                 end)
+                            else
+                                print("Достигнут лимит активных задач:", CurrentTaskCount)
                             end
                         end
                     else
                         if Hp <= MinHp then
+                            print("Атакуем ресурс (не макс HP):", Name, "HP:", Hp, "MinHP:", MinHp)
                             self.BasePlayer:HitResource(Resource)
                         end
                     end
