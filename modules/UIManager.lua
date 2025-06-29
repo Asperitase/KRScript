@@ -195,7 +195,7 @@ function UIManager:Setup(SpeedManager, FarmManager)
         Description = "Выберите игроков для ломания ресурсов на их островах",
         Values = AllPlayers,
         Multi = true,
-        Default = {self.BasePlayer:GetLocalPlayer().Name},
+        Default = {self.BasePlayer.GetLocalPlayer().Name},
     })
     PlayerDropdown:OnChanged(function(Value)
         local SelectedPlayers = {}
