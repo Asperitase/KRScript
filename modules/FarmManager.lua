@@ -194,6 +194,7 @@ function FarmManager:AutoCollectFish()
     end
 end
 
+
 -- 190 538
 function FarmManager:SpamFish()
     print("ver", 1)
