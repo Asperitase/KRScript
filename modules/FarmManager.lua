@@ -26,6 +26,7 @@ local HealthResources = {
 function FarmManager.New(Api)
     local self = setmetatable({}, FarmManager)
     self.SelectedHiveTypes = {Bee = true, MagmaBee = true}
+    self.DistanceHive = 500
     self.AutoHiveTask = nil
     self.AutoHarvestTask = nil
     self.SelectedBerryTypes = {Strawberry = true, Blueberries = true}
@@ -41,6 +42,10 @@ end
 
 function FarmManager:SetSelectedTypes(Types)
     self.SelectedHiveTypes = Types
+end
+
+function FarmManager:SetDistance(Distance)
+    self.DistanceHive = Distance
 end
 
 function FarmManager:SetSelectedBerryTypes(Types)
@@ -68,6 +73,7 @@ function FarmManager:StartupTask(TaskName, Value)
         spamfish = {task = "SpamFishTask", func = "SpamFish"}
     }
     
+    
     local Config = TaskMap[TaskName]
     if not Config then 
         return 
@@ -80,7 +86,7 @@ function FarmManager:StartupTask(TaskName, Value)
         self[Config.task] = task.spawn(function()
             while true do
                 self[Config.func](self)
-                task.wait(0.03)
+                task.wait(0.05)
             end
         end)
     else 
@@ -94,30 +100,33 @@ end
 function FarmManager:AutoHive()
     local Character = self.BasePlayer:GetLocalPlayer().Character or self.BasePlayer:GetLocalPlayer().CharacterAdded:Wait()
     local HumanPart = Character:WaitForChild("HumanoidRootPart")
-    
+    -- human add to api
     for _, Spot in ipairs(self.BasePlayer:GetLocalIsland():GetDescendants()) do
         if Spot:IsA("Model") and Spot.Name:match("Spot") then
             local PrimaryPart = Spot.PrimaryPart or Spot:FindFirstChildWhichIsA("BasePart")
             if PrimaryPart then
-                local Parent = Spot.Parent
-                local IsBee, IsMagma = false, false
-                for _, Child in ipairs(Parent:GetChildren()) do
-                    if string.find(Child.Name, "MagmaHiveRunner") and self.SelectedHiveTypes.MagmaBee then
-                        IsMagma = true
-                    elseif string.find(Child.Name, "HiveRunner") and not string.find(Child.Name, "Magma") and self.SelectedHiveTypes.Bee then
-                        IsBee = true
-                    end
-                end
-                if IsBee or IsMagma then
-                    local CollectPrompt = nil
-                    for _, Prompt in ipairs(Spot:GetDescendants()) do
-                        if Prompt:IsA("ProximityPrompt") and Prompt.ActionText == "Collect" then
-                            CollectPrompt = Prompt
-                            break
+                local Distance = (HumanPart.Position - PrimaryPart.Position).Magnitude * 0.8
+                if Distance < self.DistanceHive then
+                    local Parent = Spot.Parent
+                    local IsBee, IsMagma = false, false
+                    for _, Child in ipairs(Parent:GetChildren()) do
+                        if string.find(Child.Name, "MagmaHiveRunner") and self.SelectedHiveTypes.MagmaBee then
+                            IsMagma = true
+                        elseif string.find(Child.Name, "HiveRunner") and not string.find(Child.Name, "Magma") and self.SelectedHiveTypes.Bee then
+                            IsBee = true
                         end
                     end
-                    if CollectPrompt and CollectPrompt.Enabled then
-                        self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
+                    if IsBee or IsMagma then
+                        local CollectPrompt = nil
+                        for _, Prompt in ipairs(Spot:GetDescendants()) do
+                            if Prompt:IsA("ProximityPrompt") and Prompt.ActionText == "Collect" then
+                                CollectPrompt = Prompt
+                                break
+                            end
+                        end
+                        if CollectPrompt and CollectPrompt.Enabled then
+                            self.BasePlayer:AutoHive(Spot.Parent.Name, Spot.Name)
+                        end
                     end
                 end
             end
@@ -179,18 +188,27 @@ function FarmManager:AutoCollectFish()
             if Amount then
                 if not Amount.Text:find("/") then
                     self.BasePlayer:CollectFishCrateContents()
-                    task.wait(1)
                 end
             end
         end
     end
 end
 
+-- 190 538
 function FarmManager:SpamFish()
+    print("ver", 6)
     local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
-    while true do
+    local pos2 = Vector3.new(-349.8042297363281, -1.6463819742202759, 446.7143249511719)
+    local pos3 = Vector3.new(-358.8326416015625, -1.6463819742202759, 445.3346862792969)
+    local startTime = tick()
+    while tick() - startTime < 10 do
         self.BasePlayer:SpamFish(pos, 2)
-        task.wait(0.001)
+        self.BasePlayer:SpamFish(pos2, 2)
+        self.BasePlayer:SpamFish(pos3, 2)
+        self.BasePlayer:SpamFish(pos, 2)
+        self.BasePlayer:SpamFish(pos2, 2)
+        self.BasePlayer:SpamFish(pos3, 2)
+        task.wait(0.01) 
     end
 end
 
