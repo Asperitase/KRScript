@@ -14,7 +14,7 @@ end
 function UIManager:Setup(SpeedManager, FarmManager, EspManager)
     local Window = self.FluentMenu:CreateWindow({
         Title = "ketaminex | ",
-        SubTitle = "dev build: 1.13111", 
+        SubTitle = "dev build: 1.132", 
         TabWidth = 120,
         Size = UDim2.fromOffset(580, 750),
         Theme = "Dark",
