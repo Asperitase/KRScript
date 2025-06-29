@@ -69,18 +69,4 @@ function RobloxAPI:GetAllPlayers()
     return self.Players:GetPlayers()
 end
 
-function RobloxAPI:GetFishingRegion(LandPlotName)
-    local LocalIsland = self:GetLocalIsland()
-    local LandPlots = LocalIsland:FindFirstChild("Land")
-    
-    if LandPlots then
-        local LandPlot = LandPlots:FindFirstChild(LandPlotName)
-        if LandPlot then
-            return LandPlot:FindFirstChild("FishingRegion")
-        end
-    end
-    
-    return nil
-end
-
 return RobloxAPI 
