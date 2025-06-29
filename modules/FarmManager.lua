@@ -198,39 +198,13 @@ function FarmManager:AutoCollectFish()
 end
 
 function FarmManager:SpamFish()
-    print("SpamFish: called")
-
-    local BasePlayer = self.BasePlayer
-    if not BasePlayer then
-        print("SpamFish: self.BasePlayer is nil")
-        return
+    local pos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
+    local secondArg = 1
+    local Communication = self.BasePlayer:GetCommunication()
+    local Fish = Communication:FindFirstChild("Fish")
+    if Fish then
+        Fish:InvokeServer(pos, secondArg)
     end
-
-    local LocalPlayer = BasePlayer:GetLocalPlayer()
-    if not LocalPlayer then
-        print("SpamFish: GetLocalPlayer() is nil")
-        return
-    end
-
-    local Character = LocalPlayer.Character
-    if not Character then
-        print("SpamFish: Character not found")
-        return
-    end
-
-    local HumanRootPart = Character:FindFirstChild("HumanoidRootPart")
-    if not HumanRootPart then
-        print("SpamFish: HumanoidRootPart not found")
-        return
-    end
-
-    print("SpamFish: Character and HumanoidRootPart found, continue...")
-
-    -- Получаем LocalIsland, L
-
-    local castPos = Vector3.new(-552.5936889648438, -1.6463819742202759, -93.75228118896484)
-    local num = 1
-        self.BasePlayer:SpamFish(castPos,num)
 end
 
 function FarmManager:Destroy()
