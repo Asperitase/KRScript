@@ -7,6 +7,7 @@ local UIManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asp
 local RobloxAPI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/RobloxAPI.lua?t=" .. tick()))()
 
 
+
 -- Инициализация и запуск
 local RobloxApi = RobloxAPI.New()
 
