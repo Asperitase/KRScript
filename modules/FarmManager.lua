@@ -352,7 +352,12 @@ end
 function FarmManager:SpamFish()
     if not self.IsSpamFishRunning then return end
     
-    local pos = Vector3.new(-362.8326416015625, -1.6463819742202759, 429.3346862792969)
+    local player = self.BasePlayer:GetLocalPlayer()
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    
+    local playerPos = character.HumanoidRootPart.Position
+    local pos = Vector3.new(playerPos.X, -1.6463819742202759, playerPos.Z)
     task.spawn(function()
         self.BasePlayer:SpamFish(pos, 2)
     end)
