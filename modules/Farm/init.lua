@@ -1,13 +1,13 @@
 -- init.lua (Farm)
 -- Инициализация таба Farm
 
-local FarmTab = {}
-
-function FarmTab.Register(Window)
-    local tab = Window:CreateTab{
-        Title = "Фарм",
-        Icon = "leaf" -- стандартная иконка FluentMenu
+return function(Window)
+    local Tab = Window:CreateTab{
+        Title = "Farm",
+        Icon = "leaf"
     }
-end
-
-return FarmTab 
+    Tab:AddParagraph{
+        Title = "Фарм",
+        Content = "Здесь будут функции фарма."
+    }
+end 
