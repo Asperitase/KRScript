@@ -2,7 +2,7 @@ local FluentMenu = loadstring(game:HttpGet("https://github.com/ActualMasterOogwa
 
 local Window = FluentMenu:CreateWindow{
     Title = "KRScript",
-    SubTitle = "by idredakx | v1.0.0",
+    SubTitle = "by idredakx | v1.0.1",
     TabWidth = 160,
     Size = UDim2.fromOffset(830, 525),
     Resize = true,
