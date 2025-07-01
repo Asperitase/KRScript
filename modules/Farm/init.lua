@@ -12,12 +12,4 @@ return function(Window)
         Icon = "leaf"
     }
     print("[FarmTab] Tab:", Tab)
-    if Tab then
-        Tab:AddParagraph{
-            Title = "Фарм",
-            Content = "Здесь будут функции фарма."
-        }
-    else
-        warn("[FarmTab] Tab не создан!")
-    end
 end 
