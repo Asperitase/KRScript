@@ -7,7 +7,7 @@ return function(Window)
         warn("[FarmTab] Window невалиден или не содержит CreateTab!")
         return
     end
-    local Tab = Window:CreateTab{
+    local Tab = Window:CreateTab{ 
         Title = "Farm",
         Icon = "leaf"
     }

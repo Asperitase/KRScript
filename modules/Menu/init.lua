@@ -11,7 +11,7 @@ local Window = FluentMenu:CreateWindow{
     MinSize = Vector2.new(470, 380),
     Acrylic = false,
     Theme = "Dark",
-    MinimizeKey = Enum.KeyCode.Q
+    MinimizeKey = Enum.KeyCode.Q 
 }
 
 local FarmTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/Farm/init.lua?t=" .. tick()))()
