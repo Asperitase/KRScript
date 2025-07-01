@@ -1,1 +1,0 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/Menu/init.lua?t=" .. tick()))() 
