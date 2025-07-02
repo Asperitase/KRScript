@@ -38,10 +38,6 @@ Window:SelectTab(1)
 
 SaveManager:SetLibrary(FluentMenu)
 InterfaceManager:SetLibrary(FluentMenu)
-InterfaceManager:BuildInterfaceSection(TabID.Settings)
-
-FluentMenu:Notify{
-    Title = "KRScript",
-    Content = "by idredakx | v1.0 has been loaded",
-    Duration = 3
-}
+SaveManager:IgnoreThemeSettings()
+InterfaceManager:SetFolder("KRScript")
+SaveManager:SetFolder("KRScript/specific-game")
