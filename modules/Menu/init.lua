@@ -1,11 +1,8 @@
--- init.lua
--- ООП-стиль для Menu, возвращает функцию для loadstring(...)(...)
+local FluentMenu = loadstring(game:HttpGet("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/download/v1.0.8/Fluent.luau?t=" .. tick()))()
+local FarmTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/Farm/init.lua?t=" .. tick()))()
+local MovementTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/Movement/init.lua?t=" .. tick()))()
 
 return function()
-    local FluentMenu = loadstring(game:HttpGet("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/download/v1.0.8/Fluent.luau?t=" .. tick()))()
-    local FarmTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/Farm/init.lua?t=" .. tick()))()
-    local MovementTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/Movement/init.lua?t=" .. tick()))()
-
     local Window = FluentMenu:CreateWindow{
         Title = "KRScript",
         SubTitle = "by idredakx | v1.0",
