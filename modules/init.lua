@@ -1,4 +1,7 @@
 local FluentMenu = loadstring(game:HttpGet("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/download/v1.0.8/Fluent.luau?t=" .. tick()))()
+local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau"))()
+local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
+ 
 
 local Window = FluentMenu:CreateWindow{
     Title = "KRScript",
@@ -11,3 +14,29 @@ local Window = FluentMenu:CreateWindow{
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.Q
 }
+
+local TabID = {
+    about = Window:CreateTab{
+        Title = "About",
+        Icon = "info"
+    },
+    farm = Window:CreateTab{
+        Title = "Farm",
+        Icon = "axe"
+    },
+    movement = Window:CreateTab{
+        Title = "Movement",
+        Icon = "move-3d"
+    },
+    settings = Window:CreateTab{
+        Title = "Settings",
+        Icon = "settings"
+    }
+}
+
+Window:SelectTab(2)
+
+SaveManager:SetLibrary(Window)
+InterfaceManager:SetLibrary(Window)
+InterfaceManager:SetFolder("KRScript")
+InterfaceManager:BuildInterfaceSection(Window.TabID.settings)
