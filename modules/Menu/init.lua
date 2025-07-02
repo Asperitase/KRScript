@@ -1,6 +1,6 @@
 local FluentMenu = loadstring(game:HttpGet("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/download/v1.0.8/Fluent.luau?t=" .. tick()))()
-local FarmTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/Farm/init.lua?t=" .. tick()))()
-local MovementTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/Movement/init.lua?t=" .. tick()))()
+local FarmTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/Farm/init.lua?t=" .. tick()))()
+local MovementTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/Movement/init.lua?t=" .. tick()))()
 
 return function()
     local Window = FluentMenu:CreateWindow{
