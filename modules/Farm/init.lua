@@ -1,15 +1,16 @@
--- init.lua (Farm)
--- Инициализация таба Farm
+local FarmTab = {}
+FarmTab.__index = FarmTab
 
-return function(Window)
-    print("[FarmTab] Window:", Window)
+function FarmTab.new(Window)
+    local self = setmetatable({}, FarmTab)
     if not Window or not Window.CreateTab then
-        warn("[FarmTab] Window невалиден или не содержит CreateTab!")
-        return
+        return self
     end
-    local Tab = Window:CreateTab{ 
+    self.Tab = Window:CreateTab{
         Title = "Farm",
         Icon = "leaf"
     }
-    print("[FarmTab] Tab:", Tab)
-end 
+    return self
+end
+
+return FarmTab 
