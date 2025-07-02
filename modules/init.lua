@@ -5,13 +5,13 @@ local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercon
 
 local Window = FluentMenu:CreateWindow{
     Title = "KRScript",
-    SubTitle = "by idredakx | v1.0b",
+    SubTitle = "by idredakx | v1.0",
     TabWidth = 160,
     Size = UDim2.fromOffset(830, 525),
     Resize = true,
     MinSize = Vector2.new(470, 380),
     Acrylic = false,
-    Theme = "Dark",
+    Theme = "Monokai Vibrant",
     MinimizeKey = Enum.KeyCode.Q
 }
 
