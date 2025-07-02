@@ -34,9 +34,8 @@ local TabID = {
     }
 }
 
-Window:SelectTab(2)
+Window:SelectTab(1)
 
 SaveManager:SetLibrary(Window)
 InterfaceManager:SetLibrary(Window)
-InterfaceManager:SetFolder("KRScript")
-InterfaceManager:BuildInterfaceSection(Window.TabID.settings)
+InterfaceManager:BuildInterfaceSection(TabID.settings)
