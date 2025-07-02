@@ -5,7 +5,7 @@ local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercon
 
 local Window = FluentMenu:CreateWindow{
     Title = "KRScript",
-    SubTitle = "by idredakx | v1.0",
+    SubTitle = "by idredakx | v1.0b",
     TabWidth = 160,
     Size = UDim2.fromOffset(830, 525),
     Resize = true,
@@ -16,19 +16,19 @@ local Window = FluentMenu:CreateWindow{
 }
 
 local TabID = {
-    about = Window:CreateTab{
+    About = Window:CreateTab{
         Title = "About",
         Icon = "info"
     },
-    farm = Window:CreateTab{
+    Farm = Window:CreateTab{
         Title = "Farm",
         Icon = "axe"
     },
-    movement = Window:CreateTab{
+    Movement = Window:CreateTab{
         Title = "Movement",
         Icon = "move-3d"
     },
-    settings = Window:CreateTab{
+    Settings = Window:CreateTab{
         Title = "Settings",
         Icon = "settings"
     }
@@ -36,6 +36,12 @@ local TabID = {
 
 Window:SelectTab(1)
 
-SaveManager:SetLibrary(Window)
-InterfaceManager:SetLibrary(Window)
-InterfaceManager:BuildInterfaceSection(TabID.settings)
+SaveManager:SetLibrary(FluentMenu)
+InterfaceManager:SetLibrary(FluentMenu)
+InterfaceManager:BuildInterfaceSection(TabID.Settings)
+
+FluentMenu:Notify{
+    Title = "KRScript",
+    Content = "by idredakx | v1.0 has been loaded",
+    Duration = 3
+}
