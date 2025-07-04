@@ -722,4 +722,151 @@ function KRScript:Destroy()
 	KRScript:Destroy()
 end
 
+-- SmartWindow (главное окно)
+local SmartWindow = Instance.new("Frame")
+SmartWindow.Name = "SmartWindow"
+SmartWindow.Size = UDim2.new(0, 675, 0, 424)
+SmartWindow.Position = UDim2.new(0.5, -337, 0.5, -212)
+SmartWindow.AnchorPoint = Vector2.new(0.5, 0.5)
+SmartWindow.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+SmartWindow.Parent = KRScriptUI
+
+-- Controls
+local Controls = Instance.new("Frame")
+Controls.Name = "Controls"
+Controls.Parent = SmartWindow
+local Close = Instance.new("Frame")
+Close.Name = "Close"
+Close.Parent = Controls
+local CloseImage = Instance.new("ImageLabel")
+CloseImage.Name = "ImageLabel"
+CloseImage.Parent = Close
+local ToggleSize = Instance.new("Frame")
+ToggleSize.Name = "ToggleSize"
+ToggleSize.Parent = Controls
+local ToggleSizeImage = Instance.new("ImageLabel")
+ToggleSizeImage.Name = "ImageLabel"
+ToggleSizeImage.Parent = ToggleSize
+local Theme = Instance.new("Frame")
+Theme.Name = "Theme"
+Theme.Parent = Controls
+local ThemeImage = Instance.new("ImageLabel")
+ThemeImage.Name = "ImageLabel"
+ThemeImage.Parent = Theme
+
+-- Title
+local Title = Instance.new("Frame")
+Title.Name = "Title"
+Title.Parent = SmartWindow
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "Title"
+TitleLabel.Parent = Title
+local SubtitleLabel = Instance.new("TextLabel")
+SubtitleLabel.Name = "subtitle"
+SubtitleLabel.Parent = Title
+
+-- Logo
+local Logo = Instance.new("ImageLabel")
+Logo.Name = "Logo"
+Logo.Parent = SmartWindow
+
+-- Line
+local Line = Instance.new("Frame")
+Line.Name = "Line"
+Line.Parent = SmartWindow
+
+-- Elements
+local Elements = Instance.new("Frame")
+Elements.Name = "Elements"
+Elements.Parent = SmartWindow
+local Interactions = Instance.new("Frame")
+Interactions.Name = "Interactions"
+Interactions.Parent = Elements
+local Home = Instance.new("Frame")
+Home.Name = "Home"
+Home.Parent = Elements
+local UIPageLayout = Instance.new("UIPageLayout")
+UIPageLayout.Name = "UIPageLayout"
+UIPageLayout.Parent = Elements
+local Settings = Instance.new("ScrollingFrame")
+Settings.Name = "Settings"
+Settings.Parent = Elements
+
+-- LoadingFrame
+local LoadingFrame = Instance.new("Frame")
+LoadingFrame.Name = "LoadingFrame"
+LoadingFrame.Parent = SmartWindow
+LoadingFrame.Visible = false
+local Frame = Instance.new("Frame")
+Frame.Name = "Frame"
+Frame.Parent = LoadingFrame
+local FrameTitle = Instance.new("TextLabel")
+FrameTitle.Name = "Title"
+FrameTitle.Parent = Frame
+local FrameSubtitle = Instance.new("TextLabel")
+FrameSubtitle.Name = "Subtitle"
+FrameSubtitle.Parent = Frame
+local ImageLabel = Instance.new("ImageLabel")
+ImageLabel.Name = "ImageLabel"
+ImageLabel.Parent = Frame
+local Version = Instance.new("TextLabel")
+Version.Name = "Version"
+Version.Parent = LoadingFrame
+
+-- Navigation
+local Navigation = Instance.new("Frame")
+Navigation.Name = "Navigation"
+Navigation.Parent = SmartWindow
+local Tabs = Instance.new("Frame")
+Tabs.Name = "Tabs"
+Tabs.Parent = Navigation
+local HomeTab = Instance.new("Frame")
+HomeTab.Name = "Home"
+HomeTab.Parent = Tabs
+local InActiveTemplate = Instance.new("Frame")
+InActiveTemplate.Name = "InActive Template"
+InActiveTemplate.Parent = Tabs
+local Player = Instance.new("Frame")
+Player.Name = "Player"
+Player.Parent = Navigation
+local icon = Instance.new("Frame")
+icon.Name = "icon"
+icon.Parent = Player
+local ImageLabel2 = Instance.new("ImageLabel")
+ImageLabel2.Name = "ImageLabel"
+ImageLabel2.Parent = icon
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Name = "UIStroke"
+UIStroke.Parent = icon
+local Namez = Instance.new("TextLabel")
+Namez.Name = "Namez"
+Namez.Parent = Player
+local TextLabel = Instance.new("TextLabel")
+TextLabel.Name = "TextLabel"
+TextLabel.Parent = Player
+
+-- MobileSupport
+local MobileSupport = Instance.new("Frame")
+MobileSupport.Name = "MobileSupport"
+MobileSupport.Parent = KRScriptUI
+local Interact = Instance.new("TextButton")
+Interact.Name = "Interact"
+Interact.Parent = MobileSupport
+
+-- Drag
+local Drag = Instance.new("Frame")
+Drag.Name = "Drag"
+Drag.Parent = KRScriptUI
+local InteractDrag = Instance.new("Frame")
+InteractDrag.Name = "Interact"
+InteractDrag.Parent = Drag
+local DragCosmetic = Instance.new("Frame")
+DragCosmetic.Name = "Drag"
+DragCosmetic.Parent = Drag
+
+-- Notifications
+local Notifications = Instance.new("Frame")
+Notifications.Name = "Notifications"
+Notifications.Parent = KRScriptUI
+
 return KRScript
