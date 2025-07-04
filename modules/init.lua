@@ -1,7 +1,9 @@
 local VersionName = "KRScript" 
 
 local KRScript = { Folder = "KRScript"}
-local KRScriptUI = script.Parent:WaitForChild("KRScript UI")
+local KRScriptUI = Instance.new("ScreenGui")
+KRScriptUI.Name = "KRScriptUI"
+KRScriptUI.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
