@@ -1,3 +1,8 @@
+if _G.KRScriptUnload then
+    _G.KRScriptUnload()
+end
+
+
 local FluentMenu = loadstring(game:HttpGet("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/download/v1.0.8/Fluent.luau?t=" .. tick()))()
 local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau?t=" .. tick()))()
 local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau?t=" .. tick()))()
@@ -103,6 +108,15 @@ function MovementManager:DisablePlayerSpeed()
     end
 end
 
+function MovementManager:Destroy()
+    self:DisablePlayerSpeed()
+
+    if self.HookCharacter then
+        self.HookCharacter:Disconnect()
+    end
+    self.HookCharacter = nil
+end
+
 
 local Window = FluentMenu:CreateWindow{
     Title = "KRScript",
@@ -141,6 +155,17 @@ TabID.About:CreateParagraph("Discord", {
     TitleAlignment = "Middle",
     ContentAlignment = Enum.TextXAlignment.Center
 })
+TabID.About:CreateButton("Unload KRScript", {
+    Title       = "Unload KRScript",
+    Description = "Полностью удалить меню и отключить функции"
+}, function()
+    if _G.KRScriptUnload then
+        _G.KRScriptUnload()
+    end
+end)
+
+
+
 
 local Movement = MovementManager.New(API)
 TabID.Movement:CreateToggle("Speed Player", {Title = "Speed Player", Default = false,
@@ -164,15 +189,24 @@ TabID.Movement:CreateSlider("Speed Value", {
 
 Window:SelectTab(1)
 
-FluentMenu:Notify{
-    Title = "KRScript",
-    Content = API:GetLocalPlayer().Name,
-    SubContent = "", -- Optional
-    Duration = 5 -- Set to nil to make the notification not disappear
-}
-
 SaveManager:SetLibrary(FluentMenu)
 InterfaceManager:SetLibrary(FluentMenu)
 SaveManager:IgnoreThemeSettings()
 InterfaceManager:SetFolder("KRScript")
 SaveManager:SetFolder("KRScript/specific-game")
+
+_G.KRScriptUnload = function()
+    if Movement and Movement.Destroy then
+        Movement:Destroy()
+    end
+
+    if Window and Window.Destroy then
+        Window:Destroy()
+    elseif Window and Window._window then
+        Window._window:Destroy()
+    end
+
+    pcall(function() InterfaceManager:Unload() end)
+
+    _G.KRScriptUnload = nil
+end
