@@ -2,7 +2,6 @@ if _G.KRScriptUnload then
     _G.KRScriptUnload()
 end
 
-
 local FluentMenu = loadstring(game:HttpGet("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/download/v1.0.8/Fluent.luau?t=" .. tick()))()
 local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau?t=" .. tick()))()
 local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau?t=" .. tick()))()
@@ -156,11 +155,25 @@ TabID.About:CreateParagraph("Discord", {
     ContentAlignment = Enum.TextXAlignment.Center
 })
 TabID.About:CreateButton("Unload KRScript", {
-    Title       = "Unload KRScript",
-    Description = "Полностью удалить меню и отключить функции"
+    Title = "Unload KRScript",
+    Description = "Fully delete menu and disable function"
 }, function()
     if _G.KRScriptUnload then
-        _G.KRScriptUnload()
+        Window:Dialog{
+            Title = "Unload",
+            Content = "???",
+            Buttons = {
+                {
+                    Title = "Confirm",
+                    Callback = function()
+                        _G.KRScriptUnload()
+                    end
+                },
+                {
+                    Title = "Cancel",
+                }
+            }
+        }
     end
 end)
 
