@@ -15,7 +15,6 @@ function MovementManager.New(API)
 
     self.API = API
 
-
     self.DefaultSpeed = nil
     self.CustomSpeed = 32
     self.SpeedEnabled = false
