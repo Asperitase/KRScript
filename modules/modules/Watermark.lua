@@ -28,7 +28,7 @@ function Watermark:_build()
 
     local list = ui("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,
                                     VerticalAlignment=Enum.VerticalAlignment.Center,
-                                    Padding=UDim.new(0,12)},self.frame)
+                                    Padding=UDim.new(0,10)},self.frame)
 
     -- avatar ------------------------------------------------------------------
     local avatar = ui("ImageLabel",{Size=UDim2.fromOffset(34,34),BackgroundTransparency=1,
@@ -38,9 +38,16 @@ function Watermark:_build()
     ui("UIStroke",{Color=accent,Transparency=.2},avatar)
 
     -- шаблон текста -----------------------------------------------------------
-    local baseT = {BackgroundTransparency=1,Font=Enum.Font.GothamMedium,TextSize=14,
-                   TextColor3=Color3.fromRGB(230,240,255),TextYAlignment=Enum.TextYAlignment.Center}
-
+    local baseT = {
+        BackgroundTransparency=1,
+        Font=Enum.Font.GothamMedium,
+        TextSize=14,
+        TextColor3=Color3.fromRGB(230,240,255),
+        TextYAlignment=Enum.TextYAlignment.Center,
+        AutomaticSize=Enum.AutomaticSize.X,
+        Size=UDim2.new(0,0,1,0),
+        TextXAlignment=Enum.TextXAlignment.Left
+    }
     self.nick   = ui("TextLabel",baseT,self.frame)  self.nick.Font=Enum.Font.GothamBold
     self.server = ui("TextLabel",baseT,self.frame)
     self.ping   = ui("TextLabel",baseT,self.frame)
@@ -54,7 +61,8 @@ function Watermark:_build()
             Font = Enum.Font.GothamBold,
             TextSize = 16,
             TextColor3 = Color3.fromRGB(122,176,255),
-            Size = UDim2.fromOffset(12, 34),
+            AutomaticSize = Enum.AutomaticSize.X,
+            Size = UDim2.new(0,0,1,0),
             TextYAlignment = Enum.TextYAlignment.Center,
             TextXAlignment = Enum.TextXAlignment.Center
         }, self.frame)
