@@ -31,8 +31,8 @@ function Watermark:Create()
     
     -- Фон-контейнер (полупрозрачная полоска в стиле Fluent)
     self.Container = Instance.new("Frame")
-    self.Container.AnchorPoint = Vector2.new(0, 0)
-    self.Container.Position = UDim2.fromOffset(12, 10)
+    self.Container.AnchorPoint = Vector2.new(1, 0)
+    self.Container.Position = UDim2.new(1, -12, 0, 10)
     self.Container.Size = UDim2.fromOffset(230, 36)
     self.Container.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     self.Container.BackgroundTransparency = 0.25
@@ -76,7 +76,7 @@ end
 
 function Watermark:GetPing()
     local ping = self.API:GetNetworkPing()
-    return math.floor(ping * 1000 + 0.5)
+    return ping
 end
 
 function Watermark:GetPlayersOnline()
@@ -90,12 +90,17 @@ function Watermark:Refresh()
     if not localPlayer then return end
     
     local ping = self:GetPing()
+    if type(ping) == "number" then
+        ping = string.format("%d ms", math.floor(ping * 1000 + 0.5))
+    else
+        ping = tostring(ping)
+    end
     local count = self:GetPlayersOnline()
     
     self.TextLabel.Text = string.format(
         "<font color='#FFFFFF'><b>%s</b></font>  " ..
         "<font color='#888888'>|</font>  " ..
-        "Ping: <font color='#A5D6FF'>%d ms</font>  " ..
+        "Ping: <font color='#A5D6FF'>%s</font>  " ..
         "<font color='#888888'>|</font>  " ..
         "Players: <font color='#A5D6FF'>%d</font>",
         localPlayer.DisplayName, ping, count
@@ -157,7 +162,7 @@ end
 
 function Watermark:SetPosition(x, y)
     if self.Container then
-        self.Container.Position = UDim2.fromOffset(x or 12, y or 10)
+        self.Container.Position = UDim2.new(1, -(x or 12), 0, y or 10)
     end
 end
 
