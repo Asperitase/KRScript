@@ -152,14 +152,6 @@ function Watermark:Hide()
     end
 end
 
-function Watermark:Toggle()
-    if self.Enabled then
-        self:Hide()
-    else
-        self:Show()
-    end
-end
-
 function Watermark:SetPosition(x, y)
     if self.Container then
         self.Container.Position = UDim2.new(1, -(x or 12), 0, y or 10)
