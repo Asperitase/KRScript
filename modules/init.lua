@@ -61,7 +61,7 @@ function MovementManager:EnablePlayerSpeed()
 end
 
 function MovementManager:DisablePlayerSpeed()
-    self.DefaultSpeed = false
+    self.SpeedEnabled = false
     if self.DefaultSpeed then
         self:ApplySpeed(self.DefaultSpeed)
     end
