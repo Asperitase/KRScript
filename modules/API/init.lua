@@ -106,5 +106,8 @@ end
 --     return LocalPlayer.Character
 -- end
 
+function API:GetTweenService()
+    return game:GetService("TweenService")
+end
 
 return API

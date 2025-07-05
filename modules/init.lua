@@ -34,6 +34,8 @@ function MovementManager.New(API)
         down = Vector3.new(),
     }
     self.FlyConnections = {}
+    self.FlyBodyVelocity = nil
+    self.FlyBodyGyro = nil
 
     API:GetLocalPlayer().CharacterAdded:Connect(function()
         
@@ -163,7 +165,7 @@ function MovementManager:EnableFly()
 
     local UserInputService = self.API:GetUserInputService()
     local RunService = self.API:GetRunService()
-    local player = self.API:GetLocalPlayer()
+    local TweenService = self.API:GetTweenService()
 
     self.FlyConnections.InputBegan = UserInputService.InputBegan:Connect(function(input, processed)
         if processed then return end
@@ -178,28 +180,56 @@ function MovementManager:EnableFly()
         local humanoid = self:GetHumanoid()
         if root and humanoid then
             humanoid.PlatformStand = true
-            local cam = workspace.CurrentCamera
 
-            local forward = (self.FlyDirection.forward.Z ~= 0) and 1 or 0
-            local backward = (self.FlyDirection.backward.Z ~= 0) and -1 or 0
-            local right = (self.FlyDirection.right.X ~= 0) and 1 or 0
-            local left = (self.FlyDirection.left.X ~= 0) and -1 or 0
-            local up = (self.FlyDirection.up.Y ~= 0) and 1 or 0
-            local down = (self.FlyDirection.down.Y ~= 0) and -1 or 0
-
-            local move = (cam.CFrame.LookVector * (forward + backward) +
-                          cam.CFrame.RightVector * (right + left) +
-                          cam.CFrame.UpVector * (up + down))
-            if move.Magnitude > 0 then
-                move = move.Unit
-                -- Используем CFrame для перемещения, чтобы не трясло
-                root.CFrame = root.CFrame + move * self.FlySpeed * dt
-                root.Velocity = Vector3.new() -- сбрасываем Velocity
+            -- Создаём BodyVelocity и BodyGyro если их нет
+            if not self.FlyBodyVelocity then
+                self.FlyBodyVelocity = Instance.new("BodyVelocity")
+                self.FlyBodyVelocity.MaxForce = Vector3.new(1,1,1) * 9e9
+                self.FlyBodyVelocity.Parent = root
             end
+            if not self.FlyBodyGyro then
+                self.FlyBodyGyro = Instance.new("BodyGyro")
+                self.FlyBodyGyro.MaxTorque = Vector3.new(1,1,1) * 9e9
+                self.FlyBodyGyro.P = 9e4
+                self.FlyBodyGyro.Parent = root
+            end
+
+            local cam = workspace.CurrentCamera
+            local velocity = Vector3.zero
+            local rotation = cam.CFrame.Rotation
+
+            -- Управление направлениями
+            if self.FlyDirection.forward.Z ~= 0 then
+                velocity += cam.CFrame.LookVector
+                rotation *= CFrame.Angles(math.rad(-40), 0, 0)
+            end
+            if self.FlyDirection.backward.Z ~= 0 then
+                velocity -= cam.CFrame.LookVector
+                rotation *= CFrame.Angles(math.rad(40), 0, 0)
+            end
+            if self.FlyDirection.right.X ~= 0 then
+                velocity += cam.CFrame.RightVector
+                rotation *= CFrame.Angles(0, 0, math.rad(-40))
+            end
+            if self.FlyDirection.left.X ~= 0 then
+                velocity -= cam.CFrame.RightVector
+                rotation *= CFrame.Angles(0, 0, math.rad(40))
+            end
+            if self.FlyDirection.up.Y ~= 0 then
+                velocity += Vector3.yAxis
+            end
+            if self.FlyDirection.down.Y ~= 0 then
+                velocity -= Vector3.yAxis
+            end
+
+            -- Плавное изменение скорости
+            local tweenInfo = TweenInfo.new(0.2)
+            TweenService:Create(self.FlyBodyVelocity, tweenInfo, { Velocity = velocity.Unit * self.FlySpeed }):Play()
+            TweenService:Create(self.FlyBodyGyro, tweenInfo, { CFrame = rotation }):Play()
         end
     end)
     if not self.FlyConnections.CharacterAdded then
-        self.FlyConnections.CharacterAdded = player.CharacterAdded:Connect(function()
+        self.FlyConnections.CharacterAdded = self.API:GetLocalPlayer().CharacterAdded:Connect(function()
             if self.FlyEnabled then
                 task.defer(function()
                     self:EnableFly()
@@ -218,7 +248,14 @@ function MovementManager:DisableFly()
     local root = self.API:GetHumanoidRootPart()
     local humanoid = self:GetHumanoid()
     if root then
-        root.Velocity = Vector3.new()
+        if self.FlyBodyVelocity then
+            self.FlyBodyVelocity:Destroy()
+            self.FlyBodyVelocity = nil
+        end
+        if self.FlyBodyGyro then
+            self.FlyBodyGyro:Destroy()
+            self.FlyBodyGyro = nil
+        end
     end
     if humanoid then
         humanoid.PlatformStand = false
