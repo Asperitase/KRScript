@@ -97,10 +97,10 @@ function Watermark:Refresh()
     local count = self:GetPlayersOnline()
     self.TextLabel.Text = string.format(
         "<font color='#FFFFFF'><b>%s</b></font>  " ..
-        "<font color='#888888'>|</font>  " ..
-        "Ping: <font color='#A5D6FF'>%s</font>  " ..
-        "<font color='#888888'>|</font>  " ..
-        "Players: <font color='#A5D6FF'>%d</font>",
+        "<font color='#528bff'>|</font>  " ..
+        "Ping: <font color='#E3F2FD'>%s</font>  " ..
+        "<font color='#528bff'>|</font>  " ..
+        "Players: <font color='#E3F2FD'>%d</font>",
         localPlayer.DisplayName or "Player", ping, count
     )
     local textBounds = self.TextLabel.TextBounds.X
