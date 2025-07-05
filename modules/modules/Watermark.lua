@@ -49,35 +49,10 @@ function Watermark:_build()
         TextXAlignment=Enum.TextXAlignment.Left
     }
 
-    local function bar()
-        ui("TextLabel", {
-            Text = "║",
-            BackgroundTransparency = 1,
-            Font = Enum.Font.GothamBold,
-            TextSize = 16,
-            TextColor3 = Color3.fromRGB(122,176,255),
-            AutomaticSize = Enum.AutomaticSize.X,
-            Size = UDim2.new(0,0,1,0),
-            TextYAlignment = Enum.TextYAlignment.Center,
-            TextXAlignment = Enum.TextXAlignment.Center
-        }, self.frame)
-    end
-    
     self.nick   = ui("TextLabel", baseT, self.frame)  self.nick.Font = Enum.Font.GothamBold
-    bar()
     self.server = ui("TextLabel", baseT, self.frame)
-    bar()
     self.ping   = ui("TextLabel", baseT, self.frame)
-    bar()
     self.clock  = ui("TextLabel", baseT, self.frame)
-
-    -- Удаляем Lucide-иконки --------------------------------------------------
-    -- local function addIcon(name)
-    --     local ico=self.fluent:CreateIcon(name,14,accent) ; ico.Parent=self.frame
-    -- end
-    -- addIcon("server")
-    -- addIcon("wifi")
-    -- addIcon("clock")
 
     -- порядок элементов в листе:
     -- avatar | nick | sep | server | icon | sep | ping | icon | sep | clock | icon
