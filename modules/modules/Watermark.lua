@@ -29,59 +29,87 @@ function Watermark:Create()
     -- Контейнер
     self.Container = Instance.new("Frame")
     self.Container.AnchorPoint = Vector2.new(1, 0)
-    self.Container.Position = UDim2.new(1, -24, 0, 24)
-    self.Container.Size = UDim2.fromOffset(350, 48)
+    self.Container.Position = UDim2.new(1, -18, 0, 18)
+    self.Container.Size = UDim2.fromOffset(220, 36)
     self.Container.BackgroundColor3 = Color3.fromRGB(32, 36, 44)
-    self.Container.BackgroundTransparency = 0.15
+    self.Container.BackgroundTransparency = 0.12
     self.Container.BorderSizePixel = 0
     self.Container.Parent = self.Gui
-    -- DropShadow
+    self.Container.ZIndex = 2
+    -- DropShadow (шире, тоньше, прозрачнее)
     local shadow = Instance.new("ImageLabel")
     shadow.Name = "DropShadow"
     shadow.Image = "rbxassetid://1316045217"
     shadow.BackgroundTransparency = 1
-    shadow.Size = UDim2.new(1, 24, 1, 24)
-    shadow.Position = UDim2.new(0, -12, 0, -12)
+    shadow.Size = UDim2.new(1, 32, 1, 12)
+    shadow.Position = UDim2.new(0, -16, 0, 4)
     shadow.ImageColor3 = Color3.fromRGB(0,0,0)
-    shadow.ImageTransparency = 0.7
+    shadow.ImageTransparency = 0.85
     shadow.ZIndex = 0
     shadow.Parent = self.Container
-    self.Container.ZIndex = 1
     -- Скругление Fluent
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 14)
+    corner.CornerRadius = UDim.new(0, 10)
     corner.Parent = self.Container
     -- Аватар (круглый с рамкой)
     self.Avatar = Instance.new("ImageLabel")
-    self.Avatar.Size = UDim2.fromOffset(40, 40)
-    self.Avatar.Position = UDim2.fromOffset(8, 4)
+    self.Avatar.Size = UDim2.fromOffset(28, 28)
+    self.Avatar.Position = UDim2.fromOffset(6, 4)
     self.Avatar.BackgroundTransparency = 1
     self.Avatar.Image = string.format("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png", localPlayer.UserId)
+    self.Avatar.ZIndex = 3
     self.Avatar.Parent = self.Container
     local avatarCorner = Instance.new("UICorner")
     avatarCorner.CornerRadius = UDim.new(1, 0)
     avatarCorner.Parent = self.Avatar
     local avatarStroke = Instance.new("UIStroke")
     avatarStroke.Color = Color3.fromRGB(82, 139, 255)
-    avatarStroke.Thickness = 2
+    avatarStroke.Thickness = 1.5
     avatarStroke.Parent = self.Avatar
+    -- Lucide-иконки (rbxassetid)
+    local iconY = 6
+    local iconSize = 16
+    local pingIcon = Instance.new("ImageLabel")
+    pingIcon.Size = UDim2.fromOffset(iconSize, iconSize)
+    pingIcon.Position = UDim2.fromOffset(62, iconY)
+    pingIcon.BackgroundTransparency = 1
+    pingIcon.Image = "rbxassetid://16044047136" -- Lucide globe
+    pingIcon.ImageColor3 = Color3.fromRGB(82, 139, 255)
+    pingIcon.ZIndex = 3
+    pingIcon.Parent = self.Container
+    local playersIcon = Instance.new("ImageLabel")
+    playersIcon.Size = UDim2.fromOffset(iconSize, iconSize)
+    playersIcon.Position = UDim2.fromOffset(120, iconY)
+    playersIcon.BackgroundTransparency = 1
+    playersIcon.Image = "rbxassetid://16044046884" -- Lucide users
+    playersIcon.ImageColor3 = Color3.fromRGB(82, 139, 255)
+    playersIcon.ZIndex = 3
+    playersIcon.Parent = self.Container
+    local timeIcon = Instance.new("ImageLabel")
+    timeIcon.Size = UDim2.fromOffset(iconSize, iconSize)
+    timeIcon.Position = UDim2.fromOffset(170, iconY)
+    timeIcon.BackgroundTransparency = 1
+    timeIcon.Image = "rbxassetid://16044047018" -- Lucide clock
+    timeIcon.ImageColor3 = Color3.fromRGB(82, 139, 255)
+    timeIcon.ZIndex = 3
+    timeIcon.Parent = self.Container
     -- Текстовая часть
     self.TextLabel = Instance.new("TextLabel")
-    self.TextLabel.Position = UDim2.fromOffset(56, 0)
-    self.TextLabel.Size = UDim2.new(1, -64, 1, 0)
+    self.TextLabel.Position = UDim2.fromOffset(36, 0)
+    self.TextLabel.Size = UDim2.new(1, -44, 1, 0)
     self.TextLabel.BackgroundTransparency = 1
     self.TextLabel.TextXAlignment = Enum.TextXAlignment.Left
     self.TextLabel.RichText = true
     self.TextLabel.Font = Enum.Font.GothamMedium
-    self.TextLabel.TextSize = 18
+    self.TextLabel.TextSize = 16
     self.TextLabel.TextColor3 = Color3.fromRGB(255,255,255)
+    self.TextLabel.ZIndex = 4
     self.TextLabel.Parent = self.Container
-    self.TextLabel.ZIndex = 2
     -- Анимация появления
     self.Container.BackgroundTransparency = 1
     self.Container.Visible = true
     local TweenService = self.API:GetTweenService()
-    TweenService:Create(self.Container, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.15}):Play()
+    TweenService:Create(self.Container, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.12}):Play()
     self.Enabled = true
     self:StartUpdate()
 end
@@ -104,22 +132,17 @@ function Watermark:Refresh()
     local ping = self:GetPing()
     local count = self:GetPlayersOnline()
     local timeStr = os.date("%H:%M:%S")
-    -- Иконки (используем Emoji для универсальности)
-    local pingIcon = "🌐"
-    local playersIcon = "👥"
-    local timeIcon = "⏰"
     self.TextLabel.Text = string.format(
         "<font color='#FFFFFF'><b>%s</b></font>  " ..
         "<font color='#528bff'>|</font>  " ..
-        "%s <font color='#E3F2FD'>%s</font>  " ..
+        "<font color='#E3F2FD'>%s</font>  " ..
         "<font color='#528bff'>|</font>  " ..
-        "%s <font color='#E3F2FD'>%d</font>  " ..
+        "<font color='#E3F2FD'>%d</font>  " ..
         "<font color='#528bff'>|</font>  " ..
-        "%s <font color='#E3F2FD'>%s</font>",
-        localPlayer.DisplayName or "Player", pingIcon, ping, playersIcon, count, timeIcon, timeStr
+        "<font color='#E3F2FD'>%s</font>",
+        localPlayer.DisplayName or "Player", ping, count, timeStr
     )
-    local textBounds = self.TextLabel.TextBounds.X
-    self.Container.Size = UDim2.fromOffset(math.max(350, textBounds + 64), 48)
+    -- Размер контейнера не меняем, он фиксированный и компактный
 end
 
 function Watermark:StartUpdate()
