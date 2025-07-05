@@ -9,8 +9,8 @@ end
 local API = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/API/init.lua?t=" .. os.time()))()
 
 -- Загрузка модулей из GitHub
-local MovementManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/Movement.lua?t=" .. os.time()))()
-local Menu = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/Menu.lua?t=" .. os.time()))()
+local MovementManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/modules/Movement.lua?t=" .. os.time()))()
+local Menu = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/modules/Menu.lua?t=" .. os.time()))()
 
 -- Инициализация менеджеров
 local Movement = MovementManager.New(API)
