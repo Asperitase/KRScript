@@ -75,11 +75,7 @@ function Watermark:Create()
 end
 
 function Watermark:GetPing()
-    local ping = self.API:GetNetworkPing()
-    if type(ping) == "number" then
-        return string.format("%d ms", math.floor(ping * 1000 + 0.5))
-    end
-    return tostring(ping or "N/A")
+    return math.floor(self.API:GetNetworkPing()).."ms"
 end
 
 function Watermark:GetPlayersOnline()
@@ -95,13 +91,16 @@ function Watermark:Refresh()
     if not localPlayer then return end
     local ping = self:GetPing()
     local count = self:GetPlayersOnline()
+    local timeStr = os.date("%H:%M:%S")
     self.TextLabel.Text = string.format(
         "<font color='#FFFFFF'><b>%s</b></font>  " ..
         "<font color='#528bff'>|</font>  " ..
         "Ping: <font color='#E3F2FD'>%s</font>  " ..
         "<font color='#528bff'>|</font>  " ..
-        "Players: <font color='#E3F2FD'>%d</font>",
-        localPlayer.DisplayName or "Player", ping, count
+        "Players: <font color='#E3F2FD'>%d</font>  " ..
+        "<font color='#528bff'>|</font>  " ..
+        "<font color='#E3F2FD'>%s</font>",
+        localPlayer.DisplayName or "Player", ping, count, timeStr
     )
     local textBounds = self.TextLabel.TextBounds.X
     self.Container.Size = UDim2.fromOffset(math.max(230, textBounds + 44), 36)

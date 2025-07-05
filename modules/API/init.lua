@@ -118,13 +118,12 @@ function API:GetCoreGui()
     return game:GetService("CoreGui")
 end
 
+function API:GetServerStats()
+    return game:GetService("Stats")
+end
+
 function API:GetNetworkPing()
-    -- local localPlayer = self:GetLocalPlayer()
-    -- if localPlayer then
-    --     return localPlayer.NetworkPing
-    -- end
-    -- return 0
-    return "N/A"
+    return math.clamp(self:GetServerStats().Network.ServerStatsItem["Data Ping"]:GetValue(), 10, 700)
 end
 
 function API:GetPlayersCount()
