@@ -1,10 +1,7 @@
 local FluentMenu = loadstring(game:HttpGet("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/download/v1.0.8/Fluent.luau?t=" .. tick()))()
-local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau"))()
-local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
- 
-
-
-
+local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau?t=" .. tick()))()
+local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau?t=" .. tick()))()
+local API = loadstring(game:HttpGetAsync("https://github.com/Asperitase/KRScript/blob/main/modules/API/init.lua?t=" .. tick()))()
 
 local Window = FluentMenu:CreateWindow{
     Title = "KRScript",
@@ -48,7 +45,7 @@ Window:SelectTab(1)
 
 FluentMenu:Notify{
     Title = "KRScript",
-    Content = "has been loaded",
+    Content = API:GetLocalPlayer().Name,
     SubContent = "", -- Optional
     Duration = 5 -- Set to nil to make the notification not disappear
 }

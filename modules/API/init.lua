@@ -13,11 +13,11 @@ function API:New(String)
     return obj
 end
 
-function API:GetPlayers()
+function API:GetPlayers(): { Player }
     return Players:GetPlayers()
 end
 
-function API:GetLocalPlayer()
+function API:GetLocalPlayer(): Player?
     if Players.LocalPlayer then
         return Players.LocalPlayer
     else
@@ -26,15 +26,14 @@ function API:GetLocalPlayer()
     end
 end
 
-function API:GetPlayerByUID(UID)
-    return Players:GetPlayerByUserId(UID)
+function API:GetPlayerByUID(uid: number): Player?
+    return Players:GetPlayerByUserId(uid)
 end
 
 function API:GetWorkspace(
     Child: string,
     TargetPlayer: Player | string?
-)
-
+): Instance?
     local RootNode = Workspace:WaitForChild(Child)
     if not RootNode then
         warn(`Workspace.{Child} not found`)
@@ -49,15 +48,15 @@ function API:GetWorkspace(
     return RootNode
 end
 
-function API:GetLocalIsland()
+function API:GetLocalIsland(): Instance?
     return self:GetWorkspace("Plots", self:GetLocalPlayer().Name)
 end
 
-function API:GetReplicatedStorage(Child: string)
+function API:GetReplicatedStorage(Child: string): Instance?
     return ReplicatedStorage:WaitForChild(Child)
 end
 
-function API:GetReplicatedStorageCommunication()
+function API:GetReplicatedStorageCommunication(): Instance?
     return ReplicatedStorage:WaitForChild("Communication")
 end
 
@@ -74,7 +73,8 @@ function API:WaitForSpawn(): Model
         return LocalPlayer.Character
     end
 
-    return LocalPlayer.CharacterAdded:Wait()
+    LocalPlayer.CharacterAdded:Wait()
+    return LocalPlayer.Character
 end
 
 
