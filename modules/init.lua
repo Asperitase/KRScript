@@ -153,30 +153,27 @@ TabID.About:CreateParagraph("Discord", {
     TitleAlignment = "Middle",
     ContentAlignment = Enum.TextXAlignment.Center
 })
--- TabID.About:CreateButton("Unload KRScript", {
---     Title = "Unload KRScript",
---     Description = "Fully delete menu and disable function"
--- }, function()
---     if _G.KRScriptUnload then
---         Window:Dialog{
---             Title = "Unload",
---             Content = "???",
---             Buttons = {
---                 {
---                     Title = "Confirm",
---                     Callback = function()
---                         _G.KRScriptUnload()
---                     end
---                 },
---                 {
---                     Title = "Cancel",
---                 }
---             }
---         }
---     end
--- end)
-
-
+TabID.About:CreateButton{
+    Title = "Unload",
+    Description = "Fully delete menu and disable function",
+    Callback = function()
+    Window:Dialog{
+        Title = "Unload",
+        Content = "???",
+        Buttons = {
+            {
+                Title = "Confirm",
+                Callback = function()
+                    _G.KRScriptUnload()
+                end
+            },
+            {
+                Title = "Cancel",
+            }
+        }
+    }
+end
+}
 
 
 local Movement = MovementManager.New(API)
