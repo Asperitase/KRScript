@@ -61,48 +61,10 @@ function Watermark:_build()
     -- создаём лейблы
     self.NickLabel    = mk("TextLabel", baseText, self.Container)
     self.NickLabel.Font = Enum.Font.GothamBold
-    self.PingLabel    = mk("TextLabel", baseText, self.Container)
-    self.PlayersLabel = mk("TextLabel", baseText, self.Container)
-    self.FPSLabel     = mk("TextLabel", baseText, self.Container)
-    self.TimeLabel    = mk("TextLabel", baseText, self.Container)
-
     ----------------------------------------------------------------
     -- Раскладка + сепараторы
     ----------------------------------------------------------------
-    local cursor = 54   -- старт после аватара
-    local function segment(lbl, iconId, width)
-        -- иконка Lucide (замени id при желании)
-        mk("ImageLabel",{
-            Size=UDim2.fromOffset(14,14),
-            Position=UDim2.fromOffset(cursor,15),
-            BackgroundTransparency=1,
-            Image=iconId,
-            ImageColor3=Color3.fromRGB(120,165,255),
-            ZIndex=3
-        },self.Container)
-        cursor += 18
-
-        lbl.Position = UDim2.fromOffset(cursor,0)
-        lbl.Size     = UDim2.fromOffset(width,44)
-
-        -- красивый «скруглённый» сепаратор
-        local bar = mk("Frame",{
-            Size=UDim2.new(0,2,0.68,0),
-            Position=UDim2.fromOffset(cursor+width+6,7),
-            BackgroundColor3=Color3.fromRGB(120,165,255),
-            BorderSizePixel=0,
-            ZIndex=2
-        },self.Container)
-        mk("UICorner",{CornerRadius=UDim.new(0,1)},bar)
-
-        cursor += width + 20
-    end
-
-    segment(self.NickLabel   ,"rbxassetid://16044046814",110) -- user
-    segment(self.PingLabel   ,"rbxassetid://16044047136",60)  -- wifi
-    segment(self.PlayersLabel,"rbxassetid://16044046884",30)  -- users
-    segment(self.FPSLabel    ,"rbxassetid://16044046797",64)  -- bar-chart
-    -- последняя: время, без разделителя в конце
+    local cursor = 54   -- старт после аватара    -- последняя: время, без разделителя в конце
     mk("ImageLabel",{
         Size=UDim2.fromOffset(14,14), Position=UDim2.fromOffset(cursor,15),
         BackgroundTransparency=1, Image="rbxassetid://16044047018",
@@ -129,7 +91,7 @@ local function round(x) return math.floor(x+0.5) end
 function Watermark:_refresh()
     local p = self.API:GetLocalPlayer() if not p then return end
     self.NickLabel.Text    = p.DisplayName
-    self.PingLabel.Text    = ("%dms"):format(round(self.API:GetNetworkPing()*1000))
+    self.PingLabel.Text    = ("%dms"):format(round(self.API:GetNetworkPing()))
     self.PlayersLabel.Text = tostring(self.API:GetPlayersCount())
     self.FPSLabel.Text     = ("%d fps"):format(self.fps)
     self.TimeLabel.Text    = os.date("%H:%M:%S")
