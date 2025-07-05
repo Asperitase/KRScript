@@ -3,6 +3,9 @@ local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.
 local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
  
 
+
+
+
 local Window = FluentMenu:CreateWindow{
     Title = "KRScript",
     SubTitle = "by idredakx | v1.0",
