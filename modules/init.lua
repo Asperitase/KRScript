@@ -15,7 +15,8 @@ function MovementManager.New(API)
     self.DefaultSpeed = nil
     self.CustomSpeed = 32
     self.SpeedEnabled = false
-
+    self.HookWalkSpeed = nil
+    self.HookCharacter = nil
 
     API:GetLocalPlayer().CharacterAdded:Connect(function()
         
@@ -29,6 +30,27 @@ function MovementManager.New(API)
     end)
 
     return self
+end
+
+function MovementManager:_HookWalkSpeed(Humanoid)
+    if self.HookWalkSpeed then self.HookWalkSpeed:Disconnect() end
+
+    self.HookWalkSpeed = Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+        if self.SpeedEnabled and Humanoid.WalkSpeed ~= self.CustomSpeed then
+            Humanoid.WalkSpeed = self.CustomSpeed
+        end
+    end)
+end
+
+function MovementManager:_EnsureHook()
+    self:_hookWalkSpeed(self:GetHumanoid())
+end
+
+function MovementManager:_ClearHooks()
+    if self.HookWalkSpeed then 
+        self.HookWalkSpeed:Disconnect() 
+    end
+    self.HookWalkSpeed = nil
 end
 
 function MovementManager:GetHumanoid()
@@ -58,10 +80,24 @@ function MovementManager:EnablePlayerSpeed()
     self.CustomSpeed = self.CustomSpeed
     self.SpeedEnabled = true
     self:ApplySpeed(self.CustomSpeed)
+    self:_EnsureHook()  
+
+    if not self.HookCharacter then
+        self.HookCharacter = self.API:GetLocalPlayer().CharacterAdded:Connect(function()
+            if self.SpeedEnabled then
+                task.defer(function()
+                    self:ApplySpeed(self.CustomSpeed)
+                    self:_EnsureHook()
+                end)
+            end
+        end)
+    end
 end
 
 function MovementManager:DisablePlayerSpeed()
     self.SpeedEnabled = false
+    self:_ClearHooks()
+
     if self.DefaultSpeed then
         self:ApplySpeed(self.DefaultSpeed)
     end
