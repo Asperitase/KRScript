@@ -35,14 +35,12 @@ function MovementManager.New(API)
     self.FlyBodyGyro = nil
 
     API:GetLocalPlayer().CharacterAdded:Connect(function()
-        
+        self.DefaultSpeed = nil
         if self.SpeedEnabled then
             task.defer(function()
                 self:ApplySpeed(self.CustomSpeed)
             end)
         end
-        
-
     end)
 
     return self
@@ -88,15 +86,16 @@ end
 
 function MovementManager:EnablePlayerSpeed()
     local Humanoid = self:GetHumanoid()
-    if Humanoid and not self.DefaultSpeed then
+    if Humanoid then
         self.DefaultSpeed = Humanoid.WalkSpeed
     end
     self.CustomSpeed = self.CustomSpeed
     self.SpeedEnabled = true
     self:ApplySpeed(self.CustomSpeed)
-    self:EnsureHook(Humanoid)  
+    self:EnsureHook(Humanoid)
     if not self.HookCharacter then
         self.HookCharacter = self.API:GetLocalPlayer().CharacterAdded:Connect(function()
+            self.DefaultSpeed = nil
             if self.SpeedEnabled then
                 task.defer(function()
                     self:ApplySpeed(self.CustomSpeed)
