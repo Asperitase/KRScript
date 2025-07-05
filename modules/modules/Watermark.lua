@@ -1,122 +1,93 @@
--- WatermarkGlass.lua  ·  2025-07-05
-local Watermark = {}
-Watermark.__index = Watermark
+------------------------------------------------------------------ Watermark.lua
+local Watermark  = {} ; Watermark.__index = Watermark
 
------------------------------------------------------------------- helpers
-local function ui(cls, props, parent)
-    local o = Instance.new(cls); for k,v in props do o[k]=v end; o.Parent = parent; return o
-end
-local function fmtTime() return os.date("%H:%M") end
-local function round(x)  return math.floor(x+0.5) end
+-- helper ----------------------------------------------------------------------
+local function ui(c,p,par) local o=Instance.new(c);for k,v in p do o[k]=v end;o.Parent=par;return o end
+local grey      = Color3.fromRGB(22,25,31)
+local accent    = Color3.fromRGB(122,176,255)
 
------------------------------------------------------------------- constructor
-function Watermark.New(API)   -- Fluent нужен лишь для Lucide-иконок
-    local self = setmetatable({}, Watermark)
-
-    self.api      = API
-    self.enabled  = false
-    self.fps      = 60
-    self._frames, self._t0 = 0, tick()
-
-    return self
+-------------------------------------------------------------------------------
+function Watermark.New(API,Fluent)
+    return setmetatable({api=API,fluent=Fluent,fps=60,_frames=0,_t0=tick()},Watermark)
 end
 
------------------------------------------------------------------- private · build
+-- build -----------------------------------------------------------------------
 function Watermark:_build()
     if self.gui then return end
-    local player   = self.api:GetLocalPlayer()
-    local coreGui  = self.api:GetCoreGui()
-    local RunSrv   = self.api:GetRunService()
+    local p        = self.api:GetLocalPlayer()
+    self.gui       = ui("ScreenGui",{Name="KR_WM",ResetOnSpawn=false,IgnoreGuiInset=true,
+                                     DisplayOrder=9e4,ZIndexBehavior=Enum.ZIndexBehavior.Sibling},
+                                     self.api:GetCoreGui())
 
-    ---------------- ScreenGui
-    self.gui = ui("ScreenGui",{Name="KR_WM",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=9e4},coreGui)
+    -- контейнер: auto-width
+    self.frame     = ui("Frame",{AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,-12,0,12),
+                                 AutomaticSize=Enum.AutomaticSize.X,Size=UDim2.fromOffset(0,44),
+                                 BackgroundColor3=grey,BackgroundTransparency=.22},self.gui)
+    ui("UICorner",{CornerRadius=UDim.new(0,14)},self.frame)
+    ui("UIStroke",{Color=Color3.fromRGB(255,255,255),Transparency=.8},self.frame)
 
-    ---------------- common style
-    local dark     = Color3.fromRGB(20,23,30)
-    local accent   = Color3.fromRGB(122,176,255)
+    local list = ui("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,
+                                    VerticalAlignment=Enum.VerticalAlignment.Center,
+                                    Padding=UDim.new(0,12)},self.frame)
 
-    local function newBlock(size,pos)
-        local f = ui("Frame",{Size=size,Position=pos,BackgroundColor3=dark,BackgroundTransparency=.22},self.gui)
-        ui("UICorner",{CornerRadius=UDim.new(0,12)},f)
-        ui("UIStroke",{Color=Color3.fromRGB(255,255,255),Transparency=.8},f)
-        return f
-    end
-
-    ---------------- block ▸ SERVER (центр-топ)
-    self.blockSrv = newBlock(UDim2.fromOffset(260,34),UDim2.new(.5,-130,0,12))
-    self.blockSrv.AnchorPoint = Vector2.new(.5,0)
-
-    local srvTxt  = ui("TextLabel",{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,
-                    Font=Enum.Font.GothamMedium,TextColor3=Color3.new(1,1,1),TextSize=14},self.blockSrv)
-    srvTxt.TextXAlignment = Enum.TextXAlignment.Center
-    self._srvLabel = srvTxt
-
-    ---------------- block ▸ PLAYER (право-топ)
-    self.blockPlr = newBlock(UDim2.fromOffset(340,40),UDim2.new(1,-12,0,12))
-    self.blockPlr.AnchorPoint = Vector2.new(1,0)
-
-    -- аватар
-    local avatar = ui("ImageLabel",{Size=UDim2.fromOffset(32,32),Position=UDim2.fromOffset(6,4),
-        BackgroundTransparency=1,Image=("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png")
-        :format(player.UserId)},self.blockPlr)
+    -- avatar ------------------------------------------------------------------
+    local avatar = ui("ImageLabel",{Size=UDim2.fromOffset(34,34),BackgroundTransparency=1,
+        Image=("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png")
+        :format(p.UserId)},self.frame)
     ui("UICorner",{CornerRadius=UDim.new(1,0)},avatar)
     ui("UIStroke",{Color=accent,Transparency=.2},avatar)
 
-    -- текстовая линейка
-    local base = {BackgroundTransparency=1,Font=Enum.Font.GothamMedium,
-                  TextColor3=Color3.fromRGB(230,240,255),TextSize=14}
-    local nick    = ui("TextLabel",base,self.blockPlr)
-    nick.Font     = Enum.Font.GothamBold
-    local fpsLbl  = ui("TextLabel",base,self.blockPlr)
-    local timeLbl = ui("TextLabel",base,self.blockPlr)
+    -- шаблон текста -----------------------------------------------------------
+    local baseT = {BackgroundTransparency=1,Font=Enum.Font.GothamMedium,TextSize=14,
+                   TextColor3=Color3.fromRGB(230,240,255),TextYAlignment=Enum.TextYAlignment.Center}
 
-    self._nick, self._fpsLbl, self._timeLbl = nick, fpsLbl, timeLbl
+    self.nick   = ui("TextLabel",baseT,self.frame)  self.nick.Font=Enum.Font.GothamBold
+    self.server = ui("TextLabel",baseT,self.frame)
+    self.ping   = ui("TextLabel",baseT,self.frame)
+    self.clock  = ui("TextLabel",baseT,self.frame)
 
-    -- позиционирование + разделители
-    local cursor = 44
-    local function segment(lbl,w)
-        -- иконка Lucide
-
-        cursor += 18
-        lbl.Position = UDim2.fromOffset(cursor,0)
-        lbl.Size     = UDim2.fromOffset(w,40)
-        cursor += w + 12
-        -- сепаратор (кроме последнего)
-        local bar = ui("Frame",{Size=UDim2.new(0,2,0.65,0),Position=UDim2.fromOffset(cursor-6,7),
-                      BackgroundColor3=accent,BackgroundTransparency=.05,BorderSizePixel=0},self.blockPlr)
-        ui("UICorner",{CornerRadius=UDim.new(0,1)},bar)
+    -- утилита «разделитель»
+    local function bar()
+        local f=ui("Frame",{Size=UDim2.new(0,2,0.6,0),
+                             BackgroundColor3=accent,BackgroundTransparency=.05,BorderSizePixel=0},self.frame)
+        ui("UICorner",{CornerRadius=UDim.new(0,1)},f)
     end
 
-    segment(nick,     115,"user")
-    segment(fpsLbl,    55,"activity")   -- fps
-    segment(timeLbl,   43,"clock")      -- время (без секун)
+    -- добавляем после каждого текст-блока, кроме последнего
+    bar()  -- между Nick / Server
+    bar()  -- между Server / Ping
+    bar()  -- между Ping / Clock
 
-    -- fps счёт
-    self._connFPS = RunSrv.RenderStepped:Connect(function()
-        self._frames+=1
-        local t=tick()
-        if t-self._t0>.5 then
-            self.fps = math.floor(self._frames/(t-self._t0)+.5)
-            self._frames, self._t0 = 0, t
-        end
+    -- Lucide-иконки -----------------------------------------------------------
+    local function addIcon(name)
+        local ico=self.fluent:CreateIcon(name,14,accent) ; ico.Parent=self.frame
+    end
+    addIcon("server")
+    addIcon("wifi")
+    addIcon("clock")
+
+    -- порядок элементов в листе:
+    -- avatar | nick | sep | server | icon | sep | ping | icon | sep | clock | icon
+    list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        -- обновление позиции (anchor=1,0)
+        self.frame.Position = UDim2.new(1,-12,0,12)
     end)
 end
 
------------------------------------------------------------------- private · refresh
+-- refresh ---------------------------------------------------------------------
+local function fmtTime() return os.date("%H:%M") end
 function Watermark:_refresh()
-    local p = self.api:GetLocalPlayer()
-    self._nick.Text    = p.DisplayName
-    self._fpsLbl.Text  = ("%d fps"):format(self.fps)
-    self._timeLbl.Text = fmtTime()
-
-    local ping  = math.floor(self.api:GetNetworkPing()*1000+0.5)
-    self._srvLabel.Text = string.format("%s  |  %d ms", game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name, ping)
+    local plr=self.api:GetLocalPlayer()
+    self.nick.Text   = plr.DisplayName
+    self.server.Text = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+    self.ping.Text   = ("%d ms"):format(math.floor(self.api:GetNetworkPing()*1000+0.5))
+    self.clock.Text  = fmtTime()
 end
 
------------------------------------------------------------------- public API
+-- public ----------------------------------------------------------------------
 function Watermark:Show()
     if self.enabled then return end
-    self.enabled = true
+    self.enabled=true
     if not self.gui then self:_build() else self.gui.Enabled=true end
     self:_refresh()
     if self._upd then self._upd:Disconnect() end
@@ -134,7 +105,6 @@ end
 
 function Watermark:Destroy()
     if self._upd then self._upd:Disconnect() end
-    if self._connFPS then self._connFPS:Disconnect() end
     if self.gui then self.gui:Destroy() end
 end
 
