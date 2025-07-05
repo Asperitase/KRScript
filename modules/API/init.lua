@@ -110,4 +110,24 @@ function API:GetTweenService()
     return game:GetService("TweenService")
 end
 
+function API:GetHttpService()
+    return game:GetService("HttpService")
+end
+
+function API:GetCoreGui()
+    return game:GetService("CoreGui")
+end
+
+function API:GetNetworkPing()
+    local localPlayer = self:GetLocalPlayer()
+    if localPlayer then
+        return localPlayer.NetworkPing
+    end
+    return 0
+end
+
+function API:GetPlayersCount()
+    return #Players:GetPlayers()
+end
+
 return API

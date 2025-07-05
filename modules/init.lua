@@ -11,10 +11,12 @@ local API = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Aspe
 -- Загрузка модулей из GitHub
 local MovementManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/modules/Movement.lua?t=" .. os.time()))()
 local Menu = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/modules/Menu.lua?t=" .. os.time()))()
+local Watermark = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/modules/Watermark.lua?t=" .. os.time()))()
 
 -- Инициализация менеджеров
 local Movement = MovementManager.New(API)
-local MenuInstance = Menu.New(API, Movement)
+local WatermarkInstance = Watermark.New(API)
+local MenuInstance = Menu.New(API, Movement, WatermarkInstance)
 
 -- Создание окна меню
 local Window = MenuInstance:CreateWindow()
@@ -22,10 +24,17 @@ local Window = MenuInstance:CreateWindow()
 -- Выбор первой вкладки
 MenuInstance:SelectTab(1)
 
+-- Создание Watermark
+WatermarkInstance:Create()
+
 -- Функция выгрузки
 _G.KRScriptUnload = function()
     if Movement and Movement.Destroy then
         Movement:Destroy()
+    end
+
+    if WatermarkInstance and WatermarkInstance.Destroy then
+        WatermarkInstance:Destroy()
     end
 
     if MenuInstance and MenuInstance.Destroy then

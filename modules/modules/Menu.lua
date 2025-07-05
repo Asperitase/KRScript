@@ -1,11 +1,12 @@
 local Menu = {}
 Menu.__index = Menu
 
-function Menu.New(API, MovementManager)
+function Menu.New(API, MovementManager, WatermarkManager)
     local self = setmetatable({}, Menu)
     
     self.API = API
     self.Movement = MovementManager
+    self.Watermark = WatermarkManager
     self.Window = nil
     self.Tabs = {}
     
@@ -41,17 +42,21 @@ end
 
 function Menu:CreateTabs()
     self.Tabs = {
-        About = self.Window:CreateTab{
-            Title = "About",
-            Icon = "info"
-        },
         Farm = self.Window:CreateTab{
             Title = "Farm",
             Icon = "axe"
         },
+        Visual = self.Window:CreateTab{
+            Title = "Visual",
+            Icon = "eye"
+        },
         Movement = self.Window:CreateTab{
             Title = "Movement",
             Icon = "move-3d"
+        },
+        Friend = self.Window:CreateTab{
+            Title = "Friends",
+            Icon = "people"
         },
         Settings = self.Window:CreateTab{
             Title = "Settings",
@@ -59,19 +64,13 @@ function Menu:CreateTabs()
         }
     }
     
-    self:CreateAboutTab()
     self:CreateMovementTab()
+    self:CreateSettingsTab()
+    self:CreateVisualTab()
 end
 
-function Menu:CreateAboutTab()
-    self.Tabs.About:CreateParagraph("Discord", {
-        Title = "Discord",
-        Content = "@redakxx",
-        TitleAlignment = "Middle",
-        ContentAlignment = Enum.TextXAlignment.Center
-    })
-    
-    self.Tabs.About:CreateButton{
+function Menu:CreateSettingsTab()    
+    self.Tabs.Settings:CreateButton{
         Title = "Unload",
         Description = "Fully delete menu and disable function",
         Callback = function()
@@ -94,6 +93,21 @@ function Menu:CreateAboutTab()
             }
         end
     }
+end
+
+function Menu:CreateVisualTab()    
+    self.Tabs.Visual:CreateToggle("Watermark", {
+        Title = "Watermark",
+        Description = "Show player info watermark",
+        Default = true,
+        Callback = function(enabled)
+            if enabled then
+                self.Watermark:Show()
+            else
+                self.Watermark:Hide()
+            end
+        end
+    })
 end
 
 function Menu:CreateMovementTab()
