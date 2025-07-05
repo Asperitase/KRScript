@@ -50,8 +50,8 @@ function Watermark:_build()
         AnchorPoint            = Vector2.new(1, 0),
         Position               = UDim2.new(1, -20, 0, 20),
         Size                   = UDim2.fromOffset(460, 42), -- ⟵ увеличено
-        BackgroundTransparency = 0.55,
-        BackgroundColor3       = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 0.18,
+        BackgroundColor3       = Color3.fromRGB(32, 36, 44),
     }, self.Gui)
 
     mk("UICorner", {CornerRadius = UDim.new(0, 14)}, self.Container)
@@ -149,9 +149,6 @@ end
 
 --== данные =========================================================
 
-function Watermark:_getPing()
-    return math.floor(self.API:GetNetworkPing() * 1000 + 0.5)
-end
 function Watermark:_playerCount()
     return self.API:GetPlayersCount()
 end
@@ -159,8 +156,8 @@ end
 function Watermark:_refresh()
     local p = self.API:GetLocalPlayer()
     if not p then return end
-    self.NickLabel.Text    = "<b>" .. p.DisplayName .. "</b>"
-    self.PingLabel.Text    = ("%dms"):format(self:_getPing())
+    self.NickLabel.Text    = p.DisplayName
+    self.PingLabel.Text    = ("%dms"):format(self.API:GetNetworkPing())
     self.PlayersLabel.Text = tostring(self:_playerCount())
     self.FPSLabel.Text     = ("%d fps"):format(self.fps)
     self.TimeLabel.Text    = os.date("%H:%M:%S")
