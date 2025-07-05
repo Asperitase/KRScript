@@ -157,14 +157,13 @@ function MovementManager:EnableFly()
     if self.FlyEnabled then return end
     self.FlyEnabled = true
 
-    -- Сброс направления
     for k in pairs(self.FlyDirection) do
         self.FlyDirection[k] = Vector3.new()
     end
 
-    -- Подключаем обработчики ввода
     local UserInputService = self.API:GetUserInputService()
     local RunService = self.API:GetRunService()
+    local player = self.API:GetLocalPlayer()
 
     self.FlyConnections.InputBegan = UserInputService.InputBegan:Connect(function(input, processed)
         if processed then return end
@@ -176,28 +175,50 @@ function MovementManager:EnableFly()
     self.FlyConnections.Heartbeat = RunService.Heartbeat:Connect(function(dt)
         if not self.FlyEnabled then return end
         local root = self.API:GetHumanoidRootPart()
-        if root then
-            local direction = self:_GetFlyUnitDirection()
-            if direction.Magnitude > 0 then
-                root.Velocity = direction.Unit * self.FlySpeed
+        local humanoid = self:GetHumanoid()
+        if root and humanoid then
+            humanoid.PlatformStand = true
+            local cam = workspace.CurrentCamera
+            local move = Vector3.new()
+            local dir = self:_GetFlyUnitDirection()
+            if dir.Magnitude > 0 then
+                -- Движение относительно камеры
+                move = (cam.CFrame.LookVector * (self.FlyDirection.forward.Z + self.FlyDirection.backward.Z) +
+                        cam.CFrame.RightVector * (self.FlyDirection.right.X + self.FlyDirection.left.X) +
+                        cam.CFrame.UpVector * (self.FlyDirection.up.Y + self.FlyDirection.down.Y)).Unit
+                root.Velocity = move * self.FlySpeed
             else
                 root.Velocity = Vector3.new()
             end
         end
     end)
+    if not self.FlyConnections.CharacterAdded then
+        self.FlyConnections.CharacterAdded = player.CharacterAdded:Connect(function()
+            if self.FlyEnabled then
+                task.defer(function()
+                    self:EnableFly()
+                end)
+            end
+        end)
+    end
 end
 
 function MovementManager:DisableFly()
     self.FlyEnabled = false
-    -- Отключаем все хуки
     for _, conn in pairs(self.FlyConnections) do
         if conn then conn:Disconnect() end
     end
     self.FlyConnections = {}
-    -- Сбросить скорость
     local root = self.API:GetHumanoidRootPart()
+    local humanoid = self:GetHumanoid()
     if root then
         root.Velocity = Vector3.new()
+    end
+    if humanoid then
+        humanoid.PlatformStand = false
+    end
+    for k in pairs(self.FlyDirection) do
+        self.FlyDirection[k] = Vector3.new()
     end
 end
 
