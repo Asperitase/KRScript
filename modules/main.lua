@@ -1,16 +1,16 @@
--- KRScript - Основной файл инициализации
--- Автор: idredakx | Версия: 1.1
+-- Основной файл KRScript
+-- Подключение модулей
 
 if _G.KRScriptUnload then
     _G.KRScriptUnload()
 end
 
--- Загрузка API из GitHub
+-- Загрузка API
 local API = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/API/init.lua?t=" .. os.time()))()
 
--- Загрузка модулей из GitHub
-local MovementManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/Movement.lua?t=" .. os.time()))()
-local Menu = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Asperitase/KRScript/main/modules/Menu.lua?t=" .. os.time()))()
+-- Загрузка модулей
+local MovementManager = require(script.Parent.modules.Movement)
+local Menu = require(script.Parent.modules.Menu)
 
 -- Инициализация менеджеров
 local Movement = MovementManager.New(API)
@@ -33,4 +33,4 @@ _G.KRScriptUnload = function()
     end
 
     _G.KRScriptUnload = nil
-end
+end 
