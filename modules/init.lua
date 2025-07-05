@@ -25,7 +25,7 @@ local Window = MenuInstance:CreateWindow()
 MenuInstance:SelectTab(1)
 
 -- Создание Watermark
-WatermarkInstance:Create()
+WatermarkInstance:Show()
 
 -- Функция выгрузки
 _G.KRScriptUnload = function()
