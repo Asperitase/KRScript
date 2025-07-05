@@ -48,23 +48,31 @@ function Watermark:_build()
 
     -- утилита «разделитель»
     local function bar()
-        local f=ui("Frame",{Size=UDim2.new(0,2,0.6,0),
-                             BackgroundColor3=accent,BackgroundTransparency=.05,BorderSizePixel=0},self.frame)
-        ui("UICorner",{CornerRadius=UDim.new(0,1)},f)
+        ui("TextLabel", {
+            Text = "║",
+            BackgroundTransparency = 1,
+            Font = Enum.Font.GothamBold,
+            TextSize = 16,
+            TextColor3 = Color3.fromRGB(122,176,255),
+            Size = UDim2.fromOffset(12, 34),
+            TextYAlignment = Enum.TextYAlignment.Center,
+            TextXAlignment = Enum.TextXAlignment.Center
+        }, self.frame)
     end
 
+    -- порядок: avatar | nick | sep | server | sep | ping | sep | clock
     -- добавляем после каждого текст-блока, кроме последнего
     bar()  -- между Nick / Server
     bar()  -- между Server / Ping
     bar()  -- между Ping / Clock
 
-    -- Lucide-иконки -----------------------------------------------------------
-    local function addIcon(name)
-        local ico=self.fluent:CreateIcon(name,14,accent) ; ico.Parent=self.frame
-    end
-    addIcon("server")
-    addIcon("wifi")
-    addIcon("clock")
+    -- Удаляем Lucide-иконки --------------------------------------------------
+    -- local function addIcon(name)
+    --     local ico=self.fluent:CreateIcon(name,14,accent) ; ico.Parent=self.frame
+    -- end
+    -- addIcon("server")
+    -- addIcon("wifi")
+    -- addIcon("clock")
 
     -- порядок элементов в листе:
     -- avatar | nick | sep | server | icon | sep | ping | icon | sep | clock | icon
