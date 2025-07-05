@@ -49,7 +49,7 @@ function Watermark:_build()
     self.Container = mk("Frame", {
         AnchorPoint            = Vector2.new(1, 0),
         Position               = UDim2.new(1, -20, 0, 20),
-        Size                   = UDim2.fromOffset(290, 42),
+        Size                   = UDim2.fromOffset(460, 42), -- ⟵ увеличено
         BackgroundTransparency = 0.55,
         BackgroundColor3       = Color3.fromRGB(255, 255, 255),
     }, self.Gui)
@@ -77,8 +77,7 @@ function Watermark:_build()
         Size                   = UDim2.fromOffset(30, 30),
         Position               = UDim2.fromOffset(8, 6),
         BackgroundTransparency = 1,
-        Image                  = ("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png")
-                                 :format(plr.UserId)
+        Image = "https://www.roblox.com/headshot-thumbnail/image?userId="..plr.UserId.."&width=420&height=420&format=png"
     }, self.Container)
     mk("UICorner", {CornerRadius = UDim.new(1, 0)}, self.Avatar)
     mk("UIStroke", {
@@ -171,9 +170,16 @@ end
 
 function Watermark:Show()
     if self.Enabled then return end
-    self:_build()
     self.Enabled = true
+
+    if not self.Gui then
+        self:_build()
+    else
+        self.Gui.Enabled = true
+    end
+
     self:_refresh()
+
     if self.Update then self.Update:Disconnect() end
     self.Update = self.API:GetRunService().RenderStepped:Connect(function(dt)
         if tick() % 0.5 < dt then
