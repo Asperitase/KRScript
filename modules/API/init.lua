@@ -119,11 +119,12 @@ function API:GetCoreGui()
 end
 
 function API:GetNetworkPing()
-    local localPlayer = self:GetLocalPlayer()
-    if localPlayer then
-        return localPlayer.NetworkPing
-    end
-    return 0
+    -- local localPlayer = self:GetLocalPlayer()
+    -- if localPlayer then
+    --     return localPlayer.NetworkPing
+    -- end
+    -- return 0
+    return "N/A"
 end
 
 function API:GetPlayersCount()

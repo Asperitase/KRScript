@@ -29,17 +29,14 @@ WatermarkInstance:Create()
 
 -- Функция выгрузки
 _G.KRScriptUnload = function()
-    if Movement and Movement.Destroy then
-        Movement:Destroy()
-    end
-
-    if WatermarkInstance and WatermarkInstance.Destroy then
-        WatermarkInstance:Destroy()
-    end
-
-    if MenuInstance and MenuInstance.Destroy then
-        MenuInstance:Destroy()
-    end
-
+    pcall(function()
+        if Movement and Movement.Destroy then Movement:Destroy() end
+    end)
+    pcall(function()
+        if WatermarkInstance and WatermarkInstance.Destroy then WatermarkInstance:Destroy() end
+    end)
+    pcall(function()
+        if MenuInstance and MenuInstance.Destroy then MenuInstance:Destroy() end
+    end)
     _G.KRScriptUnload = nil
 end

@@ -24,7 +24,7 @@ function Menu:CreateWindow()
     
     self.Window = FluentMenu:CreateWindow{
         Title = "KRScript",
-        SubTitle = "by idredakx | v1.1",
+        SubTitle = "by idredakx | v1.2",
         TabWidth = 160,
         Size = UDim2.fromOffset(830, 525),
         Resize = true,

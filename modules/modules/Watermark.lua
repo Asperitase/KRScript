@@ -76,37 +76,33 @@ end
 
 function Watermark:GetPing()
     local ping = self.API:GetNetworkPing()
-    return ping
+    if type(ping) == "number" then
+        return string.format("%d ms", math.floor(ping * 1000 + 0.5))
+    end
+    return tostring(ping or "N/A")
 end
 
 function Watermark:GetPlayersOnline()
-    return self.API:GetPlayersCount()
+    local ok, count = pcall(function()
+        return self.API:GetPlayersCount()
+    end)
+    return ok and count or 0
 end
 
 function Watermark:Refresh()
     if not self.Enabled or not self.TextLabel then return end
-    
     local localPlayer = self.API:GetLocalPlayer()
     if not localPlayer then return end
-    
     local ping = self:GetPing()
-    if type(ping) == "number" then
-        ping = string.format("%d ms", math.floor(ping * 1000 + 0.5))
-    else
-        ping = tostring(ping)
-    end
     local count = self:GetPlayersOnline()
-    
     self.TextLabel.Text = string.format(
         "<font color='#FFFFFF'><b>%s</b></font>  " ..
         "<font color='#888888'>|</font>  " ..
         "Ping: <font color='#A5D6FF'>%s</font>  " ..
         "<font color='#888888'>|</font>  " ..
         "Players: <font color='#A5D6FF'>%d</font>",
-        localPlayer.DisplayName, ping, count
+        localPlayer.DisplayName or "Player", ping, count
     )
-    
-    -- Авто-подгоняем ширину, если имя длинное
     local textBounds = self.TextLabel.TextBounds.X
     self.Container.Size = UDim2.fromOffset(math.max(230, textBounds + 44), 36)
 end
@@ -161,12 +157,10 @@ end
 function Watermark:Destroy()
     self.Enabled = false
     self:StopUpdate()
-    
     if self.Gui then
-        self.Gui:Destroy()
+        pcall(function() self.Gui:Destroy() end)
         self.Gui = nil
     end
-    
     self.Container = nil
     self.TextLabel = nil
     self.Avatar = nil
