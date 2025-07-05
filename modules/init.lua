@@ -1,9 +1,3 @@
---[[
-    KRScript v1.1
-    Author: idredakx
-    Copyright © 2024 idredakx. All rights reserved.
-]]
-
 if _G.KRScriptUnload then
     _G.KRScriptUnload()
 end
@@ -35,19 +29,22 @@ function MovementManager.New(API)
     self.FlyBodyGyro = nil
 
     API:GetLocalPlayer().CharacterAdded:Connect(function()
-        self.DefaultSpeed = nil
+        
         if self.SpeedEnabled then
             task.defer(function()
                 self:ApplySpeed(self.CustomSpeed)
             end)
         end
+        
+
     end)
 
     return self
 end
 
-function MovementManager:HookWalkSpeed(Humanoid)
+function MovementManager:_HookWalkSpeed(Humanoid)
     if self.HookWalkSpeed then self.HookWalkSpeed:Disconnect() end
+
     self.HookWalkSpeed = Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
         if self.SpeedEnabled and Humanoid.WalkSpeed ~= self.CustomSpeed then
             Humanoid.WalkSpeed = self.CustomSpeed
@@ -55,11 +52,11 @@ function MovementManager:HookWalkSpeed(Humanoid)
     end)
 end
 
-function MovementManager:EnsureHook(Humanoid)
-    self:HookWalkSpeed(Humanoid)
+function MovementManager:_EnsureHook(Humanoid)
+    self:_HookWalkSpeed(Humanoid)
 end
 
-function MovementManager:ClearHooks()
+function MovementManager:_ClearHooks()
     if self.HookWalkSpeed then 
         self.HookWalkSpeed:Disconnect() 
     end
@@ -86,20 +83,21 @@ end
 
 function MovementManager:EnablePlayerSpeed()
     local Humanoid = self:GetHumanoid()
-    if Humanoid then
+    if Humanoid and not self.DefaultSpeed then
         self.DefaultSpeed = Humanoid.WalkSpeed
     end
+
     self.CustomSpeed = self.CustomSpeed
     self.SpeedEnabled = true
     self:ApplySpeed(self.CustomSpeed)
-    self:EnsureHook(Humanoid)
+    self:_EnsureHook(Humanoid)  
+
     if not self.HookCharacter then
         self.HookCharacter = self.API:GetLocalPlayer().CharacterAdded:Connect(function()
-            self.DefaultSpeed = nil
             if self.SpeedEnabled then
                 task.defer(function()
                     self:ApplySpeed(self.CustomSpeed)
-                    self:EnsureHook()
+                    self:_EnsureHook()
                 end)
             end
         end)
@@ -108,26 +106,27 @@ end
 
 function MovementManager:DisablePlayerSpeed()
     self.SpeedEnabled = false
-    self:ClearHooks()
+    self:_ClearHooks()
+
     if self.DefaultSpeed then
         self:ApplySpeed(self.DefaultSpeed)
     end
 end
 
-function MovementManager:ApplyJumpHeight(JumpHeight)
+function MovementManager:ApplyJumpHeight(jumpHeight)
     local Humanoid = self:GetHumanoid()
     if Humanoid then
-        Humanoid.JumpHeight = JumpHeight
+        Humanoid.JumpHeight = jumpHeight
         if Humanoid.UseJumpPower then
-            Humanoid.JumpPower = math.sqrt(349.24 * JumpHeight)
+            Humanoid.JumpPower = math.sqrt(349.24 * jumpHeight)
         end
     end
 end
 
-function MovementManager:SetJumpHeightValue(JumpHeight)
-    self.CustomJumpHeight = JumpHeight
+function MovementManager:SetJumpHeightValue(jumpHeight)
+    self.CustomJumpHeight = jumpHeight
     if self.JumpEnabled then
-        self:ApplyJumpHeight(JumpHeight)
+        self:ApplyJumpHeight(jumpHeight)
     end
 end
 
@@ -159,58 +158,65 @@ function MovementManager:EnableFly()
 
     self.FlyConnections.Heartbeat = RunService.Heartbeat:Connect(function(dt)
         if not self.FlyEnabled then return end
-        local Root = self.API:GetHumanoidRootPart()
-        local Humanoid = self:GetHumanoid()
-        if not Root or not Humanoid then return end
+        local root = self.API:GetHumanoidRootPart()
+        local humanoid = self:GetHumanoid()
+        if not root or not humanoid then return end
 
-        Humanoid.PlatformStand = true
+        humanoid.PlatformStand = true
 
         -- Создаём BodyVelocity и BodyGyro если их нет
         if not self.FlyBodyVelocity then
             self.FlyBodyVelocity = Instance.new("BodyVelocity")
             self.FlyBodyVelocity.MaxForce = Vector3.new(1,1,1) * 9e9
-            self.FlyBodyVelocity.Parent = Root
+            self.FlyBodyVelocity.Parent = root
         end
         if not self.FlyBodyGyro then
             self.FlyBodyGyro = Instance.new("BodyGyro")
             self.FlyBodyGyro.MaxTorque = Vector3.new(1,1,1) * 9e9
             self.FlyBodyGyro.P = 9e4
-            self.FlyBodyGyro.Parent = Root
+            self.FlyBodyGyro.Parent = root
         end
-        local Cam = workspace.CurrentCamera
-        local Velocity = Vector3.zero
-        local Rotation = Cam.CFrame.Rotation
+
+        local cam = workspace.CurrentCamera
+        local velocity = Vector3.zero
+        local rotation = cam.CFrame.Rotation
+
+        -- Управление направлениями через IsKeyDown
         if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            Velocity += Cam.CFrame.LookVector
-            Rotation *= CFrame.Angles(math.rad(-40), 0, 0)
+            velocity += cam.CFrame.LookVector
+            rotation *= CFrame.Angles(math.rad(-40), 0, 0)
         end
         if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            Velocity -= Cam.CFrame.LookVector
-            Rotation *= CFrame.Angles(math.rad(40), 0, 0)
+            velocity -= cam.CFrame.LookVector
+            rotation *= CFrame.Angles(math.rad(40), 0, 0)
         end
         if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-            Velocity += Cam.CFrame.RightVector
-            Rotation *= CFrame.Angles(0, 0, math.rad(-40))
+            velocity += cam.CFrame.RightVector
+            rotation *= CFrame.Angles(0, 0, math.rad(-40))
         end
         if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-            Velocity -= Cam.CFrame.RightVector
-            Rotation *= CFrame.Angles(0, 0, math.rad(40))
+            velocity -= cam.CFrame.RightVector
+            rotation *= CFrame.Angles(0, 0, math.rad(40))
         end
         if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-            Velocity += Vector3.yAxis
+            velocity += Vector3.yAxis
         end
         if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-            Velocity -= Vector3.yAxis
+            velocity -= Vector3.yAxis
         end
-        local TweenInfoObj = TweenInfo.new(0.2)
-        local Speed = self.FlySpeed or 16
-        if Velocity.Magnitude > 0 then
-            TweenService:Create(self.FlyBodyVelocity, TweenInfoObj, { Velocity = Velocity.Unit * Speed }):Play()
+
+        -- Плавное изменение скорости и поворота
+        local tweenInfo = TweenInfo.new(0.2)
+        local speed = self.FlySpeed or 16
+        if velocity.Magnitude > 0 then
+            TweenService:Create(self.FlyBodyVelocity, tweenInfo, { Velocity = velocity.Unit * speed }):Play()
         else
-            TweenService:Create(self.FlyBodyVelocity, TweenInfoObj, { Velocity = Vector3.zero }):Play()
+            TweenService:Create(self.FlyBodyVelocity, tweenInfo, { Velocity = Vector3.zero }):Play()
         end
-        TweenService:Create(self.FlyBodyGyro, TweenInfoObj, { CFrame = Rotation }):Play()
+        TweenService:Create(self.FlyBodyGyro, tweenInfo, { CFrame = rotation }):Play()
     end)
+
+    -- Подписка на респавн
     if not self.FlyConnections.CharacterAdded then
         self.FlyConnections.CharacterAdded = self.API:GetLocalPlayer().CharacterAdded:Connect(function()
             if self.FlyEnabled then
@@ -229,7 +235,7 @@ function MovementManager:DisableFly()
     end
     self.FlyConnections = {}
     local root = self.API:GetHumanoidRootPart()
-    local Humanoid = self:GetHumanoid()
+    local humanoid = self:GetHumanoid()
     if root then
         if self.FlyBodyVelocity then
             self.FlyBodyVelocity:Destroy()
@@ -240,19 +246,20 @@ function MovementManager:DisableFly()
             self.FlyBodyGyro = nil
         end
     end
-    if Humanoid then
-        Humanoid.PlatformStand = false
+    if humanoid then
+        humanoid.PlatformStand = false
     end
 end
 
-function MovementManager:SetFlySpeed(Speed)
-    self.FlySpeed = Speed
+function MovementManager:SetFlySpeed(speed)
+    self.FlySpeed = speed
 end
 
 function MovementManager:Destroy()
     self:DisablePlayerSpeed()
     self:DisablePlayerJump()
     self:DisableFly()
+
     if self.HookCharacter then
         self.HookCharacter:Disconnect()
     end
