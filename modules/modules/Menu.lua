@@ -56,7 +56,7 @@ function Menu:CreateTabs()
         },
         Friend = self.Window:CreateTab{
             Title = "Friends",
-            Icon = "people"
+            Icon = "users"
         },
         Settings = self.Window:CreateTab{
             Title = "Settings",
