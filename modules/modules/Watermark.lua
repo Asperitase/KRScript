@@ -87,9 +87,9 @@ function Watermark:_build()
         ui("UICorner",{CornerRadius=UDim.new(0,1)},bar)
     end
 
-    segment(nick,     120,"user")
-    segment(fpsLbl,    60,"activity")   -- fps
-    segment(timeLbl,   56,"clock")      -- время (без секун)
+    segment(nick,     115,"user")
+    segment(fpsLbl,    55,"activity")   -- fps
+    segment(timeLbl,   43,"clock")      -- время (без секун)
 
     -- fps счёт
     self._connFPS = RunSrv.RenderStepped:Connect(function()
