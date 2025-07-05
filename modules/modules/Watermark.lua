@@ -10,7 +10,7 @@ local function fmtTime() return os.date("%H:%M") end
 local function round(x)  return math.floor(x+0.5) end
 
 ------------------------------------------------------------------ constructor
-function Watermark.new(API)   -- Fluent нужен лишь для Lucide-иконок
+function Watermark.New(API)   -- Fluent нужен лишь для Lucide-иконок
     local self = setmetatable({}, Watermark)
 
     self.api      = API
