@@ -23,6 +23,17 @@ function MovementManager.New(API)
     self.DefaultJumpHeight = nil
     self.CustomJumpHeight = 7.2
     self.JumpEnabled = false
+    self.FlyEnabled = false
+    self.FlySpeed = 16
+    self.FlyDirection = {
+        forward = Vector3.new(),
+        backward = Vector3.new(),
+        left = Vector3.new(),
+        right = Vector3.new(),
+        up = Vector3.new(),
+        down = Vector3.new(),
+    }
+    self.FlyConnections = {}
 
     API:GetLocalPlayer().CharacterAdded:Connect(function()
         
@@ -109,15 +120,6 @@ function MovementManager:DisablePlayerSpeed()
     end
 end
 
-function MovementManager:Destroy()
-    self:DisablePlayerSpeed()
-
-    if self.HookCharacter then
-        self.HookCharacter:Disconnect()
-    end
-    self.HookCharacter = nil
-end
-
 function MovementManager:ApplyJumpHeight(jumpHeight)
     local Humanoid = self:GetHumanoid()
     if Humanoid then
@@ -149,6 +151,93 @@ function MovementManager:DisablePlayerJump()
     if self.DefaultJumpHeight then
         self:ApplyJumpHeight(self.DefaultJumpHeight)
     end
+end
+
+function MovementManager:EnableFly()
+    if self.FlyEnabled then return end
+    self.FlyEnabled = true
+
+    -- Сброс направления
+    for k in pairs(self.FlyDirection) do
+        self.FlyDirection[k] = Vector3.new()
+    end
+
+    -- Подключаем обработчики ввода
+    local UserInputService = self.API:GetUserInputService()
+    local RunService = self.API:GetRunService()
+
+    self.FlyConnections.InputBegan = UserInputService.InputBegan:Connect(function(input, processed)
+        if processed then return end
+        self:_UpdateFlyDirection(input.KeyCode, true)
+    end)
+    self.FlyConnections.InputEnded = UserInputService.InputEnded:Connect(function(input)
+        self:_UpdateFlyDirection(input.KeyCode, false)
+    end)
+    self.FlyConnections.Heartbeat = RunService.Heartbeat:Connect(function(dt)
+        if not self.FlyEnabled then return end
+        local root = self.API:GetHumanoidRootPart()
+        if root then
+            local direction = self:_GetFlyUnitDirection()
+            if direction.Magnitude > 0 then
+                root.Velocity = direction.Unit * self.FlySpeed
+            else
+                root.Velocity = Vector3.new()
+            end
+        end
+    end)
+end
+
+function MovementManager:DisableFly()
+    self.FlyEnabled = false
+    -- Отключаем все хуки
+    for _, conn in pairs(self.FlyConnections) do
+        if conn then conn:Disconnect() end
+    end
+    self.FlyConnections = {}
+    -- Сбросить скорость
+    local root = self.API:GetHumanoidRootPart()
+    if root then
+        root.Velocity = Vector3.new()
+    end
+end
+
+function MovementManager:SetFlySpeed(speed)
+    self.FlySpeed = speed
+end
+
+function MovementManager:_UpdateFlyDirection(keyCode, begin)
+    if keyCode == Enum.KeyCode.W then
+        self.FlyDirection.forward = begin and Vector3.new(0, 0, -1) or Vector3.new()
+    elseif keyCode == Enum.KeyCode.S then
+        self.FlyDirection.backward = begin and Vector3.new(0, 0, 1) or Vector3.new()
+    elseif keyCode == Enum.KeyCode.A then
+        self.FlyDirection.left = begin and Vector3.new(-1, 0, 0) or Vector3.new()
+    elseif keyCode == Enum.KeyCode.D then
+        self.FlyDirection.right = begin and Vector3.new(1, 0, 0) or Vector3.new()
+    elseif keyCode == Enum.KeyCode.Q then
+        self.FlyDirection.up = begin and Vector3.new(0, 1, 0) or Vector3.new()
+    elseif keyCode == Enum.KeyCode.E then
+        self.FlyDirection.down = begin and Vector3.new(0, -1, 0) or Vector3.new()
+    end
+end
+
+function MovementManager:_GetFlyUnitDirection()
+    local sum = Vector3.new()
+    for _, v in pairs(self.FlyDirection) do
+        sum = sum + v
+    end
+    return sum.Magnitude > 0 and sum.Unit or sum
+end
+
+function MovementManager:Destroy()
+    self:DisablePlayerSpeed()
+    self:DisablePlayerJump()
+    self:DisableFly()
+
+    if self.HookCharacter then
+        self.HookCharacter:Disconnect()
+    end
+    self.HookCharacter = nil
 end
 
 local Window = FluentMenu:CreateWindow{

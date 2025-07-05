@@ -4,8 +4,6 @@ API.__index = API
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
 
 function API:New(String)
     local obj = {
@@ -15,8 +13,16 @@ function API:New(String)
     return obj
 end
 
+function API:GetUserInputService()
+    return game:GetService("UserInputService")
+end
+
+function API:GetRunService()
+    return game:GetService("RunService")
+end
+
 function API:IsClient(): boolean
-    return RunService:IsClient()
+    return self:GetRunService():IsClient()
 end
 
 function API:GetPlayers(): { Player }
@@ -39,6 +45,14 @@ end
 function API:GetHumanoid(): Player?
     local Character = self:GetCharacter() or self:GetLocalPlayer().CharacterAdded:Wait()
     return Character:FindFirstChildOfClass("Humanoid")
+end
+
+function API:GetHumanoidRootPart()
+    local Character = self:GetCharacter()
+    if Character then
+        return Character:FindFirstChild("HumanoidRootPart")
+    end
+    return nil
 end
 
 function API:GetPlayerByUID(uid: number): Player?
