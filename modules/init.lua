@@ -242,7 +242,7 @@ end
 
 local Window = FluentMenu:CreateWindow{
     Title = "KRScript",
-    SubTitle = "by idredakx | v1.0",
+    SubTitle = "by idredakx | v1.1",
     TabWidth = 160,
     Size = UDim2.fromOffset(830, 525),
     Resize = true,
@@ -336,6 +336,25 @@ TabID.Movement:CreateSlider("Jump Height", {
     Default = 7.2,
     Callback = function(value)
         Movement:SetJumpHeightValue(value)
+    end
+})
+TabID.Movement:CreateToggle("Fly Player", {Title = "Fly Player", Default = false,
+    Callback = function(enabled)
+        if enabled then
+            Movement:EnableFly()
+        else
+            Movement:DisableFly()
+        end
+    end
+})
+TabID.Movement:CreateSlider("Fly Speed", {
+    Title = "Fly Speed",
+    Description = "Adjust player fly speed",
+    Min = 8,
+    Max = 100,
+    Default = 16,
+    Callback = function(value)
+        Movement:SetFlySpeed(value)
     end
 })
 
