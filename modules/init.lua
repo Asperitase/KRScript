@@ -20,6 +20,9 @@ function MovementManager.New(API)
     self.SpeedEnabled = false
     self.HookWalkSpeed = nil
     self.HookCharacter = nil
+    self.DefaultJumpHeight = nil
+    self.CustomJumpHeight = 7.2
+    self.JumpEnabled = false
 
     API:GetLocalPlayer().CharacterAdded:Connect(function()
         
@@ -115,6 +118,38 @@ function MovementManager:Destroy()
     self.HookCharacter = nil
 end
 
+function MovementManager:ApplyJumpHeight(jumpHeight)
+    local Humanoid = self:GetHumanoid()
+    if Humanoid then
+        Humanoid.JumpHeight = jumpHeight
+        if Humanoid.UseJumpPower then
+            Humanoid.JumpPower = math.sqrt(349.24 * jumpHeight)
+        end
+    end
+end
+
+function MovementManager:SetJumpHeightValue(jumpHeight)
+    self.CustomJumpHeight = jumpHeight
+    if self.JumpEnabled then
+        self:ApplyJumpHeight(jumpHeight)
+    end
+end
+
+function MovementManager:EnablePlayerJump()
+    local Humanoid = self:GetHumanoid()
+    if Humanoid and not self.DefaultJumpHeight then
+        self.DefaultJumpHeight = Humanoid.JumpHeight
+    end
+    self.JumpEnabled = true
+    self:ApplyJumpHeight(self.CustomJumpHeight)
+end
+
+function MovementManager:DisablePlayerJump()
+    self.JumpEnabled = false
+    if self.DefaultJumpHeight then
+        self:ApplyJumpHeight(self.DefaultJumpHeight)
+    end
+end
 
 local Window = FluentMenu:CreateWindow{
     Title = "KRScript",
@@ -193,6 +228,25 @@ TabID.Movement:CreateSlider("Speed Value", {
     Default = 32,
     Callback = function(value)
         Movement:SetSpeedValue(value)
+    end
+})
+TabID.Movement:CreateToggle("Jump Player", {Title = "Jump Player", Default = false,
+    Callback = function(enabled)
+        if enabled then
+            Movement:EnablePlayerJump()
+        else
+            Movement:DisablePlayerJump()
+        end
+    end
+})
+TabID.Movement:CreateSlider("Jump Height", {
+    Title = "Jump Height",
+    Description = "Adjust player jump height",
+    Min = 5,
+    Max = 50,
+    Default = 7.2,
+    Callback = function(value)
+        Movement:SetJumpHeightValue(value)
     end
 })
 
