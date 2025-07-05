@@ -42,8 +42,8 @@ function MovementManager:_HookWalkSpeed(Humanoid)
     end)
 end
 
-function MovementManager:_EnsureHook()
-    self:_hookWalkSpeed(self:GetHumanoid())
+function MovementManager:_EnsureHook(Humanoid)
+    self:_HookWalkSpeed(Humanoid)
 end
 
 function MovementManager:_ClearHooks()
@@ -80,7 +80,7 @@ function MovementManager:EnablePlayerSpeed()
     self.CustomSpeed = self.CustomSpeed
     self.SpeedEnabled = true
     self:ApplySpeed(self.CustomSpeed)
-    self:_EnsureHook()  
+    self:_EnsureHook(Humanoid)  
 
     if not self.HookCharacter then
         self.HookCharacter = self.API:GetLocalPlayer().CharacterAdded:Connect(function()
