@@ -48,12 +48,7 @@ function Watermark:_build()
         Size=UDim2.new(0,0,1,0),
         TextXAlignment=Enum.TextXAlignment.Left
     }
-    self.nick   = ui("TextLabel",baseT,self.frame)  self.nick.Font=Enum.Font.GothamBold
-    self.server = ui("TextLabel",baseT,self.frame)
-    self.ping   = ui("TextLabel",baseT,self.frame)
-    self.clock  = ui("TextLabel",baseT,self.frame)
 
-    -- утилита «разделитель»
     local function bar()
         ui("TextLabel", {
             Text = "║",
@@ -67,12 +62,14 @@ function Watermark:_build()
             TextXAlignment = Enum.TextXAlignment.Center
         }, self.frame)
     end
-
-    -- порядок: avatar | nick | sep | server | sep | ping | sep | clock
-    -- добавляем после каждого текст-блока, кроме последнего
-    bar()  -- между Nick / Server
-    bar()  -- между Server / Ping
-    bar()  -- между Ping / Clock
+    
+    self.nick   = ui("TextLabel", baseT, self.frame)  self.nick.Font = Enum.Font.GothamBold
+    bar()
+    self.server = ui("TextLabel", baseT, self.frame)
+    bar()
+    self.ping   = ui("TextLabel", baseT, self.frame)
+    bar()
+    self.clock  = ui("TextLabel", baseT, self.frame)
 
     -- Удаляем Lucide-иконки --------------------------------------------------
     -- local function addIcon(name)
@@ -96,7 +93,7 @@ function Watermark:_refresh()
     local plr=self.api:GetLocalPlayer()
     self.nick.Text   = plr.DisplayName
     self.server.Text = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
-    self.ping.Text   = ("%d ms"):format(math.floor(self.api:GetNetworkPing()*1000+0.5))
+    self.ping.Text   = ("%d ms"):format(math.floor(self.api:GetNetworkPing()))
     self.clock.Text  = fmtTime()
 end
 
