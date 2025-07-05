@@ -179,16 +179,22 @@ function MovementManager:EnableFly()
         if root and humanoid then
             humanoid.PlatformStand = true
             local cam = workspace.CurrentCamera
-            local move = Vector3.new()
-            local dir = self:_GetFlyUnitDirection()
-            if dir.Magnitude > 0 then
-                -- Движение относительно камеры
-                move = (cam.CFrame.LookVector * (self.FlyDirection.forward.Z + self.FlyDirection.backward.Z) +
-                        cam.CFrame.RightVector * (self.FlyDirection.right.X + self.FlyDirection.left.X) +
-                        cam.CFrame.UpVector * (self.FlyDirection.up.Y + self.FlyDirection.down.Y)).Unit
-                root.Velocity = move * self.FlySpeed
-            else
-                root.Velocity = Vector3.new()
+
+            local forward = (self.FlyDirection.forward.Z ~= 0) and 1 or 0
+            local backward = (self.FlyDirection.backward.Z ~= 0) and -1 or 0
+            local right = (self.FlyDirection.right.X ~= 0) and 1 or 0
+            local left = (self.FlyDirection.left.X ~= 0) and -1 or 0
+            local up = (self.FlyDirection.up.Y ~= 0) and 1 or 0
+            local down = (self.FlyDirection.down.Y ~= 0) and -1 or 0
+
+            local move = (cam.CFrame.LookVector * (forward + backward) +
+                          cam.CFrame.RightVector * (right + left) +
+                          cam.CFrame.UpVector * (up + down))
+            if move.Magnitude > 0 then
+                move = move.Unit
+                -- Используем CFrame для перемещения, чтобы не трясло
+                root.CFrame = root.CFrame + move * self.FlySpeed * dt
+                root.Velocity = Vector3.new() -- сбрасываем Velocity
             end
         end
     end)
